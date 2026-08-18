@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legato — Nền Tảng In 3D Độc Quyền</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .drops-scroll { display: flex; overflow-x: auto; gap: 16px; padding-top: 8px; padding-bottom: 12px; scrollbar-width: none; scroll-behavior: smooth; }
+  .drops-scroll::-webkit-scrollbar { display: none; }
+  .drops-scroll .drop-card { width: 280px; flex: 0 0 auto; }
+  
+  .page-container { padding: 24px; }
+  .flash-sale-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding-top: 8px; padding-bottom: 12px; }
+  @media (max-width: 768px) {
+    .page-container { padding: 16px; }
+    .drops-scroll { gap: 12px; padding-top: 4px; }
+    .drops-scroll .drop-card { width: calc((100vw - 32px - 12px) / 2); }
+    .flash-sale-grid { grid-template-columns: 1fr; }
+  }
+  
+  .flash-banner-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    height: 200px;
+    transition: border-color 0.2s;
+  }
+  .flash-banner-card:hover { border-color: #ef4444; }
+  .flash-banner-img {
+    width: 45%;
+    height: 100%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+  }
+  .flash-banner-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    min-width: 0;
+  }
+  .flash-banner-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+  }
+  .flash-banner-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #ef4444;
+    margin-bottom: 16px;
+  }
+  .flash-banner-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .flash-banner-meta .stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(239,68,68,0.1);
+    color: #ef4444;
+    border-radius: 99px;
+    font-weight: 600;
+  }
+  @media (max-width: 600px) {
+    .flash-banner-card { height: 160px; }
+    .flash-banner-img { width: 40%; }
+    .flash-banner-content { padding: 16px; }
+    .flash-banner-title { font-size: 16px; margin-bottom: 6px; }
+    .flash-banner-price { font-size: 18px; margin-bottom: 12px; }
+  }
+  .live-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 99px; font-size: 10px; font-weight: 700; color: #fca5a5; text-transform: uppercase; letter-spacing: 1px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 99px; background: #ef4444; animation: pulse 1.5s ease-in-out infinite; }
+  /* Fallback bg so no img-src-swap flicker */
+  .drop-card-img-wrap { background: url('/shared/no-image.jpg') center/cover no-repeat; }
+  .drop-card-img-wrap img.img-error { visibility: hidden; }
+
+
+  .slider-btn { background: var(--bg-card); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+  .slider-btn:hover { background: rgba(255,255,255,0.1); }
+
+  /* News Grid */
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .news-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s;
+  }
+  .news-card:hover { border-color: rgba(255,255,255,0.2); }
+  .news-card-thumb { aspect-ratio: 16/9; overflow: hidden; flex-shrink: 0; }
+  .news-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .news-card-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+  .news-card-date { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .news-card-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+  .news-card-summary { font-size: 13px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; }
+  
+  @media (max-width: 1024px) {
+    .news-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  /* Mobile: list layout */
+  @media (max-width: 768px) {
+    .news-grid { grid-template-columns: 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .news-card { flex-direction: row; border-radius: 0; border: none; border-bottom: 1px solid var(--border); }
+    .news-card:last-child { border-bottom: none; }
+    .news-card-thumb { aspect-ratio: unset; width: 100px; height: 80px; flex-shrink: 0; }
+    .news-card-body { padding: 12px; }
+    .news-card-date { font-size: 11px; margin-bottom: 4px; }
+    .news-card-title { font-size: 14px; margin-bottom: 4px; -webkit-line-clamp: 2; }
+    .news-card-summary { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar injected by app.js -->
+  <main class="main-content">
+    <header class="top-header">
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" placeholder="Tìm mô hình, xưởng in, thiết kế viên...">
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" title="Thông báo"><i data-lucide="bell"></i></button>
+        <button class="header-btn" title="Giỏ hàng"><i data-lucide="shopping-cart"></i></button>
+      </div>
+    </header>
+
+    <div class="page-container">
+      <!-- Hero Banner -->
+      <div class="hero-banner mb-32" style="background: url('https://images.unsplash.com/photo-1635805737707-575885ab0820?w=1200&q=80') center/cover;">
+        <div class="hero-banner-gradient"></div>
+        <div class="hero-banner-content">
+          <div class="hero-label"><i data-lucide="zap" style="width:12px;"></i> Featured Drop</div>
+          <h2 class="hero-title">Venom Symbiote Bust</h2>
+          <p class="hero-desc">Mô hình giới hạn từ DarkPrint Labs. Nhận gia công ngay hôm nay với vật liệu Resin siêu nét.</p>
+          <a href="/drops/" data-link class="btn btn-primary btn-lg">Khám phá ngay</a>
+        </div>
+      </div>
+      <!-- Category Pills -->
+      <div class="category-pills mb-32" style="display:flex; gap:12px; overflow-x:auto; padding-top:4px; padding-bottom:12px; scrollbar-width:none;">
+        <a href="/drops/?cat=anime" data-link class="category-pill" style="display:flex; align-items:center; gap:8px; padding:10px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:99px; color:var(--text-primary); text-decoration:none; white-space:nowrap; transition:0.2s;"><i data-lucide="sword" style="width:16px; color:var(--accent-purple);"></i> Anime Figure</a>
+        <a href="/drops/?cat=cosplay" data-link class="category-pill" style="display:flex; align-items:center; gap:8px; padding:10px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:99px; color:var(--text-primary); text-decoration:none; white-space:nowrap; transition:0.2s;"><i data-lucide="shield" style="width:16px; color:#ef4444;"></i> Cosplay Props</a>
+        <a href="/drops/?cat=decor" data-link class="category-pill" style="display:flex; align-items:center; gap:8px; padding:10px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:99px; color:var(--text-primary); text-decoration:none; white-space:nowrap; transition:0.2s;"><i data-lucide="lamp" style="width:16px; color:#fbbf24;"></i> Home Decor</a>
+        <a href="/drops/?cat=boardgame" data-link class="category-pill" style="display:flex; align-items:center; gap:8px; padding:10px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:99px; color:var(--text-primary); text-decoration:none; white-space:nowrap; transition:0.2s;"><i data-lucide="dice-5" style="width:16px; color:var(--accent-green);"></i> Boardgame</a>
+        <a href="/drops/?cat=tech" data-link class="category-pill" style="display:flex; align-items:center; gap:8px; padding:10px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:99px; color:var(--text-primary); text-decoration:none; white-space:nowrap; transition:0.2s;"><i data-lucide="monitor" style="width:16px; color:#3b82f6;"></i> Phụ Kiện Tech</a>
+      </div>
+      <style>
+        .category-pill:hover { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.2) !important; }
+        .category-pills::-webkit-scrollbar { display: none; }
+      </style>
+      <!-- Exclusive Drops / New Arrivals -->
+      <section class="mb-32">
+        <div class="section-header mb-16">
+          <div class="flex items-center gap-12">
+            <h2 class="section-title"><i data-lucide="zap" style="width:20px; display:inline-block; vertical-align:-3px; margin-right:8px; color:var(--accent-orange);"></i>Sản Phẩm Mới Lên Sàn</h2>
+            <span class="badge" style="background:rgba(239,68,68,0.15); color:#fca5a5; border-color:rgba(239,68,68,0.3);">NEW</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="slider-btn" onclick="scrollSlider('drops-container', -300)" title="Trượt trái"><i data-lucide="chevron-left" style="width:18px;"></i></button>
+            <button class="slider-btn" onclick="scrollSlider('drops-container', 300)" title="Trượt phải"><i data-lucide="chevron-right" style="width:18px;"></i></button>
+          </div>
+        </div>
+        <div class="drops-scroll" id="drops-container"></div>
+      </section>
+
+      <!-- Flash Sale / Deal Chớp Nhoáng -->
+      <section class="mb-32">
+        <div class="section-header mb-16">
+          <div class="flex items-center gap-12">
+            <h2 class="section-title"><i data-lucide="timer" style="width:20px; display:inline-block; vertical-align:-3px; margin-right:8px; color:#ef4444;"></i>Flash Sale</h2>
+            <div class="flash-timer" id="flash-timer" style="display:flex; gap:4px; font-weight:700; font-family:monospace; font-size:14px; background:rgba(239,68,68,0.1); padding:4px 8px; border-radius:6px; color:#fca5a5;">
+              <span>02</span>:<span>15</span>:<span>45</span>
+            </div>
+          </div>
+        </div>
+        <div class="flash-sale-grid" id="flash-sale-container"></div>
+      </section>
+
+      <!-- Trending Now -->
+      <section class="mb-32">
+        <div class="section-header mb-16">
+          <div class="flex items-center gap-12">
+            <h2 class="section-title"><i data-lucide="trending-up" style="width:20px; display:inline-block; vertical-align:-3px; margin-right:8px; color:var(--accent-green);"></i>Top Thịnh Hành</h2>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="slider-btn" onclick="scrollSlider('trending-container', -300)" title="Trượt trái"><i data-lucide="chevron-left" style="width:18px;"></i></button>
+            <button class="slider-btn" onclick="scrollSlider('trending-container', 300)" title="Trượt phải"><i data-lucide="chevron-right" style="width:18px;"></i></button>
+          </div>
+        </div>
+        <div class="drops-scroll" id="trending-container"></div>
+      </section>
+
+
+      <!-- Tin Tức Nổi Bật -->
+      <section class="mb-32">
+        <div class="section-header mb-16">
+          <h2 class="section-title"><i data-lucide="newspaper" style="width:20px; display:inline-block; vertical-align:-3px; margin-right:8px;"></i>Tin Tức Nổi Bật</h2>
+          <a href="/news/" data-link class="section-link">Xem tất cả <i data-lucide="arrow-right" style="width:16px;"></i></a>
+        </div>
+        <div class="news-grid" id="news-container">
+          <div style="text-align: center; color: var(--text-muted); grid-column: 1/-1;">Đang tải tin tức...</div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- Gallery Lightbox Popup -->
+<div class="gallery-popup" id="gallery-popup" onclick="closeGallery(event)">
+  <div class="gallery-popup-inner">
+    <div style="position:absolute; top:-56px; left:0; right:0; display:flex; justify-content:space-between; align-items:center; z-index:10;">
+      <div class="gallery-popup-title" id="gallery-popup-title" style="margin:0; text-align:left;"></div>
+      <div style="display:flex; gap:12px; align-items:center;">
+        <a href="" id="gallery-detail-link" data-link style="font-size:13px; padding:8px 16px; border-radius:20px; background:var(--accent-green); color:black; font-weight:600; text-decoration:none; display:flex; align-items:center; gap:6px; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+          <i data-lucide="eye" style="width:14px;"></i> Xem Chi Tiết
+        </a>
+        <button class="gallery-popup-close" onclick="closeGalleryBtn()">x</button>
+      </div>
+    </div>
+    <div style="position:relative; width:100%; display:flex; justify-content:center; align-items:center;">
+      <button class="gallery-popup-nav gallery-nav-prev" onclick="galleryNav(-1)">
+        <img src="" id="gallery-nav-prev-img" alt="">
+      </button>
+      <img src="" id="gallery-main-img" class="gallery-main-img" alt="">
+      <button class="gallery-popup-nav gallery-nav-next" onclick="galleryNav(1)">
+        <img src="" id="gallery-nav-next-img" alt="">
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/auth.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+DB.init();
+BDB.init();
+
+function generateDropsHTML(dropsList) {
+  return dropsList.map(d => {
+    const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
+    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
+    const stockCount = d.asks ? d.asks.length : 0;
+    const stockColor = stockCount > 0 ? 'var(--accent-green)' : '#ef4444';
+    const stockBorder = stockCount > 0 ? 'rgba(0,255,136,0.3)' : 'rgba(239,68,68,0.3)';
+    return `
+      <div class="drop-card">
+        <div class="drop-card-img-wrap" onclick="window.location.href='/drops/detail.html?id=${d.id}'" style="cursor:pointer;">
+          <img src="${(d.image && d.image.trim()) ? DB.escapeHTML(d.image) : '/shared/no-image.jpg'}" alt="${DB.escapeHTML(d.name)}" onerror="this.onerror=null; this.classList.add('img-error');">
+          <div class="drop-card-img-overlay">
+            <div class="gallery-hint"><i data-lucide="eye" style="width:13px;"></i> Xem</div>
+          </div>
+          <div class="drop-card-stock" style="color:${stockColor}; border-color:${stockBorder};">
+            <i data-lucide="tag" style="width:11px;"></i> ${stockCount} Sẵn
+          </div>
+        </div>
+        <div class="drop-card-body">
+          ${d.category ? `<div class="drop-card-cat">${DB.escapeHTML(d.category)}</div>` : ''}
+          <a href="/drops/detail.html?id=${d.id}" data-link class="drop-card-name">${DB.escapeHTML(d.name)}</a>
+          <div class="drop-card-designer">
+            <i data-lucide="user" style="width:11px;"></i> ${DB.escapeHTML(d.designer || 'Admin')}
+          </div>
+          <div class="drop-card-footer">
+            <div class="drop-card-price">Từ ${priceDisplay}</div>
+            <a href="/drops/detail.html?id=${d.id}" data-link class="drop-card-buy">
+              <i data-lucide="shopping-cart" style="width:12px;"></i> Mua
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+
+
+function generateFlashBannerHTML(dropsList) {
+  return dropsList.map(d => {
+    const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
+    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
+    const stockCount = d.asks ? d.asks.length : 0;
+    const imgUrl = (d.image && d.image.trim()) ? DB.escapeHTML(d.image) : '/shared/no-image.jpg';
+    
+    return `
+      <a href="/drops/detail.html?id=${d.id}" data-link class="flash-banner-card">
+        <img src="${imgUrl}" alt="${DB.escapeHTML(d.name)}" class="flash-banner-img" onerror="this.onerror=null; this.classList.add('img-error');">
+        <div class="flash-banner-content">
+          <div class="flash-banner-title">${DB.escapeHTML(d.name)}</div>
+          <div class="flash-banner-price">T\u1eeb ${priceDisplay}</div>
+          <div class="flash-banner-meta">
+            <div class="stock"><i data-lucide="zap" style="width:14px;"></i> ${stockCount} S\u1eb5n</div>
+            <div><i data-lucide="user" style="width:14px;display:inline-block;vertical-align:-2px;"></i> ${DB.escapeHTML(d.designer || 'Admin')}</div>
+          </div>
+        </div>
+      </a>
+    `;
+  }).join('');
+}
+
+function renderDrops(fetchedDrops) {
+  let drops = fetchedDrops || [];
+  
+  if (window._lastRenderedDrops && window._lastRenderedDrops === JSON.stringify(drops) && drops.length > 0) return;
+  window._lastRenderedDrops = JSON.stringify(drops);
+
+  // New Arrivals
+  const newArrivals = [...drops].reverse().slice(0, 8);
+  document.getElementById('drops-container').innerHTML = generateDropsHTML(newArrivals);
+
+  // Flash Sale
+  const flashSale = [...drops].reverse().slice(4, 6);
+  document.getElementById('flash-sale-container').innerHTML = generateFlashBannerHTML(flashSale);
+
+  // Trending
+  const trending = [...drops].sort((a,b) => (b.asks?.length||0) - (a.asks?.length||0)).slice(0, 8);
+  document.getElementById('trending-container').innerHTML = generateDropsHTML(trending);
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+
+function renderMakers() {
+  // Makers section removed — no-op
+}
+
+
+function formatDate(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+async function renderNews(fetchedNews) {
+  const container = document.getElementById('news-container');
+  let newsList = (fetchedNews || []).slice(0, 4); // Lấy 4 bài mới nhất
+  
+  if (newsList.length === 0) {
+    container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: var(--text-muted); border: 1px dashed var(--border); border-radius: 12px;">Hiện chưa có bài tin tức nào.</div>`;
+    return;
+  }
+
+  container.innerHTML = newsList.map((n, i) => `
+    <a href="/news/detail.html?id=${n.id}" data-link class="news-card animate-fade-in" style="animation-delay:${i*0.1}s;">
+      <div class="news-card-thumb">
+        <img src="${n.image}" alt="${n.title}" onerror="this.onerror=null;this.src='/shared/no-image.jpg';">
+      </div>
+      <div class="news-card-body">
+        <div class="news-card-date" style="display:flex; align-items:center; gap:6px;"><i data-lucide="calendar" style="width:12px;"></i> ${formatDate(n.createdAt)}</div>
+        <h3 class="news-card-title">${n.title}</h3>
+        <p class="news-card-summary">${n.summary}</p>
+      </div>
+    </a>
+  `).join('');
+  
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// Gallery Popup Logic
+let galleryImages = [];
+let galleryIndex = 0;
+let galleryDropId = '';
+
+function openGallery(dropId, name, images) {
+  galleryImages = images;
+  galleryIndex = 0;
+  galleryDropId = dropId;
+  document.getElementById('gallery-popup-title').textContent = name;
+  document.getElementById('gallery-detail-link').href = `/drops/detail.html?id=${dropId}`;
+  renderGallerySlide();
+  document.getElementById('gallery-popup').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderGallerySlide() {
+  const img = document.getElementById('gallery-main-img');
+  img.src = galleryImages[galleryIndex];
+  
+  const prevBtn = document.querySelector('.gallery-nav-prev');
+  const nextBtn = document.querySelector('.gallery-nav-next');
+  
+  if (galleryImages.length <= 1) {
+    prevBtn.style.display = 'none';
+    nextBtn.style.display = 'none';
+    return;
+  }
+  
+  if (galleryIndex === 0) {
+    prevBtn.style.display = 'none';
+  } else {
+    prevBtn.style.display = 'flex';
+    const prevImg = document.getElementById('gallery-nav-prev-img');
+    if (prevImg) prevImg.src = galleryImages[galleryIndex - 1];
+  }
+  
+  if (galleryIndex === galleryImages.length - 1) {
+    nextBtn.style.display = 'none';
+  } else {
+    nextBtn.style.display = 'flex';
+    const nextImg = document.getElementById('gallery-nav-next-img');
+    if (nextImg) nextImg.src = galleryImages[galleryIndex + 1];
+  }
+}
+
+function setGalleryIndex(i) {
+  galleryIndex = i;
+  renderGallerySlide();
+}
+
+function galleryNav(dir) {
+  const newIndex = galleryIndex + dir;
+  if (newIndex >= 0 && newIndex < galleryImages.length) {
+    galleryIndex = newIndex;
+    renderGallerySlide();
+  }
+}
+
+function closeGallery(e) {
+  if (e.target === document.getElementById('gallery-popup')) closeGalleryBtn();
+}
+
+function closeGalleryBtn() {
+  document.getElementById('gallery-popup').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('gallery-popup').classList.contains('open')) return;
+  if (e.key === 'ArrowLeft') galleryNav(-1);
+  if (e.key === 'ArrowRight') galleryNav(1);
+  if (e.key === 'Escape') closeGalleryBtn();
+});
+
+async function initHome() {
+  renderMakers();
+  // Listen to realtime changes from Firebase
+  if (typeof BDB !== 'undefined') {
+    BDB.listenDrops((drops) => { renderDrops(drops); });
+    BDB.listenNews((news) => { renderNews(news); });
+  } else {
+    // Fallback if BDB fails to load
+    renderDrops(DB.getDrops());
+    renderNews(DB.getNews());
+  }
+}
+
+initHome();
+
+// Flash Sale Timer Logic
+setInterval(() => {
+  const timerEl = document.getElementById('flash-timer');
+  if (!timerEl) return;
+  const now = new Date();
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const diff = endOfDay - now;
+  
+  if (diff <= 0) return;
+  
+  const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const m = Math.floor((diff / 1000 / 60) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+  
+  timerEl.innerHTML = `<span>${h.toString().padStart(2, '0')}</span>:<span>${m.toString().padStart(2, '0')}</span>:<span>${s.toString().padStart(2, '0')}</span>`;
+}, 1000);
+
+// Slider Scroll Logic
+function scrollSlider(containerId, amount) {
+  const container = document.getElementById(containerId);
+  if (container) {
+    container.scrollBy({ left: amount, behavior: 'smooth' });
+  }
+}
+</script>
+</body>
+</html>

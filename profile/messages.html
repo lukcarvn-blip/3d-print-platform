@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tin nhắn | Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .msg-container { display: flex; height: calc(100vh - 160px); background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-top: 24px; }
+  .msg-sidebar { width: 300px; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+  .msg-main { flex: 1; display: flex; flex-direction: column; background: var(--bg-base); }
+  
+  .chat-item { padding: 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
+  .chat-item:hover { background: rgba(255,255,255,0.02); }
+  .chat-item.active { background: rgba(0,255,136,0.05); border-left: 3px solid var(--accent-green); }
+  
+  .chat-header { padding: 16px; border-bottom: 1px solid var(--border); background: var(--bg-card); display: flex; align-items: center; justify-content: space-between; }
+  .chat-body { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+  .chat-footer { padding: 16px; border-top: 1px solid var(--border); background: var(--bg-card); display: flex; gap: 12px; }
+  
+  .bubble { padding: 12px 16px; border-radius: 16px; max-width: 70%; font-size: 14px; line-height: 1.5; }
+  .bubble.me { background: var(--accent-green); color: black; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .bubble.them { background: rgba(255,255,255,0.05); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+  
+  .warning-banner { background: rgba(255, 170, 0, 0.1); color: #ffaa00; padding: 12px; font-size: 13px; text-align: center; border-bottom: 1px solid rgba(255, 170, 0, 0.2); }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <main class="main-content">
+    <header class="top-header border-b">
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" placeholder="Tìm mô hình, xưởng in...">
+      </div>
+      <div class="header-actions"></div>
+    </header>
+    
+    <div class="p-24" style="max-width: 1200px; margin: 0 auto;">
+      <h2 class="font-display font-800" style="font-size:24px;">Tin nhắn (Messages)</h2>
+      <p class="text-muted">Trao đổi với khách hàng hoặc xưởng in về chi tiết đơn hàng.</p>
+      
+      <div class="msg-container">
+        <div class="msg-sidebar" id="chat-list">
+          <!-- Injected via JS -->
+        </div>
+        
+        <div class="msg-main" id="chat-window" style="display:none;">
+          <div class="warning-banner">
+            <i data-lucide="alert-triangle" style="width:14px; display:inline-block; vertical-align:-2px;"></i>
+            Vì sự an toàn, giao dịch ngoài nền tảng sẽ không được bảo vệ. Vui lòng không gửi thông tin liên lạc cá nhân (Zalo, SĐT...).
+          </div>
+          <div class="chat-header">
+            <div style="font-weight:bold; font-size:16px;" id="cw-title">Đang tải...</div>
+          </div>
+          <div class="chat-body" id="cw-body">
+            <!-- Messages go here -->
+          </div>
+          <div class="chat-footer">
+            <input type="text" class="form-control" id="msg-input" placeholder="Nhập tin nhắn..." onkeypress="if(event.key==='Enter') sendMsg()">
+            <button class="btn btn-primary" onclick="sendMsg()"><i data-lucide="send"></i></button>
+          </div>
+        </div>
+        
+        <div class="msg-main" id="chat-empty" style="align-items:center; justify-content:center; color:var(--text-muted); display:flex; flex-direction:column;">
+          <i data-lucide="message-square" style="width:48px; height:48px; opacity:0.5; margin-bottom:16px;"></i>
+          <div>Chọn một cuộc hội thoại để bắt đầu</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/shared/db.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+DB.init();
+const currentUser = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : DB.getCurrentUser();
+if (!currentUser) window.location.href = '/login/';
+
+let activeChatId = null;
+
+function renderChatList() {
+  const chats = DB.getChatsForUser(currentUser.uid);
+  const listEl = document.getElementById('chat-list');
+  
+  if (chats.length === 0) {
+    listEl.innerHTML = '<div style="padding:24px; text-align:center; color:var(--text-muted);">Chưa có tin nhắn nào</div>';
+    return;
+  }
+  
+  listEl.innerHTML = chats.map(c => {
+    const isBuyer = c.buyerId === currentUser.uid;
+    const partnerId = isBuyer ? c.makerId : c.buyerId;
+    const partner = DB.getUsers().find(u => u.uid === partnerId);
+    const partnerName = partner ? partner.name : (isBuyer ? 'Xưởng In' : 'Khách Hàng');
+    const lastMsg = c.messages.length ? c.messages[c.messages.length - 1].text : 'Chưa có tin nhắn';
+    
+    return \`
+      <div class="chat-item \${c.id === activeChatId ? 'active' : ''}" onclick="openChat('\${c.id}')">
+        <div style="font-weight:bold; margin-bottom:4px; font-size:14px;">\${partnerName}</div>
+        <div class="text-xs text-muted" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">\${c.dropName}</div>
+        <div class="text-xs" style="color:var(--text-muted); margin-top:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:0.7;">\${lastMsg}</div>
+      </div>
+    \`;
+  }).join('');
+}
+
+function openChat(chatId) {
+  activeChatId = chatId;
+  document.getElementById('chat-empty').style.display = 'none';
+  document.getElementById('chat-window').style.display = 'flex';
+  renderChatList();
+  renderMessages();
+}
+
+function renderMessages() {
+  if (!activeChatId) return;
+  const chat = DB.getChatById(activeChatId);
+  const isBuyer = chat.buyerId === currentUser.uid;
+  const partnerId = isBuyer ? chat.makerId : chat.buyerId;
+  const partner = DB.getUsers().find(u => u.uid === partnerId);
+  const partnerName = partner ? partner.name : (isBuyer ? 'Xưởng In' : 'Khách Hàng');
+  
+  document.getElementById('cw-title').innerHTML = \`\${partnerName} <span style="font-size:12px; font-weight:normal; color:var(--text-muted); margin-left:8px;">(\${chat.dropName})</span>\`;
+  
+  const bodyEl = document.getElementById('cw-body');
+  bodyEl.innerHTML = chat.messages.map(m => {
+    const isMe = m.senderId === currentUser.uid;
+    return \`<div class="bubble \${isMe ? 'me' : 'them'}">\${m.text}</div>\`;
+  }).join('');
+  
+  bodyEl.scrollTop = bodyEl.scrollHeight;
+}
+
+function sendMsg() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text || !activeChatId) return;
+  
+  DB.addMessage(activeChatId, currentUser.uid, text);
+  input.value = '';
+  renderMessages();
+  renderChatList(); // To update last message snippet
+}
+
+// Auto open chat if passed in URL
+const urlParams = new URLSearchParams(window.location.search);
+const initChatId = urlParams.get('id');
+if (initChatId) openChat(initChatId);
+else renderChatList();
+
+if (typeof lucide !== 'undefined') setTimeout(() => lucide.createIcons(), 100);
+</script>
+</body>
+</html>

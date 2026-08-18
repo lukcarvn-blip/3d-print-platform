@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khám Phá | Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .discover-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .filter-chip {
+    padding: 6px 16px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    white-space: nowrap;
+  }
+  .filter-chip:hover { border-color: rgba(255,255,255,0.2); color: white; }
+  .filter-chip.active { background: var(--accent-green); border-color: var(--accent-green); color: #000; }
+
+  .discover-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 0 auto; }
+  @media (max-width: 1200px) { .discover-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 768px) { .discover-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+  
+  .discover-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; position: relative; cursor: pointer; transition: var(--transition); aspect-ratio: 3/4; text-decoration: none; display: block; }
+  .discover-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); border-color: rgba(0,255,136,0.3); }
+  .dc-img-wrap { width: 100%; height: 100%; position: relative; background: url('/shared/no-image.jpg') center/cover no-repeat; }
+  .discover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .discover-img.img-error { visibility: hidden; }
+  .discover-card:hover .dc-img-wrap { transform: scale(1.05); }
+  .dc-img-wrap { overflow: hidden; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  
+  .dc-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,20,0.95) 0%, rgba(10,10,20,0.4) 40%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; pointer-events: none; }
+  .dc-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; line-height: 1.2; margin-bottom: 4px; color: white; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-decoration: none; }
+  .dc-price { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent-green); }
+  .dc-likes { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); padding: 4px 10px; border-radius: 99px; font-size: 12px; font-weight: bold; color: #ff6b6b; display: flex; align-items: center; gap: 4px; border: 1px solid rgba(255,107,107,0.3); }
+  .dc-cat { display: inline-block; background: var(--accent-purple); color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; align-self: flex-start; }
+  
+  @media (max-width: 768px) {
+    .dc-img-overlay { padding: 12px; }
+    .dc-name { font-size: 16px; }
+    .dc-price { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar injected by app.js -->
+  <main class="main-content">
+    <header class="top-header border-b">
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="discover-search" placeholder="Khám phá mô hình 3D..." oninput="filterDrops()">
+      </div>
+      <div class="header-actions"></div>
+    </header>
+
+    <div class="p-24" style="max-width: 1400px; margin: 0 auto;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <h1 class="font-display font-800" style="font-size: clamp(22px,3vw,32px); margin:0;">
+          <i data-lucide="compass" style="width:28px; display:inline-block; vertical-align:-5px; margin-right:8px; color:var(--accent-green);"></i>Khám Phá
+        </h1>
+        <div style="font-size:13px; color:var(--text-muted);" id="result-count"></div>
+      </div>
+
+      <!-- Category Filters -->
+      <div class="discover-filters" id="filters">
+        <button class="filter-chip active" onclick="setFilter('all', this)">Tất Cả</button>
+      </div>
+
+      <!-- Grid -->
+      <div class="discover-grid" id="discover-grid"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Gallery Lightbox -->
+<div class="gallery-popup" id="gallery-popup" onclick="closeGallery(event)">
+  <div class="gallery-popup-inner">
+    <button class="gallery-popup-close" onclick="closeGalleryBtn()">×</button>
+    <div class="gallery-popup-title" id="gallery-popup-title"></div>
+    <div style="position:relative; width:100%;">
+      <img src="" id="gallery-main-img" class="gallery-main-img" alt="">
+      <button class="gallery-popup-nav gallery-nav-prev" onclick="galleryNav(-1)">&#8249;</button>
+      <button class="gallery-popup-nav gallery-nav-next" onclick="galleryNav(1)">&#8250;</button>
+    </div>
+    <div class="gallery-popup-thumbs" id="gallery-thumbs"></div>
+    <a href="" id="gallery-detail-link" data-link class="drop-card-buy" style="font-size:13px; padding:10px 20px;">
+      <i data-lucide="eye" style="width:14px;"></i> Xem Chi Tiết
+    </a>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/auth.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+DB.init();
+BDB.init();
+
+let allDrops = [];
+let currentFilter = 'all';
+let isListeningDiscover = false;
+
+async function initDiscover() {
+  // Render from localStorage cache immediately (zero flicker)
+  const cachedDrops = DB.getDrops();
+  if (cachedDrops.length > 0) {
+    allDrops = cachedDrops;
+    buildFilters();
+    renderDiscover();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  if (BDB.db) {
+    if (isListeningDiscover) return;
+    isListeningDiscover = true;
+    const drops = DB.getDrops();
+    allDrops = drops;
+    buildFilters();
+    renderDiscover();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  } else {
+    const drops = DB.getDrops();
+    if (JSON.stringify(allDrops) === JSON.stringify(drops)) return;
+    allDrops = drops;
+    buildFilters();
+    renderDiscover();
+  }
+}
+
+function buildFilters() {
+  const cats = [...new Set(allDrops.map(d => d.category).filter(Boolean))];
+  const filtersEl = document.getElementById('filters');
+  // keep "Tất Cả" button, remove others
+  filtersEl.innerHTML = '<button class="filter-chip active" onclick="setFilter(\'all\', this)">Tất Cả</button>';
+  
+  cats.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-chip';
+    if (cat === currentFilter) btn.classList.add('active');
+    btn.textContent = cat;
+    btn.onclick = () => setFilter(cat, btn);
+    filtersEl.appendChild(btn);
+  });
+}
+
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDiscover();
+}
+
+function filterDrops() {
+  renderDiscover();
+}
+
+function renderDiscover() {
+  const query = (document.getElementById('discover-search')?.value || '').toLowerCase();
+  let drops = currentFilter === 'all' ? allDrops : allDrops.filter(d => d.category === currentFilter);
+  if (query) drops = drops.filter(d => d.name.toLowerCase().includes(query) || (d.designer||'').toLowerCase().includes(query));
+  
+  const container = document.getElementById('discover-grid');
+  document.getElementById('result-count').textContent = `${drops.length} sản phẩm`;
+
+  if (!drops.length) {
+    container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:var(--text-muted);">Không tìm thấy sản phẩm nào.</div>';
+    return;
+  }
+
+  container.innerHTML = drops.map((d, i) => {
+    const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
+    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
+    const likes = ((parseInt(d.id.replace(/\D/g,'')) || 1) * 347 % 4900) + 100;
+    const galleryImgs = [d.image, ...(d.gallery || [])].filter(Boolean).filter((v,idx,a) => a.indexOf(v)===idx);
+    const galleryData = JSON.stringify(galleryImgs).replace(/"/g,'&quot;');
+    const imgSrc = (d.image && d.image.trim()) ? DB.escapeHTML(d.image) : '/shared/no-image.jpg';
+
+    return `
+      <a href="/drops/detail.html?id=${d.id}" data-link class="discover-card">
+        <div class="dc-img-wrap">
+          <img src="${imgSrc}" class="discover-img" alt="${DB.escapeHTML(d.name)}" onerror="this.onerror=null; this.classList.add('img-error');">
+          <div class="dc-likes"><i data-lucide="heart" style="width:14px; fill:#ff6b6b;"></i>${likes.toLocaleString()}</div>
+        </div>
+        <div class="dc-img-overlay">
+          ${d.category ? `<div class="dc-cat">${DB.escapeHTML(d.category)}</div>` : ''}
+          <div class="dc-name">${DB.escapeHTML(d.name)}</div>
+          <div class="text-sm text-muted mb-4" style="display:flex; align-items:center; gap:4px; margin-bottom:4px;"><i data-lucide="tag" style="width:14px;"></i> ${d.asks ? d.asks.length : 0} Asks</div>
+          <div class="dc-price">Từ: ${priceDisplay}</div>
+        </div>
+      </a>
+    `;
+  }).join('');
+  
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// Gallery Popup
+let galleryImages = [], galleryIndex = 0;
+
+function openGallery(dropId, name, images) {
+  galleryImages = images;
+  galleryIndex = 0;
+  document.getElementById('gallery-popup-title').textContent = name;
+  document.getElementById('gallery-detail-link').href = `/drops/detail.html?id=${dropId}`;
+  renderGallerySlide();
+  document.getElementById('gallery-popup').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderGallerySlide() {
+  document.getElementById('gallery-main-img').src = galleryImages[galleryIndex];
+  document.getElementById('gallery-thumbs').innerHTML = galleryImages.map((src, i) =>
+    `<img src="${src}" class="gallery-thumb ${i===galleryIndex?'active':''}" onclick="setGalleryIndex(${i})" alt="">`
+  ).join('');
+}
+
+function setGalleryIndex(i) { galleryIndex = i; renderGallerySlide(); }
+function galleryNav(dir) { galleryIndex = (galleryIndex + dir + galleryImages.length) % galleryImages.length; renderGallerySlide(); }
+function closeGallery(e) { if (e.target === document.getElementById('gallery-popup')) closeGalleryBtn(); }
+function closeGalleryBtn() { document.getElementById('gallery-popup').classList.remove('open'); document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('gallery-popup').classList.contains('open')) return;
+  if (e.key === 'ArrowLeft') galleryNav(-1);
+  if (e.key === 'ArrowRight') galleryNav(1);
+  if (e.key === 'Escape') closeGalleryBtn();
+});
+
+initDiscover();
+</script>
+</body>
+</html>

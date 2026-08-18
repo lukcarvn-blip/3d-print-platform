@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nội Quy Dành Cho Đối Tác Xưởng In | Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .terms-container { max-width: 900px; margin: 40px auto; padding: 40px; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border); }
+  .terms-header { text-align: center; margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .terms-title { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 800; margin-bottom: 12px; }
+  .terms-subtitle { color: var(--text-muted); font-size: 16px; }
+  
+  .terms-section { margin-bottom: 32px; }
+  .terms-section-title { font-size: 20px; font-weight: 700; color: var(--accent-green); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  
+  .terms-list { list-style: none; padding: 0; margin: 0; }
+  .terms-list li { padding-left: 24px; position: relative; margin-bottom: 12px; color: var(--text-primary); line-height: 1.6; }
+  .terms-list li::before { content: '•'; position: absolute; left: 0; color: var(--accent-purple); font-weight: bold; font-size: 20px; line-height: 1; top: -2px; }
+  
+  .highlight-box { background: rgba(255, 85, 85, 0.1); border: 1px solid rgba(255, 85, 85, 0.3); border-radius: 8px; padding: 20px; margin-top: 24px; }
+  .highlight-box.green { background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.3); }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar injected by app.js -->
+  <main class="main-content">
+    <header class="top-header border-b">
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" placeholder="Tìm mô hình, xưởng in...">
+      </div>
+      <div class="header-actions"></div>
+    </header>
+    
+    <div class="p-24">
+      <div class="terms-container">
+        <div class="terms-header">
+          <h1 class="terms-title">Nội Quy Phân Phối Dành Cho Đối Tác</h1>
+          <p class="terms-subtitle">Bản Thỏa Thuận Hợp Tác & Tiêu Chuẩn Dịch Vụ Của Legato</p>
+        </div>
+        
+        <div class="terms-section">
+          <h2 class="terms-section-title"><i data-lucide="shield-alert"></i> 1. Nghiêm Cấm Giao Dịch Ngoài Nền Tảng</h2>
+          <ul class="terms-list">
+            <li><strong>Tính minh bạch:</strong> Mọi thỏa thuận, yêu cầu chỉnh sửa và báo giá đều phải được thực hiện thông qua hệ thống Chat của Legato.</li>
+            <li><strong>Tuyệt đối không lôi kéo khách hàng:</strong> Xưởng In không được phép gửi số điện thoại, link Zalo, Facebook, thông tin tài khoản ngân hàng hoặc bất kỳ hình thức liên lạc cá nhân nào nhằm mục đích điều hướng khách hàng giao dịch ngoài sàn.</li>
+            <li><strong>Chế tài:</strong> Vi phạm quy định này sẽ dẫn đến việc <strong>Khóa tài khoản Xưởng vĩnh viễn</strong> ngay lập tức, tước bỏ mọi quyền lợi và thu hồi toàn bộ số dư đang có trong tài khoản (nếu có).</li>
+          </ul>
+        </div>
+        
+        <div class="terms-section">
+          <h2 class="terms-section-title"><i data-lucide="percent"></i> 2. Mức Chiết Khấu (Phí Nền Tảng)</h2>
+          <div class="highlight-box green">
+            <h3 style="margin-top:0; color:var(--accent-green);">Cơ cấu doanh thu</h3>
+            <ul class="terms-list">
+              <li>Mức phí nền tảng (Platform Fee) được áp dụng hiện tại là: <strong>15%</strong> trên tổng giá trị mỗi đơn hàng hoàn thành thành công.</li>
+              <li>Xưởng In sẽ thực nhận <strong>85%</strong> doanh thu (chưa bao gồm phí vận chuyển).</li>
+              <li>Mức phí này được dùng để duy trì hệ thống máy chủ, lưu trữ file 3D, chạy quảng cáo kéo khách hàng, và hệ thống bảo vệ giao dịch (Escrow).</li>
+              <li>Sàn không thu phí duy trì hàng tháng. Chỉ thu phí khi Xưởng có đơn hàng thành công.</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="terms-section">
+          <h2 class="terms-section-title"><i data-lucide="award"></i> 3. Tiêu Chuẩn Chất Lượng & Thời Gian Chế Tác</h2>
+          <ul class="terms-list">
+            <li><strong>Thời gian gia công:</strong> Trừ khi có thỏa thuận riêng với khách hàng, các sản phẩm tiêu chuẩn (Drops) phải được hoàn thiện và bàn giao cho đơn vị vận chuyển trong vòng <strong>2 đến 4 ngày làm việc</strong>.</li>
+            <li><strong>Chất lượng in 3D:</strong> Sản phẩm phải giống ít nhất 95% so với ảnh mẫu thực tế đã đăng tải. Bề mặt in (Layer lines) phải được xử lý tốt, không bị lỗi warping (cong vênh), stringing (kéo sợi) nghiêm trọng.</li>
+            <li><strong>Bồi thường:</strong> Nếu sản phẩm gửi đi bị lỗi do quá trình in ấn (không phải do vận chuyển) và bị khách hàng khiếu nại (kèm video bóc hàng), Xưởng In có trách nhiệm in lại sản phẩm mới hoặc hoàn tiền toàn bộ. Sàn sẽ trừ thẳng vào tài khoản của Xưởng.</li>
+          </ul>
+        </div>
+        
+        <div class="terms-section">
+          <h2 class="terms-section-title"><i data-lucide="scale"></i> 4. Bảo Vệ Bản Quyền Mô Hình</h2>
+          <ul class="terms-list">
+            <li>Nhiều mô hình 3D trên nền tảng được cấp phép độc quyền bởi Thiết Kế Viên. Xưởng In <strong>không được phép</strong> sao chép, trích xuất file `.glb`/`.stl` để bán ra ngoài dưới mọi hình thức.</li>
+            <li>Xưởng In chỉ được cấp quyền in vật lý để phục vụ các đơn đặt hàng sinh ra từ nền tảng Legato.</li>
+            <li>Phát hiện tuồn file 3D độc quyền ra ngoài sẽ chịu truy tố theo luật sở hữu trí tuệ và bị khóa tài khoản ngay lập tức.</li>
+          </ul>
+        </div>
+
+        <div class="highlight-box">
+          <h3 style="margin-top:0; color:#ff5555; display:flex; align-items:center; gap:8px;"><i data-lucide="alert-triangle"></i> Cam Kết Chấp Thuận</h3>
+          <p style="margin-bottom:0; color:var(--text-primary); line-height:1.6;">
+            Việc bạn nhấn nút <strong>"Gửi Đơn Đăng Ký"</strong> đồng nghĩa với việc bạn đã đọc, hiểu rõ và chấp nhận tuân thủ vô điều kiện toàn bộ các điều khoản ràng buộc trên. Nền tảng Legato có quyền đơn phương chấm dứt hợp tác nếu phát hiện vi phạm.
+          </p>
+        </div>
+        
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="/shared/db.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+DB.init();
+if (typeof lucide !== 'undefined') lucide.createIcons();
+</script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chỉnh Sửa Tin Tức | Admin Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar injected by app.js -->
+  <main class="main-content">
+    <header class="top-header border-b">
+      <div class="search-bar"></div>
+    </header>
+    <div class="p-24" style="max-width: 800px; width: 100%; margin: 0 auto; min-width: 0;">
+      
+      <div style="display:flex; align-items:center; gap: 16px; margin-bottom: 24px;">
+        <a href="/admin/?tab=news" data-link class="btn btn-ghost" style="padding: 8px;"><i data-lucide="arrow-left"></i></a>
+        <div>
+          <h1 class="font-display font-800" style="font-size:28px;" id="page-title">Viết Báo Bằng AI</h1>
+          <p class="text-muted">Nhập link bài viết để AI tự động phân tích và viết lại.</p>
+        </div>
+      </div>
+
+      <!-- AI Fetch Section -->
+      <div class="card p-24" style="background: rgba(168,85,247,0.05); border-radius: 12px; border: 1px solid rgba(168,85,247,0.3); margin-bottom: 24px;">
+        <label style="font-weight: bold; color: #fff; margin-bottom: 8px; display: block;">Nhập URL bài báo/tin tức cần lấy (Bất kỳ trang nào)</label>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="ai-url" class="form-control" placeholder="https://..." style="flex:1;">
+          <button class="btn btn-primary" onclick="fetchAIContent()" id="btn-fetch" style="background: linear-gradient(135deg, #a855f7, #6366f1); border: none; white-space: nowrap;"><i data-lucide="sparkles"></i> Lấy Nội Dung AI</button>
+        </div>
+        <div id="ai-status" style="margin-top: 12px; font-size: 13px; color: var(--accent-green); display: none;"></div>
+      </div>
+
+      <div class="card p-24" style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);">
+        <input type="hidden" id="f-id">
+        
+        <div class="form-group">
+          <label>Tiêu Đề Bài Viết *</label>
+          <input type="text" class="form-control" id="f-title" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Tóm Tắt Ngắn (Summary) *</label>
+          <textarea class="form-control" id="f-summary" rows="3" required></textarea>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Link Ảnh Bìa *</label>
+            <input type="text" class="form-control" id="f-image" required placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label>Tác Giả</label>
+            <input type="text" class="form-control" id="f-author" value="Legato AI">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nội Dung Bài Viết * (Mỗi đoạn cách nhau bởi dòng trống)</label>
+          <textarea class="form-control" id="f-content" rows="12" required style="font-family: inherit;"></textarea>
+        </div>
+        
+        <div style="margin-top:24px; padding-top:24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:12px;">
+          <button class="btn btn-ghost" onclick="window.history.back()">Hủy</button>
+          <button class="btn btn-primary" onclick="saveNews()" id="btn-save">Lưu Bài Viết</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/auth.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+DB.init();
+
+// Admin Check
+const user = Auth.getCurrentUser();
+if (!user || user.role !== 'admin') {
+  alert("Chỉ Admin mới được truy cập!");
+  window.location.href = '/';
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const editId = urlParams.get('id');
+
+if (editId) {
+  document.getElementById('page-title').textContent = 'Sửa Tin Tức';
+  loadNewsData(editId);
+}
+
+function loadNewsData(id) {
+  const newsList = DB.getNews();
+  const article = newsList.find(n => n.id === id);
+  if (article) {
+    document.getElementById('f-id').value = article.id;
+    document.getElementById('f-title').value = article.title || '';
+    document.getElementById('f-summary').value = article.summary || '';
+    document.getElementById('f-image').value = article.image || '';
+    document.getElementById('f-author').value = article.author || 'Legato AI';
+    document.getElementById('f-content').value = article.content || '';
+  }
+}
+
+async function fetchAIContent() {
+  const url = document.getElementById('ai-url').value.trim();
+  if (!url) return alert("Vui lòng nhập URL bài viết!");
+
+  let apiKey = localStorage.getItem('gemini_api_key') || 'AQ.Ab8RN6JE70G1Edk-N01NRQTvbwXm1rwQWBJl3_P79y8FD97fLA';
+  if (!apiKey) {
+    apiKey = prompt("Vui lòng nhập Google Gemini API Key để dùng AI:");
+    if (!apiKey) return;
+    localStorage.setItem('gemini_api_key', apiKey);
+  }
+
+  const btn = document.getElementById('btn-fetch');
+  const status = document.getElementById('ai-status');
+  btn.innerHTML = `<i data-lucide="loader" class="spin" style="width:16px;"></i> Đang đọc link...`;
+  btn.disabled = true;
+  status.style.display = 'block';
+  status.innerHTML = "Đang kéo nội dung từ trang web (vượt CORS)...";
+  lucide.createIcons();
+
+  try {
+    // Fetch via AllOrigins to bypass CORS
+    const proxyRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+    if (!proxyRes.ok) throw new Error("Không thể truy cập URL này qua proxy.");
+    const proxyData = await proxyRes.json();
+    const rawHtml = proxyData.contents;
+
+    // Remove scripts and styles to save tokens
+    const cleanHtml = rawHtml.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                             .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+                             .substring(0, 30000); // Limit size for API
+
+    status.innerHTML = "Đang gửi cho Gemini AI phân tích và viết lại...";
+
+    const promptText = `
+      Tôi có mã HTML của một bài viết dưới đây. Hãy đóng vai là một biên tập viên tạp chí công nghệ in 3D chuyên nghiệp.
+      Hãy phân tích nội dung, trích xuất thông tin chính và VIẾT LẠI hoàn toàn bài báo này bằng tiếng Việt sao cho hấp dẫn, mạch lạc.
+      
+      Trả về kết quả dưới định dạng JSON đúng chuẩn với cấu trúc sau:
+      {
+        "title": "Tiêu đề bài viết (hấp dẫn, gợi tò mò)",
+        "summary": "Đoạn tóm tắt ngắn gọn 2-3 câu",
+        "image": "URL ảnh bìa (tìm thẻ <img src=...> chính trong bài hoặc thẻ meta og:image, NẾU KHÔNG CÓ TRẢ VỀ RỖNG)",
+        "content": "Nội dung bài viết đầy đủ (viết lại mượt mà, chia đoạn bằng dấu xuống dòng \\n)"
+      }
+
+      Chỉ trả về JSON, KHÔNG CÓ text dư thừa, KHÔNG bọc trong markdown \`\`\`json.
+      
+      HTML:
+      ${cleanHtml}
+    `;
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+    });
+
+    if (!res.ok) throw new Error("API Gemini phản hồi lỗi.");
+    const jsonRes = await res.json();
+    const textOut = jsonRes.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(textOut);
+
+    document.getElementById('f-title').value = parsed.title || '';
+    document.getElementById('f-summary').value = parsed.summary || '';
+    document.getElementById('f-content').value = parsed.content || '';
+    if (parsed.image && parsed.image.startsWith('http')) {
+      document.getElementById('f-image').value = parsed.image;
+    }
+
+    status.innerHTML = "✅ Phân tích và viết lại thành công! Bạn có thể chỉnh sửa trước khi lưu.";
+    status.style.color = "var(--accent-green)";
+
+  } catch(e) {
+    console.error(e);
+    status.innerHTML = `❌ Lỗi: ${e.message}`;
+    status.style.color = "#ff5555";
+  } finally {
+    btn.innerHTML = `<i data-lucide="sparkles" style="width:16px;"></i> Lấy Nội Dung AI`;
+    btn.disabled = false;
+    lucide.createIcons();
+  }
+}
+
+async function saveNews() {
+  const btn = document.getElementById('btn-save');
+  const title = document.getElementById('f-title').value.trim();
+  const summary = document.getElementById('f-summary').value.trim();
+  const image = document.getElementById('f-image').value.trim();
+  const content = document.getElementById('f-content').value.trim();
+  const author = document.getElementById('f-author').value.trim();
+
+  if (!title || !summary || !content) {
+    alert("Vui lòng điền đầy đủ Tiêu đề, Tóm tắt và Nội dung.");
+    return;
+  }
+
+  btn.innerHTML = "Đang lưu...";
+  btn.disabled = true;
+
+  const articleData = {
+    title,
+    summary,
+    image,
+    content,
+    author
+  };
+
+  try {
+    if (editId) {
+      await window.BDB.updateNews(editId, articleData);
+    } else {
+      articleData.id = 'news_' + Date.now();
+      articleData.createdAt = new Date().toISOString();
+      await window.BDB.addNews(articleData);
+    }
+
+    // Redirect to admin news tab
+    window.location.href = '/admin/?tab=news';
+  } catch (err) {
+    alert("Có lỗi khi lưu: " + err.message);
+    btn.innerHTML = "Lưu Bài Viết";
+    btn.disabled = false;
+  }
+}
+
+// BDB initialization wrapper (similar to edit.html)
+const BDBProxy = {
+  async updateNews(id, data) {
+    if(window.BDB && window.BDB.updateNews) return window.BDB.updateNews(id, data);
+    DB.updateNews(id, data);
+  },
+  async addNews(data) {
+    if(window.BDB && window.BDB.addNews) return window.BDB.addNews(data);
+    DB.addNews(data);
+  }
+};
+
+// Polyfill just in case before firebase loads
+window.BDB = window.BDB || BDBProxy;
+</script>
+</body>
+</html>

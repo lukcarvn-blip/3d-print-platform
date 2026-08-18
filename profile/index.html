@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile & Sell | Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .sell-form { background: var(--bg-card); border-radius: 8px; padding: 24px; border: 1px solid var(--border); margin-top: 24px; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+  .modal.open { display: flex; }
+  .modal-content { background: var(--bg-card); width: 100%; max-width: 800px; max-height: 90vh; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; }
+  .modal-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+  .mb-16 { margin-bottom: 16px; }
+  .btn-action { background: transparent; border: 1px solid var(--border); color: var(--text-primary); padding: 8px; border-radius: 6px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+  .btn-action:hover { background: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar injected by app.js -->
+  <main class="main-content">
+    <header class="top-header border-b">
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" placeholder="Tìm mô hình, xưởng in, thiết kế viên...">
+      </div>
+      <div class="header-actions"></div>
+    </header>
+    <div class="p-24" style="max-width: 1000px; width: 100%; margin: 0 auto; min-width: 0; box-sizing: border-box;">
+      <div class="profile-hero animate-fade-in mb-32">
+        <div class="profile-hero-banner"></div>
+        <div class="profile-hero-body">
+          <div class="profile-avatar-wrap">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user1" id="prof-avatar" class="profile-avatar" alt="User">
+            <div class="profile-verified"><i data-lucide="check" style="width:14px;color:white;"></i></div>
+          </div>
+          <div class="profile-info">
+            <div class="profile-name" id="prof-name">Legato Member</div>
+            <div class="profile-handle" id="prof-email">@member_88</div>
+          </div>
+          <div style="margin-left:auto;" id="maker-upgrade-zone">
+            <button class="btn btn-primary" onclick="upgradeToMaker()">Trở Thành Xưởng</button>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="font-display font-800 mb-16" style="font-size:24px; line-height:1.3; overflow-wrap: break-word;">Quản lý kho & Bán hàng<br><span style="font-size:16px; color:var(--text-muted);">(Create Ask / Drop)</span></h2>
+      <p class="text-muted mb-24">Đăng bán sản phẩm (Ask) hoặc Tự tạo bộ sưu tập Mô Hình mới (Drop).</p>
+
+      <div class="grid-2" style="margin-bottom:24px;">
+        <button class="btn btn-primary" id="mode-exist-btn" onclick="setSellMode('exist')"><i data-lucide="package"></i> Bán Mô Hình Có Sẵn</button>
+        <button class="btn btn-ghost" id="mode-new-btn" onclick="setSellMode('new')" style="border:1px solid var(--border);"><i data-lucide="plus-circle"></i> Đăng Mô Hình Mới</button>
+      </div>
+
+      <!-- FORM SẴN CÓ -->
+      <div class="sell-form" id="form-exist">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Chọn Mô Hình (Drop)</label>
+            <select class="form-control" id="f-drop-id"></select>
+          </div>
+          <div class="form-group">
+            <label>Tình trạng</label>
+            <select class="form-control" id="f-condition">
+              <option value="new">Hàng Mới 100% (Xưởng In)</option>
+              <option value="used">Pass Lại (Second-hand)</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Giá Bán (Ask Price - USD)</label>
+            <input type="number" class="form-control" id="f-price" placeholder="VD: 25">
+          </div>
+          <div class="form-group">
+            <label>Ảnh Thực Tế (Ảnh Bìa) *</label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" class="form-control" id="f-img" placeholder="Chọn ảnh..." readonly style="flex:1;">
+              <button class="btn btn-ghost" onclick="document.getElementById('f-upload-img').click()" style="padding: 0 16px; border: 1px solid var(--border);"><i data-lucide="upload" style="width:18px;"></i></button>
+              <input type="file" id="f-upload-img" accept="image/*" style="display:none;" onchange="handleAppUpload(event, 'f-img')">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Thư Viện Ảnh (Gallery - Tùy chọn)</label>
+          <div style="display:flex; gap:8px;">
+            <textarea class="form-control" id="f-gallery" rows="3" placeholder="Tải lên nhiều ảnh phụ..." readonly style="flex:1;"></textarea>
+            <button class="btn btn-ghost" onclick="document.getElementById('f-upload-gallery').click()" style="padding: 0 16px; border: 1px solid var(--border);"><i data-lucide="upload" style="width:18px;"></i></button>
+            <input type="file" id="f-upload-gallery" accept="image/*" multiple style="display:none;" onchange="handleAppUploadMultiple(event, 'f-gallery')">
+          </div>
+        </div>
+        <div style="padding:16px; background:rgba(0,255,136,0.05); border:1px dashed var(--accent-green); border-radius:8px; margin-bottom:16px;" class="text-sm">
+          <i data-lucide="shield-check" style="width:16px; display:inline-block; vertical-align:-3px; color:var(--accent-green); margin-right:4px;"></i>
+          Admin sẽ kiểm duyệt. Nếu đạt, sản phẩm sẽ tự động hiển thị trong mục "Buy Now".
+        </div>
+        <button class="btn btn-primary" onclick="submitAsk()">Gửi Kiểm Duyệt (Bán)</button>
+      </div>
+
+      <!-- FORM MỚI -->
+      <div class="sell-form" id="form-new" style="display:none;">
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Tên Mô Hình *</label>
+            <input type="text" class="form-control" id="n-name" placeholder="Tên sản phẩm">
+          </div>
+          <div class="form-group">
+            <label>Giá Đề Xuất (Retail USD) *</label>
+            <input type="number" class="form-control" id="n-price" placeholder="VD: 50">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Thể loại *</label>
+            <input type="text" class="form-control" id="n-category" placeholder="VD: Toys, Decor...">
+          </div>
+          <div class="form-group">
+            <label>Ảnh Bìa (Render/Thực tế) *</label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" class="form-control" id="n-image" placeholder="Chọn ảnh..." readonly style="flex:1;">
+              <button class="btn btn-ghost" onclick="document.getElementById('n-upload-img').click()" style="padding: 0 16px; border: 1px solid var(--border);"><i data-lucide="upload" style="width:18px;"></i></button>
+              <input type="file" id="n-upload-img" accept="image/*" style="display:none;" onchange="handleAppUpload(event, 'n-image')">
+            </div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>File 3D (.stl/.obj/.zip) <span class="text-muted">(Dành cho Khách đặt in)</span></label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" class="form-control" id="n-model3d" placeholder="URL File hoặc Tải lên..." style="flex:1;">
+              <button class="btn btn-ghost" onclick="document.getElementById('n-upload-3d').click()" style="padding: 0 16px; border: 1px solid var(--border);" title="Chỉ hỗ trợ file nhỏ. File lớn vui lòng dùng Drive/Dropbox"><i data-lucide="file-up" style="width:18px;"></i></button>
+              <input type="file" id="n-upload-3d" accept=".stl,.obj,.zip" style="display:none;" onchange="alert('Hiện tại hệ thống demo chỉ nhận link (Google Drive, Dropbox) do giới hạn dung lượng. Vui lòng dán link trực tiếp.')">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tags (Cách nhau bằng dấu phẩy)</label>
+            <input type="text" class="form-control" id="n-tags" placeholder="dragon, articulated, fantasy...">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Mô tả chi tiết</label>
+          <textarea class="form-control" id="n-desc" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Thông số kỹ thuật</label>
+          <textarea class="form-control" id="n-specs" rows="3" placeholder="- Chất liệu đề xuất: PLA/PETG..."></textarea>
+        </div>
+        
+        <div style="padding:16px; background:rgba(0,255,136,0.05); border:1px dashed var(--accent-green); border-radius:8px; margin-bottom:16px;" class="text-sm">
+          Bạn vừa là người tạo Drop, vừa có thể tạo ngay Ask đầu tiên (Với tư cách là Xưởng in độc quyền).
+        </div>
+        
+        <div class="grid-2" style="margin-top: 16px;">
+          <button type="button" class="btn btn-ghost" onclick="triggerAINew()" style="color:var(--accent-purple); border:1px solid var(--accent-purple);"><i data-lucide="sparkles"></i> AI Tự Động Điền</button>
+          <button class="btn btn-primary" onclick="submitNewDrop()">Gửi Kiểm Duyệt (Drop Mới)</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal Đăng Ký Xưởng -->
+<div class="modal" id="maker-modal">
+  <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-header">
+      <h3 style="margin:0; font-size: 18px;">Đăng ký Đối tác Xưởng In</h3>
+      <button class="btn-action" onclick="document.getElementById('maker-modal').classList.remove('open')"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="text-muted mb-16">Vui lòng cung cấp đầy đủ thông tin để được cấp quyền đăng bán sản phẩm và nhận việc in 3D từ khách hàng.</p>
+      
+      <div class="form-group mb-16">
+        <label>Tên người đại diện *</label>
+        <input type="text" class="form-control" id="m-name" required placeholder="VD: Nguyễn Văn A">
+      </div>
+      <div class="form-group mb-16">
+        <label>Vị trí địa lý (Bắt buộc dùng tính năng Định vị) *</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" class="form-control" id="m-loc" required placeholder="Nhấn nút để lấy vị trí..." readonly style="flex:1;">
+          <button class="btn btn-ghost" type="button" onclick="getLocation(this)" style="padding: 0 16px; border: 1px solid var(--border); white-space:nowrap;"><i data-lucide="map-pin" style="width:18px;"></i> Lấy Vị Trí</button>
+        </div>
+        <input type="hidden" id="m-lat">
+        <input type="hidden" id="m-lng">
+      </div>
+      <div class="form-group mb-16">
+        <label>Số điện thoại liên hệ *</label>
+        <input type="tel" class="form-control" id="m-phone" required placeholder="VD: 0987654321">
+      </div>
+      <div class="form-group mb-16">
+        <label>Link mạng xã hội (Fanpage/FB Cá nhân)</label>
+        <input type="text" class="form-control" id="m-social" placeholder="https://facebook.com/...">
+      </div>
+      
+      <div class="form-group mb-16">
+        <label>Ảnh CCCD (Mặt trước) hoặc Ảnh chân dung *</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" class="form-control" id="m-cccd" placeholder="Chọn file..." readonly style="flex:1;">
+          <button class="btn btn-ghost" onclick="document.getElementById('m-upload-cccd').click()" style="padding: 0 16px; border: 1px solid var(--border);"><i data-lucide="upload" style="width:18px;"></i></button>
+          <input type="file" id="m-upload-cccd" accept="image/*" style="display:none;" onchange="handleAppUpload(event, 'm-cccd')">
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Một số ảnh sản phẩm thực tế đã in *</label>
+        <div style="display:flex; gap:8px;">
+          <textarea class="form-control" id="m-portfolio" rows="3" placeholder="Chọn file để upload nhiều ảnh" readonly style="flex:1;"></textarea>
+          <button class="btn btn-ghost" onclick="document.getElementById('m-upload-port').click()" style="padding: 0 16px; border: 1px solid var(--border);"><i data-lucide="upload" style="width:18px;"></i></button>
+          <input type="file" id="m-upload-port" accept="image/*" multiple style="display:none;" onchange="handleAppUploadMultiple(event, 'm-portfolio')">
+        </div>
+      </div>
+      
+      <div class="form-group" style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px; border:1px solid var(--border); margin-top:24px;">
+        <label style="display:flex; align-items:flex-start; gap:12px; cursor:pointer;">
+          <input type="checkbox" id="m-agree" style="margin-top:4px; width:18px; height:18px; cursor:pointer;">
+          <span style="line-height:1.5; font-size:14px; color:var(--text-primary);">
+            Tôi cam kết các thông tin trên là chính xác và đồng ý tuân thủ tuyệt đối <a href="/pages/maker-terms.html" target="_blank" style="color:var(--accent-purple); text-decoration:underline;">Nội Quy Phân Phối Dành Cho Đối Tác</a> (bao gồm mức phí nền tảng 15% và các hình thức xử phạt nếu vi phạm chính sách).
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('maker-modal').classList.remove('open')">Hủy</button>
+      <button class="btn btn-primary" onclick="submitMakerApp()">Gửi Đơn Đăng Ký</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/auth.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+DB.init();
+
+const currentUser = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : (typeof DB !== 'undefined' ? DB.getCurrentUser() : null);
+if (!currentUser) {
+  window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+} else {
+  // Update UI with real user data
+  document.getElementById('prof-avatar').src = currentUser.avatar;
+  document.getElementById('prof-name').textContent = currentUser.name;
+  document.getElementById('prof-email').textContent = currentUser.email || 'Member';
+  
+  if (currentUser.role === 'admin') {
+    document.getElementById('maker-upgrade-zone').innerHTML = `<div style="background:var(--accent-purple); color:white; padding:8px 16px; border-radius:99px; font-weight:bold; font-size:14px;"><i data-lucide="shield-alert" style="width:16px;vertical-align:-3px;margin-right:4px;"></i> Quản Trị Viên (Admin)</div>`;
+  } else if (currentUser.role === 'maker') {
+    document.getElementById('maker-upgrade-zone').innerHTML = `<div style="background:var(--accent-green); color:black; padding:8px 16px; border-radius:99px; font-weight:bold; font-size:14px;"><i data-lucide="check-circle" style="width:16px;vertical-align:-3px;margin-right:4px;"></i> Đối Tác Xưởng In</div>`;
+  } else if (currentUser.isPendingMaker) {
+    document.getElementById('maker-upgrade-zone').innerHTML = `<div style="background:rgba(255,255,255,0.1); color:var(--text-muted); padding:8px 16px; border-radius:99px; font-weight:bold; font-size:14px;"><i data-lucide="clock" style="width:16px;vertical-align:-3px;margin-right:4px;"></i> Đang chờ duyệt Xưởng</div>`;
+  } else {
+    document.getElementById('maker-upgrade-zone').innerHTML = `<button class="btn btn-primary" onclick="openMakerModal()">Trở Thành Xưởng</button>`;
+  }
+}
+
+// ========== FIREBASE STORAGE UPLOAD ==========
+async function uploadToStorage(file, fieldEl, progressText) {
+  const MAX_MB = 10;
+  if (file.size > MAX_MB * 1024 * 1024) {
+    alert(`File quá lớn! Tối đa ${MAX_MB}MB.`); return null;
+  }
+  if (fieldEl) fieldEl.value = progressText || 'Đang tải lên...';
+  try {
+    const storage = firebase.storage();
+    const ext = file.name.split('.').pop();
+    const fileName = `uploads/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+    const ref = storage.ref(fileName);
+    const snap = await ref.put(file);
+    const url = await snap.ref.getDownloadURL();
+    return url;
+  } catch(e) {
+    const msg = 'Lỗi upload: ' + (e.message || e.code || 'Không xác định');
+    if (fieldEl) { fieldEl.value = msg; setTimeout(()=>{ if(fieldEl.value===msg) fieldEl.value=''; }, 5000); }
+    alert('⚠️ ' + msg);
+    return null;
+  }
+}
+
+async function handleAppUpload(e, targetId) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fieldEl = document.getElementById(targetId);
+  const url = await uploadToStorage(file, fieldEl, 'Đang tải lên...');
+  if (url) fieldEl.value = url;
+}
+
+async function handleAppUploadMultiple(e, targetId) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  const el = document.getElementById(targetId);
+  const existingLines = el.value ? el.value.split('\n').filter(s => s.trim() && !s.includes('Đang tải')) : [];
+  el.value = existingLines.concat(files.map(() => 'Đang tải lên...')).join('\n');
+  
+  const results = [];
+  for (const file of files) {
+    const url = await uploadToStorage(file, null, null);
+    results.push(url || '');
+  }
+  
+  const successUrls = results.filter(u => u);
+  el.value = [...existingLines, ...successUrls].join('\n');
+}
+
+function getLocation(btn) {
+  if (!navigator.geolocation) {
+    return alert('Trình duyệt của bạn không hỗ trợ định vị.');
+  }
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '<i data-lucide="loader" class="spin" style="width:18px;"></i> Đang lấy...';
+  if(typeof lucide !== 'undefined') lucide.createIcons();
+  
+  navigator.geolocation.getCurrentPosition(async (position) => {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    document.getElementById('m-lat').value = lat;
+    document.getElementById('m-lng').value = lng;
+    
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10`);
+      const data = await res.json();
+      document.getElementById('m-loc').value = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    } catch(e) {
+      document.getElementById('m-loc').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    }
+    
+    btn.innerHTML = '<i data-lucide="check" style="width:18px;color:var(--accent-green);"></i> Xong';
+    if(typeof lucide !== 'undefined') lucide.createIcons();
+  }, (err) => {
+    alert('Không thể lấy vị trí. Vui lòng cho phép quyền truy cập vị trí trong trình duyệt.');
+    btn.innerHTML = originalHtml;
+    if(typeof lucide !== 'undefined') lucide.createIcons();
+  });
+}
+
+function submitMakerApp() {
+  const name = document.getElementById('m-name').value;
+  const loc = document.getElementById('m-loc').value;
+  const phone = document.getElementById('m-phone').value;
+  const social = document.getElementById('m-social').value;
+  const cccd = document.getElementById('m-cccd').value;
+  const port = document.getElementById('m-portfolio').value;
+  const agree = document.getElementById('m-agree').checked;
+  
+  if (!name || !loc || !phone || !cccd || !port || cccd.includes('Đang xử lý') || port.includes('Đang xử lý')) {
+    return alert('Vui lòng điền đầy đủ thông tin bắt buộc và chờ ảnh xử lý xong.');
+  }
+  
+  if (!agree) {
+    return alert('Bạn cần đọc và đồng ý với Nội Quy Dành Cho Đối Tác trước khi gửi đơn.');
+  }
+
+  const app = {
+    id: DB.genId('app'),
+    uid: currentUser.uid,
+    email: currentUser.email,
+    repName: name,
+    location: loc,
+    lat: parseFloat(document.getElementById('m-lat').value),
+    lng: parseFloat(document.getElementById('m-lng').value),
+    phone: phone,
+    social: social,
+    cccd: cccd,
+    portfolio: port.split('\n').filter(s => s.trim().length > 0),
+    status: 'pending',
+    createdAt: new Date().toISOString()
+  };
+  
+  DB.addMakerApp(app);
+  DB.updateUser(currentUser.uid, { isPendingMaker: true });
+  
+  alert('Gửi đơn đăng ký thành công! Admin sẽ phản hồi trong thời gian sớm nhất.');
+  window.location.reload();
+}
+
+// Populate drops
+const drops = DB.getDrops();
+document.getElementById('f-drop-id').innerHTML = drops.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+
+let sellMode = 'exist';
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('tab') === 'new') {
+  sellMode = 'new';
+}
+
+function setSellMode(mode) {
+  sellMode = mode;
+  
+  const newUrl = new URL(window.location);
+  newUrl.searchParams.set('tab', mode);
+  window.history.replaceState({}, '', newUrl);
+
+  document.getElementById('form-exist').style.display = mode === 'exist' ? 'block' : 'none';
+  document.getElementById('form-new').style.display = mode === 'new' ? 'block' : 'none';
+  
+  if (mode === 'exist') {
+    document.getElementById('mode-exist-btn').className = 'btn btn-primary';
+    document.getElementById('mode-exist-btn').style.border = 'none';
+    document.getElementById('mode-new-btn').className = 'btn btn-ghost';
+    document.getElementById('mode-new-btn').style.border = '1px solid var(--border)';
+  } else {
+    document.getElementById('mode-new-btn').className = 'btn btn-primary';
+    document.getElementById('mode-new-btn').style.border = 'none';
+    document.getElementById('mode-exist-btn').className = 'btn btn-ghost';
+    document.getElementById('mode-exist-btn').style.border = '1px solid var(--border)';
+  }
+}
+
+setSellMode(sellMode);
+
+function submitAsk() {
+  const dropId = document.getElementById('f-drop-id').value;
+  const condition = document.getElementById('f-condition').value;
+  const price = parseFloat(document.getElementById('f-price').value);
+  const img = document.getElementById('f-img').value;
+  const galleryRaw = document.getElementById('f-gallery').value;
+  
+  if (!price || price <= 0 || !img || img.includes('Đang tải')) return alert('Vui lòng nhập giá và upload ảnh bìa!');
+  
+  const gallery = galleryRaw ? galleryRaw.split('\n').map(s => s.trim()).filter(s => s.length > 0 && !s.includes('Đang tải')) : [];
+  
+  // In a real app, this goes to an Admin Approval Queue.
+  // For demo, we auto-approve and add it to the drop's asks.
+  const drop = drops.find(d => d.id === dropId);
+  const newAsk = {
+    id: DB.genId('ask'),
+    type: condition,
+    price: price,
+    seller: currentUser.name || 'Legato Member',
+    makerId: currentUser.uid,
+    image: img,
+    gallery: gallery
+  };
+  
+  drop.asks.push(newAsk);
+  DB.updateDropAsks(drop.id, drop.asks);
+  // Optional: trigger BDB update if you want to sync this immediately
+  if (typeof BDB !== 'undefined' && BDB.updateDrop) BDB.updateDrop(drop.id, drop);
+  
+  alert('Đã thêm sản phẩm thành công! (Mô phỏng tự động duyệt). Hãy ra Khám Phá để kiểm tra.');
+  document.getElementById('f-price').value = '';
+  document.getElementById('f-img').value = '';
+  document.getElementById('f-gallery').value = '';
+}
+
+function submitNewDrop() {
+  const name = document.getElementById('n-name').value;
+  const price = parseFloat(document.getElementById('n-price').value);
+  const cat = document.getElementById('n-category').value;
+  const img = document.getElementById('n-image').value;
+  const model3d = document.getElementById('n-model3d').value;
+  const tags = document.getElementById('n-tags').value;
+  const desc = document.getElementById('n-desc').value;
+  const specs = document.getElementById('n-specs').value;
+  
+  if (!name || !price || !cat || !img || img.includes('Đang tải')) {
+    return alert('Vui lòng điền các trường bắt buộc và chờ ảnh tải xong!');
+  }
+  
+  const newDrop = {
+    id: DB.genId('drop'),
+    name,
+    retailPrice: price,
+    category: cat,
+    image: img,
+    model3d,
+    tags,
+    desc,
+    specs,
+    designer: currentUser.name,
+    designerId: currentUser.uid,
+    createdAt: new Date().toISOString(),
+    asks: []
+  };
+  
+  // Create first ask for this maker
+  newDrop.asks.push({
+    id: DB.genId('ask'),
+    type: 'new',
+    price: price,
+    seller: currentUser.name,
+    makerId: currentUser.uid
+  });
+  
+  const allDrops = DB.getDrops();
+  allDrops.unshift(newDrop);
+  localStorage.setItem(DB.KEYS.DROPS, JSON.stringify(allDrops));
+  
+  alert('Đã gửi thành công Drop mới và tạo Ask tự động! (Mô phỏng duyệt tự động).');
+  window.location.reload();
+}
+
+async function triggerAINew() {
+  const fileInput = document.getElementById('n-upload-img');
+  if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+    return alert('Vui lòng tải ảnh bìa lên từ máy để AI có thể phân tích!');
+  }
+  
+  let apiKey = localStorage.getItem('gemini_api_key');
+  if (!apiKey || apiKey.trim() === '') {
+    apiKey = 'AQ.Ab8RN6JE70G1Edk-N01NRQTvbwXm1rwQWBJl3_P79y8FD97fLA';
+  }
+
+  const btn = document.querySelector('button[onclick="triggerAINew()"]');
+  btn.innerHTML = '<i class="loader-spinner" data-lucide="loader-2" style="width:16px;"></i> Đang phân tích...';
+  if(typeof lucide !== 'undefined') lucide.createIcons();
+  
+  try {
+    const drops = DB.getDrops();
+    const historyText = drops.slice(0, 3).map(d => `- Tên: ${d.name}\n  Giá: ${d.retailPrice}\n  Mô tả: ${d.desc}\n  Thông số: ${d.specs}`).join('\n\n');
+    
+    const promptText = `
+      Bạn là một AI hỗ trợ điền thông tin sản phẩm cho cửa hàng in 3D.
+      Dưới đây là lịch sử các sản phẩm đã đăng:
+      ${historyText}
+      
+      Hãy phân tích bức ảnh được đính kèm và trả về JSON chứa các trường sau (bắt buộc đúng định dạng JSON, không Markdown, không có \`\`\`json):
+      {
+        "name": "Tên sản phẩm tiếng Việt",
+        "price": "Giá bán ước tính (số, ví dụ: 25.5)",
+        "desc": "Mô tả chi tiết 2-3 câu, kế thừa văn phong của các sản phẩm cũ",
+        "specs": "- Thông số kỹ thuật gạch đầu dòng (kế thừa định dạng cũ)",
+        "category": "Thể loại (vd: Marvel, Anime, Đồ chơi...)",
+        "tags": "Các từ khóa (ngăn cách bằng dấu phẩy)"
+      }
+    `;
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    await new Promise(res => reader.onload = res);
+    const base64Str = reader.result;
+    
+    const mimeType = base64Str.split(';')[0].split(':')[1];
+    const base64 = base64Str.split(',')[1];
+    
+    const payload = {
+      contents: [{
+        parts: [
+          { text: promptText },
+          { inlineData: { mimeType: mimeType, data: base64 } }
+        ]
+      }]
+    };
+    
+    const models = ['gemini-3.7-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite'];
+    let res, lastErr;
+    for (const model of models) {
+      try {
+        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.status === 503 || res.status === 429) {
+          lastErr = `Model ${model} quá tải, đang thử model khác...`;
+          continue;
+        }
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(`Lỗi ${res.status}: ${errData?.error?.message || 'Lỗi mạng'}`);
+        }
+        break;
+      } catch(e) {
+        if (e.message.startsWith('Lỗi')) throw e;
+        lastErr = e.message;
+      }
+    }
+    
+    if (!res || !res.ok) throw new Error(lastErr || 'Quá tải API, vui lòng thử lại sau.');
+    
+    const data = await res.json();
+    let text = data.candidates[0].content.parts[0].text.trim();
+    if (text.startsWith('```json')) text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const aiData = JSON.parse(text);
+
+    if(aiData) {
+      if(!document.getElementById('n-name').value) document.getElementById('n-name').value = aiData.name;
+      if(!document.getElementById('n-price').value) document.getElementById('n-price').value = aiData.price;
+      if(!document.getElementById('n-category').value) document.getElementById('n-category').value = aiData.category;
+      if(!document.getElementById('n-tags').value) document.getElementById('n-tags').value = aiData.tags;
+      if(!document.getElementById('n-desc').value) document.getElementById('n-desc').value = aiData.desc;
+      if(!document.getElementById('n-specs').value) document.getElementById('n-specs').value = aiData.specs;
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Lỗi khi gọi AI: ' + e.message);
+  } finally {
+    btn.innerHTML = '<i data-lucide="sparkles"></i> AI Tự Động Điền';
+    if(typeof lucide !== 'undefined') lucide.createIcons();
+  }
+}
+</script>
+</body>
+</html>

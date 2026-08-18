@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đăng Nhập | Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000') center/cover; position: relative; overflow: hidden; }
+  .auth-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(10,10,15,0.4) 0%, rgba(10,10,15,0.95) 100%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .auth-card { position: relative; z-index: 10; width: 100%; max-width: 440px; padding: 48px; background: rgba(20,20,30,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); margin: 24px; }
+  .auth-logo { text-align: center; margin-bottom: 32px; }
+  .btn-google { background: white; color: black; border: none; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .btn-google:hover { background: #f1f1f1; }
+  .divider { display: flex; align-items: center; text-align: center; margin: 24px 0; color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+  .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .divider:not(:empty)::before { margin-right: .25em; }
+  .divider:not(:empty)::after { margin-left: .25em; }
+  
+  /* Premium inputs for auth */
+  .auth-card .form-control { padding: 14px 16px; font-size: 15px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.08); border-radius: 12px; }
+  .auth-card .form-control:focus { background: rgba(0,0,0,0.5); border-color: var(--accent-green); }
+  .auth-card .btn-lg { padding: 14px; font-size: 16px; border-radius: 12px; }
+  
+  @media (max-width: 768px) {
+    .auth-container { align-items: center; }
+    .auth-overlay { background: linear-gradient(to bottom, rgba(10,10,15,0.4) 0%, rgba(10,10,15,0.95) 100%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .auth-card { 
+      margin: 0;
+      max-width: 100%;
+      min-height: 100vh;
+      border-radius: 0;
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: rgba(15, 15, 26, 0.6);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
+      border: none;
+      box-shadow: none;
+    }
+    .auth-logo { margin-bottom: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="auth-container">
+  <div class="auth-overlay"></div>
+  
+  <div class="auth-card animate-fade-in" id="card-login">
+    <div class="auth-logo">
+      <a href="/" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <img src="/shared/logo.png" alt="Legato Logo" style="height: 144px; width: auto; object-fit: contain;">
+      </a>
+    </div>
+
+    <h2 class="font-display font-bold mb-8 text-center" style="font-size:20px;">Chào mừng trở lại</h2>
+    <p class="text-muted text-sm text-center mb-24">Đăng nhập để đấu giá và nhận đơn gia công</p>
+
+    <button class="btn btn-google w-full btn-lg" onclick="Auth.loginWithGoogle()">
+      <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)"><path fill="#4285F4" d="M -3.264 51.509 C -3.264 50.719 -3.334 49.969 -3.454 49.239 L -14.754 49.239 L -14.754 53.749 L -8.284 53.749 C -8.574 55.229 -9.424 56.479 -10.684 57.329 L -10.684 60.329 L -6.824 60.329 C -4.564 58.239 -3.264 55.159 -3.264 51.509 Z"/><path fill="#34A853" d="M -14.754 63.239 C -11.514 63.239 -8.804 62.159 -6.824 60.329 L -10.684 57.329 C -11.764 58.049 -13.134 58.489 -14.754 58.489 C -17.884 58.489 -20.534 56.379 -21.484 53.529 L -25.464 53.529 L -25.464 56.619 C -23.494 60.539 -19.444 63.239 -14.754 63.239 Z"/><path fill="#FBBC05" d="M -21.484 53.529 C -21.734 52.809 -21.864 52.039 -21.864 51.239 C -21.864 50.439 -21.724 49.669 -21.484 48.949 L -21.484 45.859 L -25.464 45.859 C -26.284 47.479 -26.754 49.299 -26.754 51.239 C -26.754 53.179 -26.284 54.999 -25.464 56.619 L -21.484 53.529 Z"/><path fill="#EA4335" d="M -14.754 43.989 C -12.984 43.989 -11.404 44.599 -10.154 45.789 L -6.734 42.369 C -8.804 40.429 -11.514 39.239 -14.754 39.239 C -19.444 39.239 -23.494 41.939 -25.464 45.859 L -21.484 48.949 C -20.534 46.099 -17.884 43.989 -14.754 43.989 Z"/></g></svg>
+      Tiếp tục với Google
+    </button>
+
+    <div class="divider">Hoặc Email</div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" class="form-control" id="l-email" placeholder="Nhập email...">
+    </div>
+    <div class="form-group mb-24">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <label style="margin:0;">Mật khẩu</label>
+        <a href="#" class="text-xs text-primary" style="text-decoration:none;">Quên mật khẩu?</a>
+      </div>
+      <input type="password" class="form-control" id="l-password" placeholder="••••••••">
+    </div>
+
+    <button class="btn btn-primary w-full btn-lg mb-16" onclick="Auth.loginEmail(document.getElementById('l-email').value, document.getElementById('l-password').value)">Đăng Nhập</button>
+    <div class="text-center text-sm text-muted">
+      Chưa có tài khoản? <a href="#" class="text-primary" onclick="toggleForm('register')">Đăng ký ngay</a>
+    </div>
+  </div>
+
+  <div class="auth-card animate-fade-in" id="card-register" style="display:none;">
+    <div class="auth-logo">
+      <a href="/" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+        <img src="/shared/logo.png" alt="Legato Logo" style="height: 144px; width: auto; object-fit: contain;">
+      </a>
+    </div>
+
+    <h2 class="font-display font-bold mb-8 text-center" style="font-size:20px;">Tạo tài khoản mới</h2>
+    <p class="text-muted text-sm text-center mb-24">Gia nhập cộng đồng In 3D lớn nhất.</p>
+
+    <div class="form-group">
+      <label>Tên hiển thị</label>
+      <input type="text" class="form-control" id="r-name" placeholder="Ví dụ: Maker Tự Do">
+    </div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" class="form-control" id="r-email" placeholder="Nhập email...">
+    </div>
+    <div class="form-group mb-24">
+      <label>Mật khẩu</label>
+      <input type="password" class="form-control" id="r-password" placeholder="••••••••">
+    </div>
+
+    <button class="btn btn-primary w-full btn-lg mb-16" onclick="Auth.registerEmail(document.getElementById('r-name').value, document.getElementById('r-email').value, document.getElementById('r-password').value)">Tạo Tài Khoản</button>
+    <div class="text-center text-sm text-muted">
+      Đã có tài khoản? <a href="#" class="text-primary" onclick="toggleForm('login')">Đăng nhập</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase & Auth Logic -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/auth.js"></script>
+<script>
+  DB.init();
+  lucide.createIcons();
+  
+  function toggleForm(type) {
+    if (type === 'login') {
+      document.getElementById('card-register').style.display = 'none';
+      document.getElementById('card-login').style.display = 'block';
+    } else {
+      document.getElementById('card-login').style.display = 'none';
+      document.getElementById('card-register').style.display = 'block';
+    }
+  }
+
+  // Auto redirect if already logged in
+  if (Auth.getCurrentUser()) {
+    const urlParams = new URLSearchParams(window.location.search);
+    window.location.href = urlParams.get('next') || '/';
+  }
+</script>
+</body>
+</html>

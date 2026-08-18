@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chỉnh Sửa Sản Phẩm | Admin Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar injected by app.js -->
+  <main class="main-content">
+    <header class="top-header border-b">
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" placeholder="Tìm mô hình, xưởng in...">
+      </div>
+    </header>
+    <div class="p-24" style="max-width: 800px; width: 100%; margin: 0 auto; min-width: 0;">
+      
+      <div style="display:flex; align-items:center; gap: 16px; margin-bottom: 24px;">
+        <a href="/admin/" data-link class="btn btn-ghost" style="padding: 8px;"><i data-lucide="arrow-left"></i></a>
+        <div>
+          <h1 class="font-display font-800" style="font-size:28px;" id="page-title">Thêm Sản Phẩm Mới</h1>
+          <p class="text-muted">Nhập thông tin chi tiết cho sản phẩm.</p>
+        </div>
+      </div>
+
+      <div class="card p-24" style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border);">
+        <input type="hidden" id="f-id">
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Tên Sản Phẩm *</label>
+            <input type="text" class="form-control" id="f-name" required>
+          </div>
+          <div class="form-group">
+            <label>Giá Niêm Yết (USD) *</label>
+            <input type="number" class="form-control" id="f-price" required>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Tên Nhà Thiết Kế (Tác giả)</label>
+            <input type="text" class="form-control" id="f-designer" value="Legato Official">
+          </div>
+          <div class="form-group">
+            <label>Ảnh Bìa (Link chính) *</label>
+            <div style="display:flex; gap:8px;">
+              <input type="text" class="form-control" id="f-image" required placeholder="https://..." style="flex:1;">
+              <button type="button" class="btn btn-ghost" onclick="document.getElementById('f-upload').click()" title="Tải ảnh lên" style="padding: 0 16px; border: 1px solid var(--border);"><i data-lucide="upload" style="width:18px;"></i></button>
+              <input type="file" id="f-upload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Thể loại - Bộ sưu tập</label>
+            <input type="text" class="form-control" id="f-category" placeholder="VD: Marvel, DC, Gaming...">
+            <div id="suggest-category" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+          <div class="form-group">
+            <label>Thẻ (Tags)</label>
+            <input type="text" class="form-control" id="f-tags" placeholder="VD: action figure, bust, toy...">
+            <div id="suggest-tags" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Chất liệu</label>
+            <input type="text" class="form-control" id="f-material" placeholder="VD: PLA, ABS, PETG, Resin...">
+            <div id="suggest-material" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+          <div class="form-group">
+            <label>Kích thước tỉ lệ</label>
+            <input type="text" class="form-control" id="f-scale" placeholder="VD: 400%, 1000%, hoặc Custom">
+            <div id="suggest-scale" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Link Tệp 3D (.glb, .gltf) - Dùng cho View 3D</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" class="form-control" id="f-model3d" placeholder="https://domain.com/model.glb" style="flex:1;">
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('f-upload-3d').click()" title="Tải tệp 3D lên" style="padding: 0 16px; border: 1px solid var(--border);"><i data-lucide="upload" style="width:18px;"></i></button>
+            <input type="file" id="f-upload-3d" accept=".glb,.gltf" style="display:none;" onchange="handle3DUpload(event)">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Thư Viện Ảnh (Gallery) - Mỗi link một dòng</label>
+          <div style="display:flex; gap:8px;">
+            <textarea class="form-control" id="f-gallery" rows="3" placeholder="https://anh1.jpg&#10;https://anh2.jpg" style="flex:1;"></textarea>
+            <button type="button" class="btn btn-ghost" onclick="document.getElementById('f-upload-gallery').click()" title="Tải ảnh Gallery lên" style="padding: 0 16px; border: 1px solid var(--border);"><i data-lucide="upload" style="width:18px;"></i></button>
+            <input type="file" id="f-upload-gallery" accept="image/*" multiple style="display:none;" onchange="handleGalleryUpload(event)">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <label style="margin-bottom:0;">Mô tả chi tiết</label>
+            <button type="button" onclick="updateDesc()" id="btn-update-desc" style="display:flex; align-items:center; gap:6px; padding:5px 12px; border-radius:8px; border:1px solid var(--accent-purple); background:rgba(139,92,246,0.1); color:var(--accent-purple); font-size:12px; font-weight:600; cursor:pointer; transition:0.2s;">
+              <i data-lucide="wand-2" style="width:13px;"></i> Cập Nhật Mô Tả
+            </button>
+          </div>
+          <textarea class="form-control" id="f-desc" rows="4"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <label style="margin-bottom:0;">Thông số kỹ thuật (Hỗ trợ gạch đầu dòng)</label>
+            <button type="button" onclick="updateSpecs()" id="btn-update-specs" style="display:flex; align-items:center; gap:6px; padding:5px 12px; border-radius:8px; border:1px solid var(--accent-purple); background:rgba(139,92,246,0.1); color:var(--accent-purple); font-size:12px; font-weight:600; cursor:pointer; transition:0.2s;">
+              <i data-lucide="wand-2" style="width:13px;"></i> Cập Nhật Thông Số
+            </button>
+          </div>
+          <textarea class="form-control" id="f-specs" rows="4" placeholder="- In 3D SLA&#10;- Kích thước 20cm"></textarea>
+        </div>
+        
+        <div style="display:flex; justify-content: flex-end; gap: 12px; margin-top: 24px; align-items:center;">
+          <button type="button" class="btn btn-ghost" onclick="triggerAI()" style="margin-right:auto; color:var(--accent-purple); border:1px solid var(--accent-purple);" id="btn-ai"><i data-lucide="sparkles"></i> AI Tự Động Điền</button>
+          <a href="/admin/" data-link class="btn btn-ghost">Hủy</a>
+          <button class="btn btn-primary" onclick="saveProduct()">Lưu Sản Phẩm</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/auth.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+DB.init();
+BDB.init();
+
+// Security Check
+const user = Auth.getCurrentUser();
+if (!user || user.role !== 'admin') {
+  alert("Chỉ có Admin mới được truy cập trang này!");
+  window.location.href = '/';
+}
+
+const urlParams = new URLSearchParams(window.location.search);
+const editId = urlParams.get('id');
+
+if (editId) {
+  document.getElementById('page-title').textContent = "Chỉnh Sửa Sản Phẩm";
+  const drops = DB.getDrops();
+  const d = drops.find(x => x.id === editId);
+  if (d) {
+    document.getElementById('f-id').value = d.id;
+    document.getElementById('f-name').value = d.name;
+    document.getElementById('f-price').value = d.retailPrice;
+    document.getElementById('f-designer').value = d.designer || 'Legato Official';
+    document.getElementById('f-image').value = d.image;
+    document.getElementById('f-gallery').value = (d.gallery || []).join('\n');
+    document.getElementById('f-desc').value = d.desc || '';
+    document.getElementById('f-specs').value = d.specs || '';
+    document.getElementById('f-category').value = d.category || '';
+    document.getElementById('f-tags').value = d.tags || '';
+    document.getElementById('f-material').value = d.material || '';
+    document.getElementById('f-scale').value = d.scale || '';
+    document.getElementById('f-model3d').value = d.model3d || '';
+  }
+}
+
+function renderSuggestions() {
+  const drops = DB.getDrops();
+  const categories = [...new Set(drops.map(d => d.category).filter(Boolean))];
+  const materials = [...new Set(drops.map(d => d.material).filter(Boolean))];
+  const scales = [...new Set(drops.map(d => d.scale).filter(Boolean))];
+  
+  let tags = [];
+  drops.forEach(d => {
+    if(d.tags) d.tags.split(',').forEach(t => tags.push(t.trim()));
+  });
+  tags = [...new Set(tags.filter(Boolean))];
+
+  const createBtn = (val, targetId, append=false) => {
+    return `<span style="font-size:12px; padding:4px 10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; cursor:pointer; color:var(--text-muted);" onclick="setVal('${targetId}', this.innerText, ${append})" onmouseover="this.style.color='#fff'; this.style.borderColor='var(--accent-purple)';" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='rgba(255,255,255,0.1)';">${val}</span>`;
+  };
+
+  document.getElementById('suggest-category').innerHTML = categories.map(c => createBtn(c, 'f-category')).join('');
+  document.getElementById('suggest-material').innerHTML = materials.map(m => createBtn(m, 'f-material')).join('');
+  document.getElementById('suggest-scale').innerHTML = scales.map(s => createBtn(s, 'f-scale')).join('');
+  document.getElementById('suggest-tags').innerHTML = tags.map(t => createBtn(t, 'f-tags', true)).join('');
+}
+
+function setVal(id, val, append) {
+  const el = document.getElementById(id);
+  if (append) {
+    if (el.value) {
+      if (!el.value.includes(val)) el.value += ', ' + val;
+    } else {
+      el.value = val;
+    }
+  } else {
+    el.value = val;
+  }
+}
+renderSuggestions();
+
+// Helper: get current form context
+function getFormContext() {
+  return {
+    name: document.getElementById('f-name').value,
+    category: document.getElementById('f-category').value,
+    material: document.getElementById('f-material').value,
+    scale: document.getElementById('f-scale').value,
+    tags: document.getElementById('f-tags').value,
+    specs: document.getElementById('f-specs').value,
+    desc: document.getElementById('f-desc').value,
+  };
+}
+
+async function callGemini(prompt) {
+  let apiKey = localStorage.getItem('gemini_api_key');
+  if (!apiKey || apiKey.trim() === '') {
+    apiKey = 'AQ.Ab8RN6JE70G1Edk-N01NRQTvbwXm1rwQWBJl3_P79y8FD97fLA'; // Fallback key
+  }
+  const models = ['gemini-3.7-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite'];
+  for (const model of models) {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      if (res.status === 503 || res.status === 429) continue;
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(`Lỗi ${res.status}: ${e?.error?.message || 'API lỗi'}`);
+      }
+      const data = await res.json();
+      return data.candidates[0].content.parts[0].text.trim();
+    } catch(e) {
+      if (e.message.startsWith('Lỗi')) throw e;
+    }
+  }
+  throw new Error('Tất cả model đều quá tải, thử lại sau.');
+}
+
+async function updateDesc() {
+  const ctx = getFormContext();
+  if (!ctx.name) return alert('Vui lòng nhập tên sản phẩm trước!');
+  const btn = document.getElementById('btn-update-desc');
+  btn.innerHTML = `<i data-lucide="loader" class="spin"></i> Đang viết...`;
+  btn.disabled = true;
+  try {
+    const result = await callGemini(
+      `Viết mô tả sản phẩm in 3D cho một cửa hàng chuyên nghiệp. Mô tả 2-3 câu hấp dẫn, ngắn gọn, tiếng Việt tự nhiên. KHÔNG dùng markdown, KHÔNG gạch đầu dòng, chỉ trả về đoạn văn thuần.
+Thông tin:
+- Tên: ${ctx.name}
+- Thể loại: ${ctx.category}
+- Chất liệu: ${ctx.material}
+- Tỉ lệ: ${ctx.scale}
+- Tags: ${ctx.tags}
+${ctx.specs ? `- Thông số hiện có: ${ctx.specs}` : ''}`
+    );
+    document.getElementById('f-desc').value = result;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  } catch(e) {
+    alert('Lỗi: ' + e.message);
+  } finally {
+    btn.innerHTML = `<i data-lucide="wand-2" style="width:13px;"></i> Cập Nhật Mô Tả`;
+    btn.disabled = false;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+}
+
+async function updateSpecs() {
+  const ctx = getFormContext();
+  if (!ctx.name) return alert('Vui lòng nhập tên sản phẩm trước!');
+  const btn = document.getElementById('btn-update-specs');
+  btn.innerHTML = `<i data-lucide="loader" class="spin"></i> Đang viết...`;
+  btn.disabled = true;
+  try {
+    const result = await callGemini(
+      `Viết thông số kỹ thuật cho sản phẩm in 3D dưới dạng gạch đầu dòng (mỗi dòng bắt đầu bằng "- "). 4-6 dòng, tiếng Việt. Chỉ trả về danh sách thuần, không markdown, không tiêu đề.
+Thông tin:
+- Tên: ${ctx.name}
+- Thể loại: ${ctx.category}
+- Chất liệu: ${ctx.material}
+- Tỉ lệ: ${ctx.scale}
+${ctx.desc ? `- Mô tả: ${ctx.desc}` : ''}`
+    );
+    document.getElementById('f-specs').value = result;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  } catch(e) {
+    alert('Lỗi: ' + e.message);
+  } finally {
+    btn.innerHTML = `<i data-lucide="wand-2" style="width:13px;"></i> Cập Nhật Thông Số`;
+    btn.disabled = false;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+}
+
+// Loại bỏ tất cả trường undefined trước khi ghi vào Firestore
+function sanitizeData(obj) {
+  const clean = {};
+  Object.keys(obj).forEach(key => {
+    if (obj[key] !== undefined) {
+      clean[key] = obj[key] === '' ? null : obj[key];
+    }
+  });
+  return clean;
+}
+
+async function saveProduct() {
+  const id = document.getElementById('f-id').value;
+  const name = document.getElementById('f-name').value;
+  const price = parseFloat(document.getElementById('f-price').value);
+  const imageRaw = document.getElementById('f-image').value;
+  
+  if (!name || !price) return alert("Vui lòng nhập đủ trường bắt buộc (*)");
+  if (!imageRaw || imageRaw.trim() === '') return alert("Ảnh bìa không được để trống!");
+  
+  // Không cảnh báo base64 nữa vì mình dùng base64 để thay thế Storage
+  let image = imageRaw;
+  
+  const galleryRaw = document.getElementById('f-gallery').value;
+  // Filter out base64 lines from gallery too
+  const gallery = galleryRaw.split('\n')
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && !s.startsWith('data:') && !s.includes('Đang xử lý'));
+  
+  const data = {
+    name: name,
+    retailPrice: price,
+    designer: document.getElementById('f-designer').value,
+    image: image,
+    gallery: gallery,
+    desc: document.getElementById('f-desc').value,
+    specs: document.getElementById('f-specs').value,
+    category: document.getElementById('f-category').value,
+    tags: document.getElementById('f-tags').value,
+    material: document.getElementById('f-material').value,
+    scale: document.getElementById('f-scale').value,
+    model3d: document.getElementById('f-model3d').value
+  };
+
+  // Cho phép lưu base64 cho file 3D (nếu có cách)
+  if (data.model3d && data.model3d.startsWith('data:')) {
+    // data.model3d = '';
+  }
+
+  const btnSave = document.querySelector('.btn-primary');
+  const origText = 'Lưu Sản Phẩm';
+  if (btnSave) { btnSave.textContent = 'Đang lưu...'; btnSave.disabled = true; }
+  
+  // Safety timeout — always reset button after 10s max
+  const safetyTimer = setTimeout(() => {
+    if (btnSave) { btnSave.textContent = origText; btnSave.disabled = false; }
+  }, 10000);
+
+  try {
+    if (id) {
+      await BDB.updateDrop(id, sanitizeData(data));
+    } else {
+      data.id = DB.genId('drop');
+      data.asks = [];
+      data.createdAt = new Date().toISOString();
+      data.author = user ? (user.name || 'Admin') : 'Admin';
+      data.location = (user && user.location) ? user.location : 'Hà Nội, VN';
+      await BDB.addDrop(sanitizeData(data));
+    }
+    clearTimeout(safetyTimer);
+    if (btnSave) { btnSave.textContent = origText; btnSave.disabled = false; }
+    alert('✅ Lưu sản phẩm thành công! Đã đồng bộ lên cloud.');
+    window.location.href = '/admin/';
+  } catch(err) {
+    clearTimeout(safetyTimer);
+    if (btnSave) { btnSave.textContent = origText; btnSave.disabled = false; }
+    console.error('[saveProduct] Error:', err);
+    alert('⚠️ Lỗi khi lưu: ' + (err.message || 'Không xác định. Thử lại.')  );
+  }
+}
+
+// ========== VIETNIX S3 UPLOAD (VIA VERCEL API) ==========
+async function uploadToStorage(file, fieldEl, progressText) {
+  const MAX_MB = 100; // Tăng lên 100MB cho S3
+  if (file.size > MAX_MB * 1024 * 1024) {
+    alert(`File quá lớn! Tối đa ${MAX_MB}MB.`); return null;
+  }
+  
+  if (fieldEl) fieldEl.value = progressText || 'Đang xin phép tải lên...';
+
+  try {
+    // 1. Gọi API nội bộ để xin URL Tải lên
+    const res = await fetch('/api/get-upload-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type || 'application/octet-stream'
+      })
+    });
+    
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Lỗi cấp quyền upload');
+    }
+    
+    const { uploadUrl, publicUrl } = await res.json();
+
+    // 2. Bắn file thẳng lên Vietnix S3
+    if (fieldEl) fieldEl.value = 'Đang tải dữ liệu lên S3...';
+    
+    const uploadRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': file.type || 'application/octet-stream'
+      },
+      body: file
+    });
+    
+    if (!uploadRes.ok) {
+      throw new Error('Tải lên S3 thất bại. Có thể do lỗi cấu hình CORS trên Vietnix.');
+    }
+    
+    return publicUrl;
+  } catch(e) {
+    console.error("Upload error:", e);
+    const msg = 'Lỗi: ' + e.message;
+    if (fieldEl) { fieldEl.value = msg; setTimeout(()=>{ if(fieldEl.value===msg) fieldEl.value=''; }, 5000); }
+    alert('⚠️ LỖI UPLOAD: ' + e.message + '\n\nNếu lỗi CORS, hãy vào Vietnix S3 -> Bucket -> Cài đặt -> CORS và thêm cấu hình cho phép Web truy cập.');
+    return null;
+  }
+}
+
+async function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fieldEl = document.getElementById('f-image');
+  const url = await uploadToStorage(file, fieldEl, 'Đang tải ảnh bìa lên...');
+  if (url) fieldEl.value = url;
+}
+
+async function handle3DUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fieldEl = document.getElementById('f-model3d');
+  const url = await uploadToStorage(file, fieldEl, 'Đang tải tệp 3D lên...');
+  if (url) fieldEl.value = url;
+}
+
+async function handleGalleryUpload(e) {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  const galleryEl = document.getElementById('f-gallery');
+  const placeholder = 'Đang tải gallery lên (' + files.length + ' ảnh)...';
+  galleryEl.value += (galleryEl.value ? '\n' : '') + placeholder;
+  const urls = [];
+  for (const file of files) {
+    const url = await uploadToStorage(file, null, null);
+    if (url) urls.push(url);
+  }
+  galleryEl.value = galleryEl.value
+    .split('\n')
+    .filter(l => l !== placeholder)
+    .concat(urls)
+    .join('\n');
+}
+
+async function triggerAI() {
+  const fileInput = document.getElementById('f-upload');
+  if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+    return alert('Vui lòng tải ảnh lên từ máy để AI phân tích!');
+  }
+  
+  let apiKey = localStorage.getItem('gemini_api_key');
+  if (!apiKey || apiKey.trim() === '') {
+    apiKey = 'AQ.Ab8RN6JE70G1Edk-N01NRQTvbwXm1rwQWBJl3_P79y8FD97fLA'; // Fallback key
+  }
+  
+  const btn = document.getElementById('btn-ai');
+  btn.innerHTML = `<i data-lucide="loader" class="spin"></i> Đang phân tích...`;
+  btn.disabled = true;
+  
+  try {
+    const drops = DB.getDrops();
+    const historyText = drops.slice(0, 3).map(d => `- Tên: ${d.name}\n  Giá: ${d.retailPrice}\n  Mô tả: ${d.desc}\n  Thông số: ${d.specs}`).join('\n\n');
+    
+    const promptText = `
+      Bạn là một AI hỗ trợ điền thông tin sản phẩm cho cửa hàng in 3D.
+      Dưới đây là lịch sử các sản phẩm đã đăng:
+      ${historyText}
+      
+      Hãy phân tích bức ảnh được đính kèm và trả về JSON chứa các trường sau (bắt buộc đúng định dạng JSON, không Markdown, không có \`\`\`json):
+      {
+        "name": "Tên sản phẩm tiếng Việt",
+        "price": "Giá bán ước tính (số, ví dụ: 25.5)",
+        "desc": "Mô tả chi tiết 2-3 câu, kế thừa văn phong của các sản phẩm cũ",
+        "specs": "- Thông số kỹ thuật gạch đầu dòng (kế thừa định dạng cũ)",
+        "category": "Thể loại (vd: Marvel, Anime, Đồ chơi...)",
+        "tags": "Các từ khóa (ngăn cách bằng dấu phẩy)",
+        "material": "Chất liệu phù hợp dự đoán (VD: Nhựa PLA, Resin)",
+        "scale": "Tỉ lệ dự đoán (vd: 100%, 400%, Custom...)"
+      }
+    `;
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    await new Promise(res => reader.onload = res);
+    const base64Str = reader.result;
+    
+    const mimeType = base64Str.split(';')[0].split(':')[1];
+    const base64 = base64Str.split(',')[1];
+    const inlineData = { mimeType: mimeType, data: base64 };
+    
+    const payload = {
+      contents: [{
+        parts: [
+          { text: promptText },
+          { inlineData: inlineData }
+        ]
+      }]
+    };
+    
+    const models = ['gemini-3.7-flash', 'gemini-3.6-flash', 'gemini-3.5-flash-lite'];
+    let res, lastErr;
+    for (const model of models) {
+      try {
+        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.status === 503 || res.status === 429) {
+          // Overloaded, try next model
+          lastErr = `Model ${model} quá tải (${res.status}), đang thử model khác...`;
+          continue;
+        }
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(`Lỗi ${res.status}: ${errData?.error?.message || 'API Key không hợp lệ hoặc lỗi mạng'}`);
+        }
+        break; // Success
+      } catch(fetchErr) {
+        if (fetchErr.message.startsWith('Lỗi')) throw fetchErr;
+        lastErr = fetchErr.message;
+      }
+    }
+    if (!res || !res.ok) throw new Error(lastErr || 'Tất cả model đều quá tải, vui lòng thử lại sau ít phút.');
+    
+    const jsonRes = await res.json();
+    let textOut = jsonRes.candidates[0].content.parts[0].text;
+    
+    textOut = textOut.replace(/```json/g, '').replace(/```/g, '').trim();
+    const result = JSON.parse(textOut);
+    
+    if (result.name) document.getElementById('f-name').value = result.name;
+    if (result.price) document.getElementById('f-price').value = result.price;
+    if (result.desc) document.getElementById('f-desc').value = result.desc;
+    if (result.specs) document.getElementById('f-specs').value = result.specs;
+    if (result.category) document.getElementById('f-category').value = result.category;
+    if (result.tags) document.getElementById('f-tags').value = result.tags;
+    if (result.material) document.getElementById('f-material').value = result.material;
+    if (result.scale) document.getElementById('f-scale').value = result.scale;
+    
+    alert("✨ AI đã phân tích và tự động điền xong!");
+    
+  } catch(e) {
+    alert("Lỗi AI: " + e.message);
+    if (e.message.includes('API Key') || e.message.includes('400') || e.message.includes('403')) {
+      localStorage.removeItem('gemini_api_key');
+    }
+  } finally {
+    btn.innerHTML = `<i data-lucide="sparkles"></i> AI Tự Động Điền`;
+    btn.disabled = false;
+    lucide.createIcons();
+  }
+}
+</script>
+</body>
+</html>

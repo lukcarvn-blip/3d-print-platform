@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exclusive Drops | Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .snkrs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 0 auto; }
+  @media (max-width: 1024px) { .snkrs-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 768px) { .snkrs-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+  
+  .market-drop-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; position: relative; cursor: pointer; transition: box-shadow 0.3s, border-color 0.3s; aspect-ratio: 3/4; text-decoration: none; display: block; }
+  .market-drop-card:hover { border-color: rgba(0,255,136,0.3); }
+  .market-drop-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .market-drop-card:hover .market-drop-img { /* Removed transform to fix jitter */ }
+  .market-drop-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,20,0.95) 0%, rgba(10,10,20,0.4) 40%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; pointer-events: none; }
+  .market-drop-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; line-height: 1.2; margin-bottom: 4px; color: white; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .market-drop-price { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent-green); }
+  @media (max-width: 768px) {
+    .market-drop-overlay { padding: 12px; }
+    .market-drop-name { font-size: 16px; }
+    .market-drop-price { font-size: 16px; }
+  }
+  
+  .page-btn { min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 600; font-size: 14px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+  .page-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+  .page-btn.active { background: var(--accent-green); color: black; border-color: var(--accent-green); }
+  .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar injected by app.js -->
+  <main class="main-content">
+    <header class="top-header border-b">
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" placeholder="Tìm mô hình, xưởng in, thiết kế viên...">
+      </div>
+      <div class="header-actions"></div>
+    </header>
+
+    <div class="p-24" style="max-width: 1400px; margin: 0 auto;">
+      
+      <!-- Advanced Filters -->
+      <div class="filter-bar" style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px; align-items:center; background:var(--bg-card); padding:16px; border-radius:var(--radius-lg); border:1px solid var(--border);">
+        <div style="flex:1; min-width:200px; display:flex; align-items:center; background:var(--bg-surface); border:1px solid var(--border); border-radius:8px; padding:0 12px; height: 44px;">
+          <i data-lucide="search" style="color:var(--text-muted); width:18px;"></i>
+          <input type="text" id="filter-search" placeholder="Tra cứu tên sản phẩm, bộ sưu tập..." style="flex:1; background:transparent; border:none; outline:none; color:white; font-size:14px; padding:10px;" oninput="applyFilters()">
+        </div>
+        <select id="filter-category" style="background:var(--bg-surface); border:1px solid var(--border); color:white; padding:0 16px; border-radius:8px; font-size:14px; min-width:140px; outline:none; height: 44px; cursor:pointer;" onchange="applyFilters()">
+          <option value="">Tất cả Thể Loại</option>
+        </select>
+        <select id="filter-price" style="background:var(--bg-surface); border:1px solid var(--border); color:white; padding:0 16px; border-radius:8px; font-size:14px; min-width:160px; outline:none; height: 44px; cursor:pointer;" onchange="applyFilters()">
+          <option value="">Sắp xếp Theo Giá</option>
+          <option value="asc">Giá: Thấp đến Cao</option>
+          <option value="desc">Giá: Cao xuống Thấp</option>
+        </select>
+      </div>
+
+      <div class="snkrs-grid" id="market-grid"></div>
+      
+      <!-- Pagination -->
+      <div id="pagination" style="display:flex; justify-content:center; gap:8px; margin-top:32px; flex-wrap:wrap;"></div>
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/auth.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+DB.init();
+BDB.init();
+
+let currentPage = 1;
+const itemsPerPage = 8;
+let allDrops = [];
+let filteredDrops = [];
+
+function initMarket(drops) {
+  if (JSON.stringify(allDrops) === JSON.stringify(drops) && allDrops.length > 0) return;
+  allDrops = drops || [];
+  filteredDrops = [...allDrops];
+  populateFilters();
+  applyFilters();
+}
+
+if (typeof BDB !== 'undefined') {
+  BDB.listenDrops(initMarket);
+} else {
+  initMarket(DB.getDrops());
+}
+
+function populateFilters() {
+  const cats = [...new Set(allDrops.map(d => d.category).filter(Boolean))];
+  const select = document.getElementById('filter-category');
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">Tất cả Thể Loại</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  select.value = currentVal;
+}
+
+function applyFilters() {
+  const term = document.getElementById('filter-search').value.toLowerCase();
+  const cat = document.getElementById('filter-category').value;
+  const priceSort = document.getElementById('filter-price').value;
+  
+  filteredDrops = allDrops.filter(d => {
+    const matchTerm = d.name.toLowerCase().includes(term) || (d.category && d.category.toLowerCase().includes(term));
+    const matchCat = cat === '' || d.category === cat;
+    return matchTerm && matchCat;
+  });
+  
+  if (priceSort === 'asc') {
+    filteredDrops.sort((a,b) => getLowestPrice(a) - getLowestPrice(b));
+  } else if (priceSort === 'desc') {
+    filteredDrops.sort((a,b) => getLowestPrice(b) - getLowestPrice(a));
+  }
+  
+  currentPage = 1;
+  renderMarketGrid();
+}
+
+function getLowestPrice(drop) {
+  if (drop.asks && drop.asks.length > 0) return Math.min(...drop.asks.map(a => a.price));
+  return drop.retailPrice;
+}
+
+function renderMarketGrid() {
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const pageItems = filteredDrops.slice(start, end);
+  
+  document.getElementById('market-grid').innerHTML = pageItems.map((d, i) => {
+    const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
+    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
+    
+    return `
+    <a href="/drops/detail.html?id=${d.id}" data-link class="market-drop-card skeleton-bg">
+      <img src="${DB.escapeHTML(d.image)}" class="market-drop-img lazy-img" alt="${DB.escapeHTML(d.name)}" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.src='/shared/no-image.jpg'; this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');">
+      <div class="market-drop-overlay">
+        <div class="market-drop-name">${DB.escapeHTML(d.name)}</div>
+        <div class="text-sm text-muted mb-4"><i data-lucide="tag" style="width:14px;display:inline-block;vertical-align:-2px;"></i> ${d.asks ? d.asks.length : 0} Asks</div>
+        <div class="market-drop-price">Từ: ${DB.escapeHTML(priceDisplay)}</div>
+      </div>
+    </a>
+  `}).join('');
+  
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+  renderPagination();
+}
+
+function renderPagination() {
+  const totalPages = Math.ceil(filteredDrops.length / itemsPerPage);
+  const container = document.getElementById('pagination');
+  
+  if (totalPages <= 1) {
+    container.innerHTML = '';
+    return;
+  }
+  
+  let html = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})"><i data-lucide="chevron-left" style="width:16px;"></i></button>`;
+  
+  // Show up to 10 pages
+  const maxPages = 10;
+  let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+  let endPage = startPage + maxPages - 1;
+  
+  if (endPage > totalPages) {
+    endPage = totalPages;
+    startPage = Math.max(1, endPage - maxPages + 1);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  
+  html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})"><i data-lucide="chevron-right" style="width:16px;"></i></button>`;
+  
+  container.innerHTML = html;
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function goToPage(page) {
+  const totalPages = Math.ceil(filteredDrops.length / itemsPerPage);
+  if (page >= 1 && page <= totalPages) {
+    currentPage = page;
+    renderMarketGrid();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+initMarket();
+
+
+</script>
+</body>
+</html>

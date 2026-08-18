@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details | Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+/* ══════════════════════════════
+   LAYOUT
+══════════════════════════════ */
+.detail-wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+  display: grid;
+  grid-template-columns: 480px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (max-width: 1100px) { .detail-wrap { grid-template-columns: 420px 1fr; gap: 28px; } }
+@media (max-width: 900px)  { .detail-wrap { grid-template-columns: 1fr; padding: 0; gap: 0; } }
+
+/* ══════════════════════════════
+   LEFT COLUMN (sticky)
+══════════════════════════════ */
+.left-col {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (max-width: 900px) { .left-col { position: static; gap: 0; } }
+
+/* Image Frame — 1:1 */
+.img-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.09);
+}
+@media (max-width: 900px) { .img-frame { border-radius: 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); } }
+
+.img-frame img#d-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Flash badge */
+.flash-badge {
+  position: absolute; top: 14px; left: 14px; z-index: 3;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white; font-weight: 800; font-size: 12px;
+  padding: 5px 10px; border-radius: 7px;
+  display: none; align-items: center; gap: 5px;
+  box-shadow: 0 4px 14px rgba(239,68,68,0.45);
+}
+
+/* Expand button */
+.btn-expand {
+  position: absolute; top: 14px; right: 14px; z-index: 3;
+  width: 34px; height: 34px;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: white; transition: 0.2s;
+}
+.btn-expand:hover { background: rgba(255,255,255,0.12); }
+
+/* Gallery nav */
+.gallery-nav {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  padding: 10px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+.gallery-nav button {
+  width: 30px; height: 30px; border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.5); color: white;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: 0.2s;
+}
+.gallery-nav button:hover { background: rgba(255,255,255,0.15); }
+.gallery-counter { font-size: 13px; font-weight: 700; color: white; min-width: 52px; text-align: center; }
+
+/* Video Frame */
+.video-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,0.09);
+  display: none;
+}
+.video-frame iframe { width: 100%; height: 100%; border: none; }
+@media (max-width: 900px) { .video-frame { border-radius: 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 0; } }
+
+/* Buy action (sticky on left) */
+.action-zone {
+  background: rgba(0,255,136,0.05);
+  border: 1px solid rgba(0,255,136,0.25);
+  border-radius: 14px; padding: 16px;
+  margin-top: 4px;
+}
+@media (max-width: 900px) {
+  .action-zone {
+    border-radius: 0;
+    border-left: none; border-right: none;
+    margin-top: 0; margin-bottom: 12px;
+  }
+}
+.btn-buy {
+  background: var(--accent-green); color: black;
+  font-weight: 800; font-family: 'Space Grotesk'; font-size: 17px;
+  padding: 16px; width: 100%; border-radius: 10px; border: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: 0.2s;
+}
+.btn-buy:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ══════════════════════════════
+   RIGHT COLUMN (scrollable info)
+══════════════════════════════ */
+.right-col { padding: 4px 0 60px; }
+@media (max-width: 900px) { .right-col { padding: 16px 16px 60px; } }
+
+.breadcrumb { display: flex; gap: 6px; color: var(--text-muted); font-size: 12px; margin-bottom: 18px; align-items: center; }
+.breadcrumb .sep { opacity: 0.4; }
+.breadcrumb .current { color: rgba(255,255,255,0.65); }
+
+.p-title { font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 800; line-height: 1.15; margin-bottom: 14px; }
+@media (max-width: 600px) { .p-title { font-size: 26px; } }
+
+.p-stats { display: flex; gap: 18px; font-size: 13px; color: var(--text-muted); margin-bottom: 18px; flex-wrap: wrap; }
+.p-stats-item { display: flex; align-items: center; gap: 5px; }
+
+.price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.price-main { font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 800; color: var(--accent-green); letter-spacing: -1px; }
+.price-original { font-size: 19px; color: var(--text-muted); text-decoration: line-through; display: none; }
+
+/* ── OPTION PANELS side by side ── */
+.options-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+@media (max-width: 500px) { .options-row { grid-template-columns: 1fr; } }
+
+.opt-panel { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.09); border-radius: 14px; padding: 18px; }
+.opt-panel-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 14px; }
+
+/* Material cards */
+.mat-opts { display: flex; flex-direction: column; gap: 9px; }
+.mat-card {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 12px; border-radius: 9px;
+  border: 2px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+  cursor: pointer; transition: 0.2s;
+}
+.mat-card.active { border-color: var(--accent-green); background: rgba(0,255,136,0.06); }
+.mat-card:hover:not(.active) { border-color: rgba(255,255,255,0.18); }
+.mat-icon { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.mat-icon svg { width: 26px; height: 26px; }
+.mat-card.active .mat-icon svg { filter: drop-shadow(0 0 5px rgba(0,255,136,0.6)); }
+.mat-name { font-weight: 700; font-size: 13px; color: white; }
+.mat-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.mat-desc-box { margin-top: 10px; background: rgba(0,0,0,0.35); border-radius: 8px; padding: 10px; font-size: 12px; color: var(--text-muted); line-height: 1.65; }
+.mat-desc-box strong { color: rgba(255,255,255,0.72); }
+
+/* Size panel */
+.size-inner { display: flex; gap: 10px; align-items: stretch; }
+.size-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.size-btn {
+  padding: 9px 12px; border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+  color: white; font-weight: 700; font-size: 14px;
+  cursor: pointer; transition: 0.2s; text-align: center; width: 100%;
+}
+.size-btn.active { border-color: var(--accent-green); background: var(--accent-green); color: black; }
+.size-btn:hover:not(.active) { border-color: rgba(255,255,255,0.2); }
+
+/* Size ruler visual — matching reference */
+.size-visual {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: space-between;
+  border-left: 1px solid rgba(255,255,255,0.07);
+  padding-left: 12px;
+  min-width: 70px;
+}
+.ruler-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 10px 0;
+}
+.ruler-line {
+  width: 2px; height: 100%;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  position: relative;
+}
+.ruler-tick {
+  position: absolute;
+  right: 0px; top: 40%; /* adjusted to roughly match human scale height visually */
+  display: flex; align-items: center; gap: 4px;
+}
+.ruler-tick::before {
+  content: '';
+  display: block; width: 10px; height: 2px;
+  background: var(--accent-green);
+}
+.size-cm-label {
+  font-size: 11px; font-weight: 800;
+  color: var(--accent-green); white-space: nowrap;
+  letter-spacing: 0.5px;
+  margin-left: 12px; /* to push it away from tick */
+}
+.size-figure {
+  font-size: 24px; opacity: 0.8;
+  line-height: 1;
+}
+
+/* Accordion */
+.accordion {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 18px 0; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  font-weight: 700; font-size: 14px; user-select: none;
+  transition: color 0.2s;
+}
+.accordion:hover { color: rgba(255,255,255,0.8); }
+.accordion svg { flex-shrink: 0; transition: transform 0.2s; }
+.accordion.open svg { transform: rotate(180deg); }
+.accordion-content { display: none; padding-bottom: 18px; color: var(--text-muted); font-size: 14px; line-height: 1.7; }
+
+/* Timeline */
+.timeline { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 18px; margin-bottom: 8px; }
+.progress-track { height: 3px; background: rgba(255,255,255,0.08); border-radius: 4px; margin: 14px 0; position: relative; }
+.progress-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent-green); width: 50%; border-radius: 4px; }
+.timeline-steps { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); text-align: center; font-weight: 600; }
+
+/* Color picker */
+.color-palette { display: flex; gap: 10px; flex-wrap: wrap; }
+.color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+.color-swatch.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+.custom-color-picker { width: 30px; height: 30px; padding: 0; border: none; border-radius: 50%; cursor: pointer; overflow: hidden; background: transparent; }
+.custom-color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+.custom-color-picker::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+/* Bottom Sections */
+.bottom-section { max-width: 1280px; width: 100%; margin: 0 auto; padding: 40px 24px 80px; display: flex; flex-direction: column; gap: 48px; }
+.half-grid { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 16px; }
+.half-grid::-webkit-scrollbar { height: 5px; }
+.half-grid::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 99px; }
+.half-grid > * { flex: 0 0 calc(25% - 12px); scroll-snap-align: start; min-width: 0; }
+@media (max-width: 600px) { .bottom-section { padding: 24px 16px 80px; } .half-grid > * { flex: 0 0 calc(50% - 8px); } }
+
+/* Checkout Modal */
+.checkout-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+.checkout-modal.open { display: flex; }
+.checkout-card { background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; border: 1px solid var(--accent-green); overflow: hidden; box-shadow: 0 20px 50px rgba(0,255,136,0.1); }
+.checkout-header { padding: 24px; text-align: center; border-bottom: 1px dashed var(--border); }
+.checkout-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.checkout-img-wrap { width: 100%; height: 180px; border-radius: 8px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
+.checkout-img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.checkout-row { display: flex; justify-content: space-between; }
+.checkout-label { color: var(--text-muted); }
+.checkout-val { font-weight: 700; color: white; text-align: right; }
+.checkout-footer { padding: 24px; background: rgba(0,255,136,0.05); }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- Sidebar injected by app.js -->
+  <main class="main-content">
+    <header class="top-header justify-between border-b" style="height:70px;">
+      <a href="/drops/" class="back-btn" data-link style="display:flex;align-items:center;gap:8px;color:var(--text-muted);text-decoration:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Quay lại
+      </a>
+      <div class="header-actions"></div>
+    </header>
+
+    <div class="detail-wrap">
+
+      <!-- ════ LEFT COL ════ -->
+      <div class="left-col">
+
+        <!-- Image Frame (1:1) -->
+        <div class="img-frame skeleton-bg" id="img-frame-container">
+          <!-- Ambient Blur / Solid Background -->
+          <div id="img-ambient-bg" style="position:absolute; inset:-10%; width:120%; height:120%; background-size:cover; background-position:center; filter:blur(40px); opacity:0; transition: opacity 0.4s; z-index:1;"></div>
+          <!-- Flash badge -->
+          <div class="flash-badge" id="flash-badge" style="z-index:3;">⚡ FLASH SALE <span id="flash-discount" style="margin-left:4px;"></span></div>
+          <!-- Expand -->
+          <button class="btn-expand" onclick="openFullscreen()" title="Xem toàn màn hình" style="z-index:3;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+          <!-- Main image -->
+          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="d-img" alt="" onload="adaptImageBackground()" class="lazy-img" style="position:relative; z-index:2; width:100%; height:100%; object-fit:contain; display:block;">
+          <!-- Gallery nav -->
+          <div class="gallery-nav" id="gallery-nav" style="z-index:3; position:absolute;">
+            <button onclick="galleryPrev()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="gallery-counter" id="gallery-counter">01 / 01</span>
+            <button onclick="galleryNext()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Video Frame -->
+        <div class="video-frame" id="video-frame">
+          <iframe id="d-video" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+        </div>
+
+        <!-- BUY ACTION (sticky on left) -->
+        <div class="action-zone" id="action-zone">
+          <button class="btn-buy" id="btn-buy" onclick="checkout()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span id="btn-text">MUA NGAY</span>
+          </button>
+          <div id="action-desc" style="font-size:12px;color:var(--text-muted);margin-top:10px;text-align:center;">Sản phẩm có sẵn. Giao ngay trong 2H.</div>
+        </div>
+
+      </div><!-- /left-col -->
+
+      <!-- ════ RIGHT COL ════ -->
+      <div class="right-col">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+          Trang chủ <span class="sep">›</span> Drops <span class="sep">›</span> <span id="d-cat"></span><span class="current" id="d-bread"></span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="p-title" id="d-name"></h1>
+
+        <!-- Stats -->
+        <div class="p-stats">
+          <span class="p-stats-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span id="d-likes">0</span>
+          </span>
+          <span class="p-stats-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span id="d-views">0</span> lượt xem
+          </span>
+          <span class="p-stats-item">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <span id="d-ask-count">0</span> sẵn hàng
+          </span>
+        </div>
+
+        <!-- Price -->
+        <div class="price-row">
+          <div class="price-main" id="d-price"></div>
+          <div class="price-original" id="d-price-original"></div>
+        </div>
+
+        <!-- Options Row -->
+        <div class="options-row">
+
+          <!-- Chất Liệu -->
+          <div class="opt-panel">
+            <div class="opt-panel-title">Chất Liệu</div>
+            <div class="mat-opts">
+              <div class="mat-card active" onclick="selectMat(this,'PLA',1,'PLA (Polylactic Acid): Nhựa phân hủy sinh học thân thiện môi trường, nguồn gốc từ tinh bột ngô. Cho độ nét in cực cao, màu sắc đẹp, phù hợp trưng bày trong nhà. Giá thành rẻ hơn.')">
+                <div class="mat-icon">
+                  <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="9" rx="11" ry="4" stroke="#00ff88" stroke-width="2"/><rect x="9" y="9" width="22" height="16" rx="2" stroke="#00ff88" stroke-width="2"/><ellipse cx="20" cy="25" rx="11" ry="4" stroke="#00ff88" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="29" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
+                </div>
+                <div><div class="mat-name">PLA</div><div class="mat-sub">Mặc định</div></div>
+              </div>
+              <div class="mat-card" onclick="selectMat(this,'PETG',1.2,'PETG (Polyethylene Terephthalate Glycol): Bền hơn PLA, chịu nhiệt và va đập tốt. Phù hợp cho các mô hình cần độ bền cao hoặc để ngoài trời.')">
+                <div class="mat-icon">
+                  <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="9" rx="11" ry="4" stroke="#9ca3af" stroke-width="2"/><rect x="9" y="9" width="22" height="16" rx="2" stroke="#9ca3af" stroke-width="2"/><ellipse cx="20" cy="25" rx="11" ry="4" stroke="#9ca3af" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="29" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
+                </div>
+                <div><div class="mat-name">PETG</div><div class="mat-sub">+20% Giá</div></div>
+              </div>
+              <div class="mat-card" onclick="selectMat(this,'Resin 8K',1.5,'Resin 8K: Công nghệ in quang học độ phân giải cực cao 8K. Chi tiết sắc nét đến từng sợi tóc. Phù hợp cho mô hình trưng bày cao cấp.')">
+                <div class="mat-icon">
+                  <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="9" rx="11" ry="4" stroke="#a78bfa" stroke-width="2"/><rect x="9" y="9" width="22" height="16" rx="2" stroke="#a78bfa" stroke-width="2"/><ellipse cx="20" cy="25" rx="11" ry="4" stroke="#a78bfa" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="29" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
+                </div>
+                <div><div class="mat-name">Resin 8K</div><div class="mat-sub">+50% Giá</div></div>
+              </div>
+            </div>
+            <div class="mat-desc-box" id="mat-desc">
+              <strong>PLA (Polylactic Acid):</strong> Nhựa phân hủy sinh học thân thiện môi trường, nguồn gốc từ tinh bột ngô. Cho độ nét in cực cao, màu sắc đẹp, phù hợp trưng bày trong nhà. Giá thành rẻ hơn.
+            </div>
+          </div>
+
+          <!-- Kích Thước -->
+          <div class="opt-panel">
+            <div class="opt-panel-title">Kích Thước</div>
+            <div class="size-inner">
+              <div class="size-list">
+                <button class="size-btn active" onclick="selectSize(this,'300%',1)">300%</button>
+                <button class="size-btn" onclick="selectSize(this,'400%',1.3)">400%</button>
+                <button class="size-btn" onclick="selectSize(this,'1000%',2.5)">1000%</button>
+              </div>
+              <div class="size-visual">
+                <div class="ruler-container">
+                  <div class="ruler-line">
+                    <div class="ruler-tick">
+                      <span class="size-cm-label" id="size-cm">~ 21 CM</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="size-figure">🧍</div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /options-row -->
+
+        <!-- 3D Color picker (hidden unless model3d) -->
+        <div id="color-picker-section" style="display:none;margin-bottom:18px;">
+          <div style="font-size:13px;font-weight:700;color:white;margin-bottom:10px;">Màu Sơn 3D</div>
+          <div class="color-palette" id="color-palette">
+            <div class="color-swatch active" style="background:#ffffff;" onclick="changeModelColor(this,'#ffffff')"></div>
+            <div class="color-swatch" style="background:#ff3333;" onclick="changeModelColor(this,'#ff3333')"></div>
+            <div class="color-swatch" style="background:#33cc33;" onclick="changeModelColor(this,'#33cc33')"></div>
+            <div class="color-swatch" style="background:#3366ff;" onclick="changeModelColor(this,'#3366ff')"></div>
+            <div class="color-swatch" style="background:#ffcc00;" onclick="changeModelColor(this,'#ffcc00')"></div>
+            <div class="color-swatch" style="background:#a855f7;" onclick="changeModelColor(this,'#a855f7')"></div>
+            <input type="color" class="custom-color-picker" id="custom-color" value="#ffffff" onchange="changeModelColor(null,this.value)" title="Màu tùy chỉnh">
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+          <div style="font-size:12px;text-transform:uppercase;font-weight:700;color:white;display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Quy Trình Chế Tác Dự Kiến
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);">Tổng thời gian khoảng 2-4 ngày</div>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+          <div class="timeline-steps">
+            <div>📦 Đặt Hàng</div>
+            <div>🔨 Chế Tác<br><span style="font-size:9px;">(2-4 ngày)</span></div>
+            <div>🚚 Giao Hàng</div>
+          </div>
+        </div>
+
+        <!-- Accordions -->
+        <div class="accordion" onclick="toggleAcc(this)">
+          Mô Tả Sản Phẩm <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content" style="display:block;" id="d-desc"></div>
+
+        <div class="accordion" onclick="toggleAcc(this)">
+          Thông Số Kỹ Thuật <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content" id="d-specs"></div>
+
+        <div class="accordion" onclick="toggleAcc(this)">
+          Danh Sách Xưởng Nhận In <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="accordion-content" id="d-asks"></div>
+
+      </div><!-- /right-col -->
+    </div><!-- /detail-wrap -->
+
+    <!-- Bottom Sections -->
+    <div class="bottom-section">
+      <div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:10px;">Sản Phẩm Liên Quan</h2>
+        <div id="d-related-list" class="half-grid"></div>
+      </div>
+      <div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:10px;">📈 Bán Chạy Nhất</h2>
+        <div id="d-bestseller-list" class="half-grid"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Checkout Modal -->
+<div class="checkout-modal" id="checkout-modal">
+  <div class="checkout-card">
+    <div class="checkout-header">
+      <h2 style="margin:0;font-family:'Space Grotesk',sans-serif;font-size:22px;">Bảng Yêu Cầu Đơn Hàng</h2>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Kiểm tra kỹ trước khi chốt đơn</div>
+    </div>
+    <div class="checkout-body">
+      <div class="checkout-img-wrap"><img src="" id="co-img" class="checkout-img"></div>
+      <div class="checkout-row"><span class="checkout-label">Sản phẩm:</span><span class="checkout-val" id="co-name"></span></div>
+      <div class="checkout-row"><span class="checkout-label">Chất liệu:</span><span class="checkout-val" id="co-mat"></span></div>
+      <div class="checkout-row"><span class="checkout-label">Kích thước:</span><span class="checkout-val" id="co-size"></span></div>
+      <div class="checkout-row" style="margin-top:8px;font-size:18px;border-top:1px dashed var(--border);padding-top:14px;">
+        <span class="checkout-label" style="color:white;font-weight:700;">TỔNG THANH TOÁN:</span>
+        <span class="checkout-val" id="co-total" style="color:var(--accent-green);font-size:22px;"></span>
+      </div>
+    </div>
+    <div class="checkout-footer">
+      <button class="btn btn-primary" style="width:100%;padding:14px;font-size:16px;font-weight:800;border-radius:8px;" onclick="confirmCheckout()">Xác nhận & Chốt đơn</button>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="btn btn-ghost" onclick="closeCheckoutModal()">Quay lại sửa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/auth.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════
+//  GLOBAL STATE
+// ══════════════════════════════════════════════════════════
+DB.init();
+BDB.init();
+
+let drop = null, basePrice = 0, currentLowestAsk = null, calculatedPrice = 0;
+let currentMatMult = 1, currentSizeMult = 1;
+let currentMatName = 'PLA', currentSizeName = '300%', currentColorHex = '#ffffff';
+let isCustom = false;
+let galleryImages = [], galleryIndex = 0;
+
+const SIZE_CM_MAP = { '300%': 21, '400%': 28, '1000%': 70 };
+
+// Declare functions in global scope so onclick can access them
+window.adaptImageBackground = function() {
+  const img = document.getElementById('d-img');
+  const container = document.getElementById('img-frame-container');
+  const ambient = document.getElementById('img-ambient-bg');
+  
+  if (!img || !img.src || img.src.includes('no-image.jpg') || img.src.startsWith('data:image/gif')) {
+    if (img.src.includes('no-image.jpg')) {
+      container.style.background = '#0d1117';
+      ambient.style.opacity = '0';
+      img.classList.add('loaded');
+      container.classList.remove('skeleton-bg');
+    }
+    return;
+  }
+
+  // Remove skeleton state
+  img.classList.add('loaded');
+  container.classList.remove('skeleton-bg');
+
+  // 1. Try canvas to pick up solid background color from top-left pixel
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth || img.width || 100;
+    canvas.height = img.naturalHeight || img.height || 100;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const p = ctx.getImageData(2, 2, 1, 1).data;
+    
+    // Check if not completely transparent
+    if (p[3] > 10) {
+      container.style.background = `rgb(${p[0]}, ${p[1]}, ${p[2]})`;
+      ambient.style.opacity = '0';
+      return; // Stop here if canvas success
+    }
+  } catch (e) {
+    console.log('Canvas CORS blocked or empty. Falling back to ambient blur.');
+  }
+
+  // 2. Fallback: ambient blurred image
+  container.style.background = '#0d1117';
+  ambient.style.backgroundImage = `url(${img.src})`;
+  ambient.style.opacity = '0.85';
+};
+
+window.selectMat = function(el, name, mult, desc) {
+  currentMatMult = mult;
+  currentMatName = name;
+  document.querySelectorAll('.mat-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mat-desc').innerHTML = desc.replace(/^([^:]+):/, '<strong>$1:</strong>');
+  updatePrice();
+};
+
+window.selectSize = function(el, name, mult) {
+  currentSizeMult = mult;
+  currentSizeName = name;
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const cm = SIZE_CM_MAP[name] || Math.round(21 * mult);
+  document.getElementById('size-cm').textContent = `~ ${cm} CM`;
+  updatePrice();
+};
+
+window.changeModelColor = function(el, colorHex) {
+  currentColorHex = colorHex;
+  if (el) {
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    const cc = document.getElementById('custom-color');
+    if (cc) cc.value = colorHex;
+  }
+  updatePrice(true);
+  const mv = document.querySelector('model-viewer');
+  if (mv) {
+    const apply = () => { try { mv.model.materials[0].pbrMetallicRoughness.setBaseColorFactor(colorHex); } catch(e){} };
+    if (mv.model) apply(); else mv.addEventListener('load', apply, {once:true});
+  }
+};
+
+window.galleryPrev = function() { setGalleryImage(galleryIndex - 1); };
+window.galleryNext = function() { setGalleryImage(galleryIndex + 1); };
+
+window.openFullscreen = function() {
+  const src = galleryImages[galleryIndex];
+  if (!src) return;
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.96);z-index:99999;display:flex;align-items:center;justify-content:center;cursor:zoom-out;';
+  ov.innerHTML = `<img src="${src}" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:8px;">`;
+  ov.onclick = () => ov.remove();
+  document.body.appendChild(ov);
+};
+
+window.toggleAcc = function(el) {
+  const content = el.nextElementSibling;
+  const isOpen = content.style.display === 'block';
+  content.style.display = isOpen ? 'none' : 'block';
+  el.classList.toggle('open', !isOpen);
+};
+
+window.checkout = async function() {
+  const user = Auth.getCurrentUser();
+  if (!user) {
+    alert('Vui lòng đăng nhập để giao dịch!');
+    window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+    return;
+  }
+  document.getElementById('co-img').src = document.getElementById('d-img').src;
+  document.getElementById('co-name').textContent = drop.name;
+  document.getElementById('co-mat').textContent = currentMatName;
+  document.getElementById('co-size').textContent = currentSizeName;
+  document.getElementById('co-total').textContent = DB.formatUSD(calculatedPrice);
+  document.getElementById('checkout-modal').classList.add('open');
+};
+
+window.closeCheckoutModal = function() {
+  document.getElementById('checkout-modal').classList.remove('open');
+};
+
+window.confirmCheckout = function() {
+  if (isCustom) {
+    DB.addBid({
+      id: DB.genId('bid'), dropId: drop.id,
+      dropName: `${drop.name} (${currentMatName}, ${currentSizeName}, ${currentColorHex})`,
+      dropImage: drop.image, budget: calculatedPrice,
+      status: 'pending', createdAt: new Date().toISOString()
+    });
+    alert(`Đã chốt đơn gia công với giá ${DB.formatUSD(calculatedPrice)}!`);
+  } else {
+    alert(`Chốt đơn thành công với giá ${DB.formatUSD(calculatedPrice)}!`);
+    if (drop.asks && drop.asks.length > 0) {
+      drop.asks.shift();
+      DB.updateDropAsks(drop.id, drop.asks);
+    }
+  }
+  window.location.href = '/drops/';
+};
+
+window.startChat = function(makerId) {
+  if (typeof window.startGlobalChat === 'function') {
+    window.startGlobalChat(makerId, drop.id, drop.name);
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+//  PRICE UPDATE
+// ══════════════════════════════════════════════════════════
+function updatePrice(forceCustom = false) {
+  isCustom = forceCustom || (currentMatMult !== 1 || currentSizeMult !== 1 || currentColorHex !== '#ffffff');
+
+  const priceEl = document.getElementById('d-price');
+  const origEl  = document.getElementById('d-price-original');
+  const az       = document.getElementById('action-zone');
+  const btnBuy   = document.getElementById('btn-buy');
+  const btnText  = document.getElementById('btn-text');
+  const desc     = document.getElementById('action-desc');
+
+  if (isCustom) {
+    calculatedPrice = basePrice * currentMatMult * currentSizeMult;
+    priceEl.textContent = DB.formatUSD(calculatedPrice);
+    priceEl.style.color = 'var(--accent-purple)';
+    origEl.style.display = 'none';
+    az.style.background = 'rgba(124,58,237,0.06)';
+    az.style.borderColor = 'rgba(124,58,237,0.3)';
+    btnBuy.style.background = 'var(--accent-purple)';
+    btnBuy.style.color = 'white';
+    btnText.textContent = 'ĐẶT GIA CÔNG (BID) - ' + DB.formatUSD(calculatedPrice);
+    desc.textContent = 'Custom: Yêu cầu gửi sàn ẩn danh. Xưởng nhận đơn & chế tác 2-4 ngày.';
+  } else {
+    calculatedPrice = currentLowestAsk || basePrice;
+    priceEl.textContent = DB.formatUSD(calculatedPrice);
+    priceEl.style.color = 'var(--accent-green)';
+    if (currentLowestAsk && currentLowestAsk < basePrice) {
+      origEl.textContent = DB.formatUSD(basePrice);
+      origEl.style.display = 'block';
+    } else {
+      origEl.style.display = 'none';
+    }
+    az.style.background = 'rgba(0,255,136,0.05)';
+    az.style.borderColor = 'rgba(0,255,136,0.25)';
+    btnBuy.style.background = 'var(--accent-green)';
+    btnBuy.style.color = 'black';
+    if (currentLowestAsk) {
+      btnText.textContent = 'MUA NGAY - ' + DB.formatUSD(calculatedPrice);
+      desc.textContent = 'Sản phẩm có sẵn tại kho (Verified). Giao ngay trong 2H.';
+    } else {
+      btnText.textContent = 'ĐẶT GIA CÔNG (BID) - ' + DB.formatUSD(calculatedPrice);
+      desc.textContent = 'Hết hàng có sẵn. Bấm Đặt Gia Công để xưởng in mới.';
+      isCustom = true;
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  GALLERY HELPERS
+// ══════════════════════════════════════════════════════════
+function buildGallery() {
+  const all = [];
+  if (drop.image && drop.image.trim()) all.push(drop.image.trim());
+  (drop.gallery || []).forEach(src => { if (src && src.trim() && src.trim() !== drop.image) all.push(src.trim()); });
+  galleryImages = all;
+  galleryIndex = 0;
+  
+  if (galleryImages.length <= 1) {
+    document.getElementById('gallery-nav').style.display = 'none';
+  } else {
+    document.getElementById('gallery-nav').style.display = 'flex';
+  }
+  
+  setGalleryImage(0);
+}
+
+function setGalleryImage(idx) {
+  galleryIndex = Math.max(0, Math.min(idx, Math.max(0, galleryImages.length - 1)));
+  const img = document.getElementById('d-img');
+  if (img) {
+    const newSrc = galleryImages[galleryIndex] || '/shared/no-image.jpg';
+    if (img.src !== newSrc) {
+      img.classList.remove('loaded');
+      const container = document.getElementById('img-frame-container');
+      if (container) container.classList.add('skeleton-bg');
+      img.src = newSrc;
+    }
+  }
+  const counter = document.getElementById('gallery-counter');
+  const total = Math.max(1, galleryImages.length);
+  if (counter) counter.textContent = `${String(galleryIndex + 1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
+}
+
+function extractYoutubeId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|watch\?v=|v\/))([^&?\/\s]{11})/);
+  return m ? m[1] : null;
+}
+
+// ══════════════════════════════════════════════════════════
+//  BOTTOM SECTIONS
+// ══════════════════════════════════════════════════════════
+async function renderBottomSections() {
+  let allDrops = [];
+  try { allDrops = await BDB.getDrops(); } catch(e) { allDrops = DB.getDrops(); }
+  allDrops = allDrops.filter(d => d.id !== drop.id);
+
+  const renderList = (list) => list.map(d => {
+    const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
+    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
+    const stock = (d.asks || []).length;
+    return `
+      <div class="drop-card">
+        <div class="drop-card-img-wrap" onclick="window.location.href='/drops/detail.html?id=${d.id}'" style="cursor:pointer;">
+          <img src="${(d.image&&d.image.trim())?DB.escapeHTML(d.image):'/shared/no-image.jpg'}" alt="${DB.escapeHTML(d.name)}" onerror="this.src='/shared/no-image.jpg'">
+          <div class="drop-card-img-overlay"><div class="gallery-hint">Xem</div></div>
+          <div class="drop-card-stock" style="color:${stock>0?'var(--accent-green)':'#ef4444'};border-color:${stock>0?'rgba(0,255,136,0.3)':'rgba(239,68,68,0.3)'};">${stock} Sẵn</div>
+        </div>
+        <div class="drop-card-body">
+          ${d.category ? `<div class="drop-card-cat">${DB.escapeHTML(d.category)}</div>` : ''}
+          <a href="/drops/detail.html?id=${d.id}" data-link class="drop-card-name">${DB.escapeHTML(d.name)}</a>
+          <div class="drop-card-footer">
+            <div class="drop-card-price">Từ ${priceDisplay}</div>
+            <a href="/drops/detail.html?id=${d.id}" data-link class="drop-card-buy">Mua</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('d-related-list').innerHTML = renderList(allDrops.slice(0,8)) || '<div style="opacity:.5">Chưa có sản phẩm.</div>';
+  document.getElementById('d-bestseller-list').innerHTML = renderList([...allDrops].reverse().slice(0,8)) || '<div style="opacity:.5">Chưa có sản phẩm.</div>';
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+async function initDetail() {
+  const id = new URLSearchParams(window.location.search).get('id');
+
+  // Load drop data
+  let drops = [];
+  try {
+    drops = await BDB.getDrops();
+  } catch(e) {
+    drops = DB.getDrops();
+  }
+  drop = drops.find(d => d.id === id);
+
+  if (!drop) { window.location.href = '/drops/'; return; }
+
+  // State
+  basePrice = Number(drop.retailPrice) || 0;
+  const askPrices = (drop.asks || []).map(a => Number(a.price)).filter(p => p > 0);
+  currentLowestAsk = askPrices.length > 0 ? Math.min(...askPrices) : null;
+  calculatedPrice = currentLowestAsk || basePrice;
+
+  // ── Populate UI ──
+  document.title = drop.name + ' | Legato';
+  document.getElementById('d-name').textContent = drop.name;
+  document.getElementById('d-bread').textContent = drop.name;
+  if (drop.category) document.getElementById('d-cat').textContent = drop.category + ' › ';
+  document.getElementById('d-ask-count').textContent = (drop.asks || []).length;
+  document.getElementById('d-desc').innerHTML  = drop.desc  ? drop.desc.replace(/\n/g,'<br>') : '<span style="opacity:.5">Chưa có mô tả.</span>';
+  document.getElementById('d-specs').innerHTML = drop.specs ? drop.specs.replace(/\n/g,'<br>') : '<span style="opacity:.5">Chưa có thông số.</span>';
+
+  // Flash sale badge
+  if (currentLowestAsk && currentLowestAsk < basePrice) {
+    const pct = Math.round((1 - currentLowestAsk / basePrice) * 100);
+    const badge = document.getElementById('flash-badge');
+    badge.style.display = 'flex';
+    document.getElementById('flash-discount').textContent = '-' + pct + '%';
+  }
+
+  // Model3D
+  if (drop.model3d) {
+    const wrap = document.getElementById('d-img').parentNode;
+    const mv = document.createElement('model-viewer');
+    mv.setAttribute('src', drop.model3d);
+    mv.setAttribute('camera-controls', '');
+    mv.setAttribute('auto-rotate', '');
+    mv.setAttribute('rotation-per-second', '30deg');
+    mv.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,0.08)0%,transparent 70%);';
+    document.getElementById('d-img').style.display = 'none';
+    document.getElementById('gallery-nav').style.display = 'none';
+    wrap.appendChild(mv);
+    document.getElementById('color-picker-section').style.display = 'block';
+  }
+
+  // Video
+  if (drop.video) {
+    const videoId = extractYoutubeId(drop.video);
+    if (videoId) {
+      document.getElementById('d-video').src = 'https://www.youtube.com/embed/' + videoId;
+      document.getElementById('video-frame').style.display = 'block';
+    }
+  }
+
+  // Asks
+  if (drop.asks && drop.asks.length > 0) {
+    document.getElementById('d-asks').innerHTML = drop.asks.map(a => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:11px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">
+        <div>
+          <div style="font-weight:700;color:white;">${a.seller || 'Xưởng Ẩn Danh'}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${a.type === 'new' ? 'In mới 100%' : 'Pass lại'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="color:var(--accent-green);font-weight:700;">${DB.formatUSD(a.price)}</div>
+          <button class="btn btn-ghost" onclick="startChat('${a.makerId||'admin'}')" style="padding:5px 10px;font-size:12px;">💬 Chat</button>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    document.getElementById('d-asks').innerHTML = '<div style="opacity:.6;font-size:13px;">Chưa có xưởng nào nhận in sẵn. Hãy Đặt Gia Công để xưởng nhận nhé.</div>';
+  }
+
+  // Gallery & Price
+  if (!drop.model3d) buildGallery();
+  updatePrice();
+  renderBottomSections();
+}
+
+// Start
+initDetail();
+</script>
+</body>
+</html>

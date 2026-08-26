@@ -1,0 +1,53 @@
+Vercel CLI 59.5.0 (Node.js 26.2.0)
+Deploying 3d-print-platform
+Uploading [--------------------] (0.0B/571.3KB)
+Uploading [=====---------------] (144.1KB/571.3KB)
+Uploading [==========----------] (288.1KB/571.3KB)
+Uploading [===============-----] (432.1KB/571.3KB)
+Uploading [====================] (571.3KB/571.3KB)
+  Inspect         https://vercel.com/lukcarvn-blips-projects/3d-print-platform/4dQcBHfgfnjEzN9AGZ9yY2cBXjKy
+  Production      https://3d-print-platform-mltegjr68-lukcarvn-blips-projects.vercel.app
+Building…
+Building…
+Running build in Washington, D.C., USA (East) – iad1
+Build machine configuration: 2 cores, 8 GB
+Retrieving list of deployment files...
+Downloading 42 deployment files...
+Restored build cache from previous deployment (DkpXFpuNAQ1FukcUohY12b9RqPbr)
+Running "vercel build"
+Vercel CLI 59.3.0
+Installing dependencies...
+up to date in 418ms
+Warning: Node.js functions are compiled from ESM to CommonJS. If this is not intended, add "type": "module" to your package.json file.
+Compiling "get-upload-url.js" from ESM to CommonJS...
+Build Completed in /vercel/output [2s]
+Deploying outputs...
+[2K[1A[2K[G  Production      https://3d-print-platform-mltegjr68-lukcarvn-blips-projects.vercel.app
+Completing…
+▲ Aliased         https://3d-print-platform-lukcarvn-blips-projects.vercel.app
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_4dQcBHfgfnjEzN9AGZ9yY2cBXjKy",
+    "url": "https://3d-print-platform-mltegjr68-lukcarvn-blips-projects.vercel.app",
+    "inspectorUrl": "https://vercel.com/lukcarvn-blips-projects/3d-print-platform/4dQcBHfgfnjEzN9AGZ9yY2cBXjKy",
+    "readyState": "READY",
+    "target": "production",
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_4dQcBHfgfnjEzN9AGZ9yY2cBXjKy"
+  },
+  "message": "Deployment 3d-print-platform-mltegjr68-lukcarvn-blips-projects.vercel.app ready.",
+  "next": [
+    {
+      "command": "vercel curl https://3d-print-platform-mltegjr68-lukcarvn-blips-projects.vercel.app",
+      "when": "Verify deployment, including when Deployment Protection is enabled"
+    },
+    {
+      "command": "vercel inspect 3d-print-platform-mltegjr68-lukcarvn-blips-projects.vercel.app",
+      "when": "Inspect deployment"
+    },
+    {
+      "command": "vercel deploy --prod",
+      "when": "Promote to production"
+    }
+  ]
+}

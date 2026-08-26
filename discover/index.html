@@ -185,7 +185,7 @@ function renderDiscover() {
 
   container.innerHTML = drops.map((d, i) => {
     const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
-    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
+    const priceDisplay = lowestAsk ? DB.formatVND(lowestAsk) : DB.formatVND(d.retailPrice);
     const likes = ((parseInt(d.id.replace(/\D/g,'')) || 1) * 347 % 4900) + 100;
     const galleryImgs = [d.image, ...(d.gallery || [])].filter(Boolean).filter((v,idx,a) => a.indexOf(v)===idx);
     const galleryData = JSON.stringify(galleryImgs).replace(/"/g,'&quot;');

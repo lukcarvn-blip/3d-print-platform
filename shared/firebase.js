@@ -36,6 +36,17 @@ const BDB = {
 
   // ── DROPS ──────────────────────────────────────────────
 
+  async getSettings() {
+    if (!this.db) return {};
+    try {
+      const doc = await this.db.collection('Legato_settings').doc('global').get();
+      return doc.exists ? doc.data() : {};
+    } catch(e) { return {}; }
+  },
+  async saveSettings(data) {
+    if (!this.db) return;
+    await this.db.collection('Legato_settings').doc('global').set(data, { merge: true });
+  },
   async getDrops() {
     if (!this.db) throw new Error("Database not initialized");
     const snap = await this.db.collection(this.COLLECTION).orderBy('createdAt', 'desc').get();

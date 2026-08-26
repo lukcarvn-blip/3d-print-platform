@@ -42,7 +42,7 @@ function renderProducts() {
         <div style="font-weight:bold; font-size:13px; margin-bottom:4px;"><i data-lucide="user" style="width:12px;display:inline-block;vertical-align:-2px;"></i> ${authorName}</div>
         <div class="text-xs text-muted"><i data-lucide="map-pin" style="width:12px;display:inline-block;vertical-align:-2px;"></i> ${location}</div>
       </td>
-      <td class="td-price" data-label="Giá Bán" style="color:var(--accent-green); font-weight:bold; font-size:16px;">${DB.formatUSD(d.retailPrice)}</td>
+      <td class="td-price" data-label="Giá Bán" style="color:var(--accent-green); font-weight:bold; font-size:16px;">${DB.formatVND(d.retailPrice)}</td>
       <td class="td-asks" data-label="Tồn Kho">${d.asks ? d.asks.length : 0} Asks</td>
       <td class="td-actions" style="text-align:right;">
         <a href="/admin/edit.html?id=${d.id}" data-link class="btn-action" title="Sửa"><i data-lucide="edit-2" style="width:16px;"></i> <span style="font-size:13px; margin-left:4px;" class="desktop-hide">Sửa</span></a>
@@ -184,7 +184,7 @@ function renderOrders() {
       <td class="td-id" data-label="Mã Đơn" style="font-family:monospace; color:var(--text-muted); font-size:13px;">${o.id}</td>
       <td class="td-info" style="font-weight:bold; font-size:15px;">${o.dropName}</td>
       <td class="td-customer" data-label="Khách Hàng">${o.buyerEmail}</td>
-      <td class="td-price" data-label="Tổng Tiền" style="color:var(--accent-purple); font-weight:bold;">${DB.formatUSD(o.price)}</td>
+      <td class="td-price" data-label="Tổng Tiền" style="color:var(--accent-purple); font-weight:bold;">${DB.formatVND(o.price)}</td>
       <td class="td-status" data-label="Trạng Thái">
         <span style="padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold; ${o.status==='shipping'?'background:rgba(0,255,136,0.1);color:var(--accent-green);':'background:rgba(255,255,255,0.1);'}">${o.status.toUpperCase()}</span>
       </td>

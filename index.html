@@ -51,7 +51,7 @@
     font-family: 'Space Grotesk', sans-serif;
     font-size: 20px;
     font-weight: 700;
-    color: white;
+    color: var(--text-primary);
     margin-bottom: 8px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -97,8 +97,8 @@
   .drop-card-img-wrap img.img-error { visibility: hidden; }
 
 
-  .slider-btn { background: var(--bg-card); border: 1px solid var(--border); color: white; padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-  .slider-btn:hover { background: rgba(255,255,255,0.1); }
+  .slider-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+  .slider-btn:hover { background: rgba(var(--shade-rgb),0.1); }
 
   /* News Grid */
   .news-grid {
@@ -116,12 +116,12 @@
     flex-direction: column;
     transition: border-color 0.2s;
   }
-  .news-card:hover { border-color: rgba(255,255,255,0.2); }
+  .news-card:hover { border-color: rgba(var(--shade-rgb),0.2); }
   .news-card-thumb { aspect-ratio: 16/9; overflow: hidden; flex-shrink: 0; }
   .news-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
   .news-card-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
   .news-card-date { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
-  .news-card-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+  .news-card-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
   .news-card-summary { font-size: 13px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; }
   
   @media (max-width: 1024px) {
@@ -175,7 +175,7 @@
         <a href="/drops/?cat=tech" data-link class="category-pill" style="display:flex; align-items:center; gap:8px; padding:10px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:99px; color:var(--text-primary); text-decoration:none; white-space:nowrap; transition:0.2s;"><i data-lucide="monitor" style="width:16px; color:#3b82f6;"></i> Phụ Kiện Tech</a>
       </div>
       <style>
-        .category-pill:hover { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.2) !important; }
+        .category-pill:hover { background: rgba(var(--shade-rgb),0.05) !important; border-color: rgba(var(--shade-rgb),0.2) !important; }
         .category-pills::-webkit-scrollbar { display: none; }
       </style>
       <!-- Exclusive Drops / New Arrivals -->
@@ -271,63 +271,51 @@
 DB.init();
 BDB.init();
 
+
+function generateFlashBannerHTML(dropsList) {
+  // Uses the same card layout as generateDropsHTML but maybe could be stylized differently in future.
+  return generateDropsHTML(dropsList);
+}
+
 function generateDropsHTML(dropsList) {
   return dropsList.map(d => {
+    const discount = d.discountPercent ? parseFloat(d.discountPercent) : 0;
+    const basePrice = Number(d.retailPrice) || 0;
     const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
-    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
-    const stockCount = d.asks ? d.asks.length : 0;
+    const calculatedPrice = lowestAsk ? lowestAsk : basePrice * (1 - discount/100);
+    const priceDisplay = DB.formatVND(calculatedPrice);
+    const stockCount = (d.stockQty !== undefined && d.stockQty > 0) ? d.stockQty : (d.asks ? d.asks.length : 0);
     const stockColor = stockCount > 0 ? 'var(--accent-green)' : '#ef4444';
     const stockBorder = stockCount > 0 ? 'rgba(0,255,136,0.3)' : 'rgba(239,68,68,0.3)';
+    const badgeHTML = discount > 0 ? `<div class="market-drop-sale-badge" style="position:absolute; top:8px; left:8px; background:var(--accent-purple); color: var(--text-primary); padding:4px 8px; border-radius:12px; font-size:11px; font-weight:800; z-index:10;">-${discount}%</div>` : '';
+    
     return `
       <div class="drop-card">
-        <div class="drop-card-img-wrap" onclick="window.location.href='/drops/detail.html?id=${d.id}'" style="cursor:pointer;">
+        <div class="drop-card-img-wrap" onclick="window.location.href='/drops/detail.html?id=${d.id}'" style="cursor:pointer; position:relative;">
+          ${badgeHTML}
           <img src="${(d.image && d.image.trim()) ? DB.escapeHTML(d.image) : '/shared/no-image.jpg'}" alt="${DB.escapeHTML(d.name)}" onerror="this.onerror=null; this.classList.add('img-error');">
           <div class="drop-card-img-overlay">
             <div class="gallery-hint"><i data-lucide="eye" style="width:13px;"></i> Xem</div>
           </div>
-          <div class="drop-card-stock" style="color:${stockColor}; border-color:${stockBorder};">
-            <i data-lucide="tag" style="width:11px;"></i> ${stockCount} Sẵn
+          <div class="drop-card-stock" style="color:${stockColor}; border-color:${stockBorder}; position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); padding:4px 8px; border-radius:12px; font-size:11px; font-weight:600; display:flex; align-items:center; gap:4px; backdrop-filter:blur(4px); border:1px solid ${stockBorder}; z-index:10;">
+            <i data-lucide="${stockCount > 0 ? 'package' : 'hammer'}" style="width:11px;"></i> ${stockCount > 0 ? stockCount + ' Sẵn kho' : 'Đặt chế tác'}
           </div>
         </div>
         <div class="drop-card-body">
           ${d.category ? `<div class="drop-card-cat">${DB.escapeHTML(d.category)}</div>` : ''}
           <a href="/drops/detail.html?id=${d.id}" data-link class="drop-card-name">${DB.escapeHTML(d.name)}</a>
-          <div class="drop-card-designer">
-            <i data-lucide="user" style="width:11px;"></i> ${DB.escapeHTML(d.designer || 'Admin')}
+          <div class="drop-card-designer" style="display:flex; gap:12px;">
+            <span style="display:flex; align-items:center; gap:4px;"><i data-lucide="box" style="width:11px;"></i> ${DB.escapeHTML(d.material || 'PLA')}</span>
+            <span style="display:flex; align-items:center; gap:4px;"><i data-lucide="ruler" style="width:11px;"></i> ${DB.escapeHTML(d.scale || '500%')}</span>
           </div>
           <div class="drop-card-footer">
             <div class="drop-card-price">Từ ${priceDisplay}</div>
             <a href="/drops/detail.html?id=${d.id}" data-link class="drop-card-buy">
-              <i data-lucide="shopping-cart" style="width:12px;"></i> Mua
+              <i data-lucide="shopping-cart" style="width:12px;"></i> <span class="buy-text">Mua</span>
             </a>
           </div>
         </div>
       </div>
-    `;
-  }).join('');
-}
-
-
-
-function generateFlashBannerHTML(dropsList) {
-  return dropsList.map(d => {
-    const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
-    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
-    const stockCount = d.asks ? d.asks.length : 0;
-    const imgUrl = (d.image && d.image.trim()) ? DB.escapeHTML(d.image) : '/shared/no-image.jpg';
-    
-    return `
-      <a href="/drops/detail.html?id=${d.id}" data-link class="flash-banner-card">
-        <img src="${imgUrl}" alt="${DB.escapeHTML(d.name)}" class="flash-banner-img" onerror="this.onerror=null; this.classList.add('img-error');">
-        <div class="flash-banner-content">
-          <div class="flash-banner-title">${DB.escapeHTML(d.name)}</div>
-          <div class="flash-banner-price">T\u1eeb ${priceDisplay}</div>
-          <div class="flash-banner-meta">
-            <div class="stock"><i data-lucide="zap" style="width:14px;"></i> ${stockCount} S\u1eb5n</div>
-            <div><i data-lucide="user" style="width:14px;display:inline-block;vertical-align:-2px;"></i> ${DB.escapeHTML(d.designer || 'Admin')}</div>
-          </div>
-        </div>
-      </a>
     `;
   }).join('');
 }

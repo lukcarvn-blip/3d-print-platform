@@ -1,3 +1,37 @@
+
+window.setTheme = function(theme) {
+  localStorage.setItem('theme', theme);
+  if (theme === 'light' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+    document.documentElement.dataset.theme = 'light';
+  } else {
+    document.documentElement.dataset.theme = 'dark';
+  }
+};
+(function() {
+  const theme = localStorage.getItem('theme') || 'system';
+  if (theme === 'light' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+    document.documentElement.dataset.theme = 'light';
+  } else {
+    document.documentElement.dataset.theme = 'dark';
+  }
+  
+  // Listen for OS theme changes if set to system
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+      if (localStorage.getItem('theme') === 'system') {
+          document.documentElement.dataset.theme = e.matches ? 'light' : 'dark';
+      }
+  });
+})();
+
+
+// Inject Pixel Font globally
+if (!document.querySelector('link[href*="Press+Start+2P"]')) {
+  const fontLink = document.createElement('link');
+  fontLink.rel = 'stylesheet';
+  fontLink.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
+  document.head.appendChild(fontLink);
+}
+
 // ============================================================
 // Legato — Shared App Logic (Layout & Navigation)
 
@@ -209,7 +243,16 @@ const initApp = () => {
       <aside class="sidebar">
         <div class="sidebar-logo" style="position:relative;">
           <a href="/" style="text-decoration:none; cursor:pointer; display:flex; align-items:center; gap:10px; flex:1; min-width:0;" data-link>
-            <img src="/shared/logo.png" alt="Legato Logo" style="height: 108px; width: auto; object-fit: contain; margin-left: -12px;" class="sidebar-logo-img">
+            
+  <div class="brand-logo-container" style="display:flex; align-items:center; gap:8px; margin-left: 4px;">
+    <span class="brand-text" style="font-family: 'Press Start 2P', monospace, sans-serif; font-size: 16px; color: #fff;">LEGATO</span>
+    <div class="brand-lego-head">
+      <div class="brand-lego-eye left"></div>
+      <div class="brand-lego-eye right"></div>
+      <div class="brand-lego-mouth"></div>
+    </div>
+  </div>
+
           </a>
           <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Đóng/Mở menu" id="sidebar-toggle-btn">
             <i data-lucide="panel-left-close" style="width:15px;"></i>
@@ -280,7 +323,7 @@ const initApp = () => {
       const btn = document.getElementById('sidebar-toggle-btn');
       if (!sidebar) return;
       const isCollapsed = sidebar.classList.toggle('collapsed');
-      if (mainContent) mainContent.style.marginLeft = isCollapsed ? '64px' : '';
+      if (mainContent) mainContent.style.marginLeft = (isCollapsed && window.innerWidth > 768) ? '64px' : '';
       // Swap icon
       if (btn) {
         const iconEl = btn.querySelector('i[data-lucide]');
@@ -299,7 +342,7 @@ const initApp = () => {
         const mainContent = document.querySelector('.main-content');
         if (sidebar) {
           sidebar.classList.add('collapsed');
-          if (mainContent) mainContent.style.marginLeft = '64px';
+          if (mainContent) mainContent.style.marginLeft = (window.innerWidth > 768) ? '64px' : '';
           // Fix toggle icon
           setTimeout(() => {
             const btn = document.getElementById('sidebar-toggle-btn');
@@ -319,7 +362,16 @@ const initApp = () => {
     const topHeader = document.querySelector('.top-header');
     const mobileLogoHtml = `
         <a href="/" class="mobile-header-logo" style="text-decoration:none; align-items:center; gap:8px;" data-link>
-          <img src="/shared/logo.png" alt="Legato Logo" style="height: 80px; width: auto; object-fit: contain; transform: scale(1.2); transform-origin: left center;">
+          
+  <div class="brand-logo-container" style="display:flex; align-items:center; gap:8px; margin-left: 4px;">
+    <span class="brand-text" style="font-family: 'Press Start 2P', monospace, sans-serif; font-size: 16px; color: #fff;">LEGATO</span>
+    <div class="brand-lego-head">
+      <div class="brand-lego-eye left"></div>
+      <div class="brand-lego-eye right"></div>
+      <div class="brand-lego-mouth"></div>
+    </div>
+  </div>
+
         </a>
     `;
     if (topHeader && !topHeader.querySelector('.mobile-header-logo') && !topHeader.querySelector('.back-btn')) {
@@ -408,7 +460,10 @@ const initApp = () => {
         headerActions.innerHTML = `
           <button class="header-btn mobile-search-btn" title="Tìm kiếm" onclick="toggleMobileSearch()"><i data-lucide="search"></i></button>
           <button class="header-btn" title="Thông báo" onclick="alert('Bạn không có thông báo mới.')"><i data-lucide="bell"></i></button>
-          <button class="header-btn" title="Giỏ hàng" onclick="alert('Giỏ hàng trống.')"><i data-lucide="shopping-cart"></i></button>
+          <button class="header-btn" title="Giỏ hàng" onclick="window.location.href='/cart/'" style="position:relative;">
+            <i data-lucide="shopping-cart"></i>
+            <span class="cart-counter" style="position:absolute; top:-2px; right:-2px; background:var(--accent-green); color:black; font-size:10px; font-weight:800; border-radius:10px; padding: 0 4px; display:none; align-items:center; justify-content:center; min-width: 14px; height:14px;">0</span>
+          </button>
           <div style="position:relative; display:inline-block;" class="auth-dropdown-wrap">
             <img src="${user.avatar}" class="header-avatar" id="avatar-btn" alt="Avatar" style="cursor:pointer;">
             <div id="auth-dropdown-menu" class="auth-dropdown glass-panel-dark" style="position:absolute; right:0; top:45px; width:200px; display:none; flex-direction:column; z-index:100; border:1px solid var(--border);">
@@ -423,11 +478,16 @@ const initApp = () => {
         `;
       } else {
         headerActions.innerHTML = `
-          <button class="header-btn mobile-search-btn" title="Tìm kiếm" onclick="toggleMobileSearch()" style="margin-right:8px;"><i data-lucide="search"></i></button>
+          <button class="header-btn mobile-search-btn" title="Tìm kiếm" onclick="toggleMobileSearch()"><i data-lucide="search"></i></button>
+          <button class="header-btn" title="Giỏ hàng" onclick="window.location.href='/cart/'" style="position:relative; margin-right:8px;">
+            <i data-lucide="shopping-cart"></i>
+            <span class="cart-counter" style="position:absolute; top:-2px; right:-2px; background:var(--accent-green); color:black; font-size:10px; font-weight:800; border-radius:10px; padding: 0 4px; display:none; align-items:center; justify-content:center; min-width: 14px; height:14px;">0</span>
+          </button>
           <a href="/login/" data-link class="header-login-btn" style="display:none; align-items:center; gap:8px; padding:8px 20px; background:var(--accent-green); color:black; font-weight:700; font-size:14px; border-radius:99px; text-decoration:none; white-space:nowrap; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'"><i data-lucide="log-in" style="width:16px;"></i> Đăng nhập</a>
         `;
       }
       if (typeof lucide !== 'undefined') lucide.createIcons();
+        if (typeof DB !== 'undefined' && DB.updateCartCount) DB.updateCartCount();
     }
   }, 300);
 
@@ -484,7 +544,7 @@ const initApp = () => {
   // 6. Inject Global Chat Widget
   const user = typeof Auth !== 'undefined' ? Auth.getCurrentUser() : (typeof DB !== 'undefined' ? DB.getCurrentUser() : null);
   const isAdminRoute = window.location.pathname.includes('/admin');
-  if (user && !isAdminRoute) {
+  if (false && user && !isAdminRoute) { // Chat disabled by user request
     const chatWidgetHtml = `
       <div id="global-chat-fab" style="position:fixed; bottom:32px; right:32px; width:56px; height:56px; border-radius:28px; background:var(--accent-green); color:black; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 24px rgba(0,255,136,0.4); z-index:10000; transition:transform 0.2s;" onclick="toggleGlobalChat()">
         <i data-lucide="message-circle" style="width:24px; height:24px;"></i>
@@ -673,3 +733,46 @@ window.addEventListener('pageshow', (event) => {
     if (loader) loader.classList.remove('active');
   }
 });
+
+
+// --- INJECT ANALYTICS ---
+function injectAnalytics(settings) {
+    if (settings.gaId && !document.getElementById('ga-script')) {
+        console.log('[Analytics] Injecting GA4:', settings.gaId);
+        const script1 = document.createElement('script');
+        script1.id = 'ga-script';
+        script1.async = true;
+        script1.src = `https://www.googletagmanager.com/gtag/js?id=${settings.gaId}`;
+        document.head.appendChild(script1);
+        
+        const script2 = document.createElement('script');
+        script2.innerHTML = `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${settings.gaId}');`;
+        document.head.appendChild(script2);
+    }
+    
+    if (settings.clarityId && !document.getElementById('clarity-script')) {
+        console.log('[Analytics] Injecting Clarity:', settings.clarityId);
+        const script3 = document.createElement('script');
+        script3.id = 'clarity-script';
+        script3.innerHTML = `(function(c,l,a,r,i,t,y){ c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)}; t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i; y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y); })(window, document, "clarity", "script", "${settings.clarityId}");`;
+        document.head.appendChild(script3);
+    }
+}
+
+// Check for live settings after DB init
+setTimeout(() => {
+    if (typeof BDB !== 'undefined' && BDB.db) {
+        if (typeof BDB.getSettings === 'function') {
+            BDB.getSettings().then(s => {
+               if (s && Object.keys(s).length > 0) {
+                   window.SiteSettings = Object.assign(window.SiteSettings || {}, s);
+                   localStorage.setItem('_v3_settings', JSON.stringify(window.SiteSettings));
+                   injectAnalytics(s);
+               }
+            }).catch(e => console.warn(e));
+        }
+    } else {
+       // Fallback for non-Firebase environments
+       injectAnalytics(window.SiteSettings || {});
+    }
+}, 1000);

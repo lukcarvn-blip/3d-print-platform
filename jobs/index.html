@@ -52,13 +52,13 @@ function renderJobs() {
       actionHTML = `
         <div style="background:rgba(255,255,255,0.02); padding:16px; border-radius:8px; margin-top:16px;">
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;" class="text-sm">
-            <span class="text-muted">Khách đặt (Bid):</span> <strong>${DB.formatUSD(b.budget)}</strong>
+            <span class="text-muted">Khách đặt (Bid):</span> <strong>${DB.formatVND(b.budget)}</strong>
           </div>
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;" class="text-sm">
-            <span class="text-muted">Phí Nền Tảng (20%):</span> <span class="text-red">-${DB.formatUSD(platformFee)}</span>
+            <span class="text-muted">Phí Nền Tảng (20%):</span> <span class="text-red">-${DB.formatVND(platformFee)}</span>
           </div>
           <div style="display:flex; justify-content:space-between; margin-bottom:16px; padding-top:8px; border-top:1px dashed var(--border);">
-            <span class="text-primary font-bold">XƯỞNG THỰC NHẬN:</span> <strong style="color:var(--accent-green); font-size:18px;">${DB.formatUSD(makerPayout)}</strong>
+            <span class="text-primary font-bold">XƯỞNG THỰC NHẬN:</span> <strong style="color:var(--accent-green); font-size:18px;">${DB.formatVND(makerPayout)}</strong>
           </div>
           <div class="slide-claim-wrap" onmousedown="startSlide(event, '${b.id}', this)">
             <div class="slide-claim-track"></div>

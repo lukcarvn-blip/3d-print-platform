@@ -426,7 +426,7 @@ function renderProducts(fetchedDrops) {
         <div style="font-weight:bold; font-size:13px; margin-bottom:4px;"><i data-lucide="user" style="width:12px;display:inline-block;vertical-align:-2px;"></i> ${authorName}</div>
         <div class="text-xs text-muted"><i data-lucide="map-pin" style="width:12px;display:inline-block;vertical-align:-2px;"></i> ${location}</div>
       </td>
-      <td class="td-price" data-label="Giá Bán" style="color:var(--accent-green); font-weight:bold; font-size:16px;">${DB.formatUSD(d.retailPrice)}</td>
+      <td data-label="Giá Bán"><span style="color:var(--accent-green);font-weight:700;">${d.retailPrice ? d.retailPrice.toLocaleString('vi-VN') + ' VNĐ' : 'Liên hệ'}</span></td>
       <td class="td-asks" data-label="Tồn Kho">${d.asks ? d.asks.length : 0} Asks</td>
       <td class="td-actions" style="text-align:right;">
         <a href="/admin/edit.html?id=${d.id}" data-link class="btn-action" title="Sửa"><i data-lucide="edit-2" style="width:16px;"></i> <span style="font-size:13px; margin-left:4px;" class="desktop-hide">Sửa</span></a>
@@ -568,7 +568,7 @@ function renderOrders() {
       <td class="td-id" data-label="Mã Đơn" style="font-family:monospace; color:var(--text-muted); font-size:13px;">${o.id}</td>
       <td class="td-info" style="font-weight:bold; font-size:15px;">${o.dropName}</td>
       <td class="td-customer" data-label="Khách Hàng">${o.buyerEmail}</td>
-      <td class="td-price" data-label="Tổng Tiền" style="color:var(--accent-purple); font-weight:bold;">${DB.formatUSD(o.price)}</td>
+      <td class="td-price" data-label="Tổng Tiền" style="color:var(--accent-purple); font-weight:bold;">${DB.formatVND(o.price)}</td>
       <td class="td-status" data-label="Trạng Thái">
         <span style="padding:4px 8px; border-radius:4px; font-size:12px; font-weight:bold; ${o.status==='shipping'?'background:rgba(0,255,136,0.1);color:var(--accent-green);':'background:rgba(255,255,255,0.1);'}">${o.status.toUpperCase()}</span>
       </td>
@@ -805,18 +805,27 @@ function loadSettings() {
   });
 }
 
-function saveSettings() {
-  const s = {
-    logoText: document.getElementById('s-logo-text').value,
-    logoIcon: document.getElementById('s-logo-icon').value,
-    themeColor: document.getElementById('s-theme-color').value,
-    fontFamily: document.getElementById('s-font-family').value
-  };
-  localStorage.setItem('_v3_settings', JSON.stringify(s));
-  localStorage.setItem('gemini_api_key', document.getElementById('s-gemini-key').value);
-  alert('Đã lưu cấu hình. Đang áp dụng giao diện mới...');
-  setTimeout(() => window.location.reload(), 1500);
-}
+async function saveSettings() {
+    const s = {
+      logoText: document.getElementById('s-logo-text').value,
+      logoIcon: document.getElementById('s-logo-icon').value,
+      themeColor: document.getElementById('s-theme-color').value,
+      fontFamily: document.getElementById('s-font-family').value,
+      gaId: document.getElementById('s-ga-id').value.trim(),
+      clarityId: document.getElementById('s-clarity-id').value.trim()
+    };
+    
+    // Save to firebase
+    if (typeof BDB !== 'undefined') {
+        await BDB.saveSettings(s);
+    }
+    // Also save to local storage for instant fallback
+    localStorage.setItem('_v3_settings', JSON.stringify(s));
+    localStorage.setItem('gemini_api_key', document.getElementById('s-gemini-key').value);
+    
+    alert('Đã lưu cấu hình thành công lên Máy Chủ. Đang tải lại...');
+    setTimeout(() => window.location.reload(), 1500);
+  }
 
 function renderAll() {
   if (typeof BDB !== 'undefined') {

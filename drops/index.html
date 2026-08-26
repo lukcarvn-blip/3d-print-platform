@@ -15,19 +15,52 @@
   .market-drop-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
   .market-drop-card:hover .market-drop-img { /* Removed transform to fix jitter */ }
   .market-drop-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,20,0.95) 0%, rgba(10,10,20,0.4) 40%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; pointer-events: none; }
-  .market-drop-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; line-height: 1.2; margin-bottom: 4px; color: white; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .market-drop-name { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800; line-height: 1.2; margin-bottom: 4px; color: var(--text-primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .market-drop-price { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent-green); }
   @media (max-width: 768px) {
-    .market-drop-overlay { padding: 12px; }
-    .market-drop-name { font-size: 16px; }
-    .market-drop-price { font-size: 16px; }
+    .market-drop-overlay { padding: 8px; }
+    .market-drop-name { font-size: 13px; margin-bottom: 2px; }
+    .market-drop-price { font-size: 11px; }
   }
   
   .page-btn { min-width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 600; font-size: 14px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; transition: 0.2s; }
-  .page-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+  .page-btn:hover { background: rgba(var(--shade-rgb),0.05); color: var(--text-primary); }
   .page-btn.active { background: var(--accent-green); color: black; border-color: var(--accent-green); }
   .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-</style>
+
+    .market-drop-overlay { transition: background 0.3s; }
+    .market-drop-text-group { transition: opacity 0.3s, transform 0.3s; width: 100%; }
+    .market-drop-card:hover .market-drop-text-group { opacity: 0; transform: translateY(10px); }
+    .market-drop-card:hover .market-drop-overlay { background: linear-gradient(to top, rgba(10,10,20,0.2) 0%, transparent 100%); }
+    .market-drop-sale-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: var(--text-primary);
+      font-weight: 800;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      z-index: 2;
+    }
+    .market-drop-buy {
+      background: var(--accent-green);
+      color: black;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    @media (max-width: 768px) {
+      .market-drop-buy span { display: none; }
+      .market-drop-buy { padding: 4px 6px; gap: 0; }
+    }
+
+  </style>
 </head>
 <body>
 <div class="app-layout">
@@ -47,12 +80,12 @@
       <div class="filter-bar" style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:24px; align-items:center; background:var(--bg-card); padding:16px; border-radius:var(--radius-lg); border:1px solid var(--border);">
         <div style="flex:1; min-width:200px; display:flex; align-items:center; background:var(--bg-surface); border:1px solid var(--border); border-radius:8px; padding:0 12px; height: 44px;">
           <i data-lucide="search" style="color:var(--text-muted); width:18px;"></i>
-          <input type="text" id="filter-search" placeholder="Tra cứu tên sản phẩm, bộ sưu tập..." style="flex:1; background:transparent; border:none; outline:none; color:white; font-size:14px; padding:10px;" oninput="applyFilters()">
+          <input type="text" id="filter-search" placeholder="Tra cứu tên sản phẩm, bộ sưu tập..." style="flex:1; background:transparent; border:none; outline:none; color: var(--text-primary); font-size:14px; padding:10px;" oninput="applyFilters()">
         </div>
-        <select id="filter-category" style="background:var(--bg-surface); border:1px solid var(--border); color:white; padding:0 16px; border-radius:8px; font-size:14px; min-width:140px; outline:none; height: 44px; cursor:pointer;" onchange="applyFilters()">
+        <select id="filter-category" style="background:var(--bg-surface); border:1px solid var(--border); color: var(--text-primary); padding:0 16px; border-radius:8px; font-size:14px; min-width:140px; outline:none; height: 44px; cursor:pointer;" onchange="applyFilters()">
           <option value="">Tất cả Thể Loại</option>
         </select>
-        <select id="filter-price" style="background:var(--bg-surface); border:1px solid var(--border); color:white; padding:0 16px; border-radius:8px; font-size:14px; min-width:160px; outline:none; height: 44px; cursor:pointer;" onchange="applyFilters()">
+        <select id="filter-price" style="background:var(--bg-surface); border:1px solid var(--border); color: var(--text-primary); padding:0 16px; border-radius:8px; font-size:14px; min-width:160px; outline:none; height: 44px; cursor:pointer;" onchange="applyFilters()">
           <option value="">Sắp xếp Theo Giá</option>
           <option value="asc">Giá: Thấp đến Cao</option>
           <option value="desc">Giá: Cao xuống Thấp</option>
@@ -139,16 +172,29 @@ function renderMarketGrid() {
   
   document.getElementById('market-grid').innerHTML = pageItems.map((d, i) => {
     const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
-    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
+    const discount = d.discountPercent ? parseFloat(d.discountPercent) : 0;
+    const basePrice = Number(d.retailPrice) || 0;
+    const calculatedPrice = lowestAsk ? lowestAsk : basePrice * (1 - discount/100);
+    const priceDisplay = DB.formatVND(calculatedPrice);
+    const badgeHTML = discount > 0 ? `<div class="market-drop-sale-badge">-${discount}%</div>` : '';
     
     return `
     <a href="/drops/detail.html?id=${d.id}" data-link class="market-drop-card skeleton-bg">
       <img src="${DB.escapeHTML(d.image)}" class="market-drop-img lazy-img" alt="${DB.escapeHTML(d.name)}" onload="this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');" onerror="this.src='/shared/no-image.jpg'; this.classList.add('loaded'); this.parentElement.classList.remove('skeleton-bg');">
-      <div class="market-drop-overlay">
-        <div class="market-drop-name">${DB.escapeHTML(d.name)}</div>
-        <div class="text-sm text-muted mb-4"><i data-lucide="tag" style="width:14px;display:inline-block;vertical-align:-2px;"></i> ${d.asks ? d.asks.length : 0} Asks</div>
-        <div class="market-drop-price">Từ: ${DB.escapeHTML(priceDisplay)}</div>
-      </div>
+      ${badgeHTML}
+        <div class="market-drop-overlay">
+          <div class="market-drop-text-group">
+            <div class="market-drop-name">${DB.escapeHTML(d.name)}</div>
+            <div class="text-sm text-muted mb-4" style="display: flex; gap: 12px;">
+                <span style="display:flex; align-items:center; gap:4px;"><i data-lucide="box" style="width:14px;"></i> ${DB.escapeHTML(d.material || 'PLA')}</span>
+                <span style="display:flex; align-items:center; gap:4px;"><i data-lucide="ruler" style="width:14px;"></i> ${DB.escapeHTML(d.scale || '100%')}</span>
+              </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="market-drop-price">Từ: ${DB.escapeHTML(priceDisplay)}</div>
+              <div class="market-drop-buy"><i data-lucide="shopping-cart" style="width:14px;"></i> <span>Mua</span></div>
+            </div>
+          </div>
+        </div>
     </a>
   `}).join('');
   

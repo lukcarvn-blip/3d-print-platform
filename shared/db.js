@@ -415,7 +415,7 @@ const DB = {
   },
 
   genId(prefix='id') { return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`; },
-  formatUSD(n) { return `$${Number(n).toFixed(2)}`; },
+  formatVND(n) { return new Intl.NumberFormat('vi-VN').format(Number(n) * 1000) + ' VNĐ'; },
   
   // Anti-XSS Utility
   escapeHTML(str) {
@@ -428,6 +428,36 @@ const DB = {
       .replace(/'/g, '&#39;');
   },
   
+  
+  // Cart
+  getCart() { return this._get('legato_cart') || []; },
+  saveCart(cart) { this._set('legato_cart', cart); this.updateCartCount(); },
+  addToCart(item) {
+    const cart = this.getCart();
+    const existing = cart.find(x => x.id === item.id && x.mat === item.mat && x.size === item.size && x.color === item.color && x.isCustom === item.isCustom && x.hasAcrylicBox === item.hasAcrylicBox && x.engraving === item.engraving);
+    if (existing) {
+      existing.qty += item.qty;
+    } else {
+      cart.push(item);
+    }
+    this.saveCart(cart);
+  },
+  removeFromCart(index) {
+    const cart = this.getCart();
+    cart.splice(index, 1);
+    this.saveCart(cart);
+  },
+  clearCart() { localStorage.removeItem('legato_cart'); this.updateCartCount(); },
+  updateCartCount() {
+    const cart = this.getCart();
+    const total = cart.reduce((acc, curr) => acc + curr.qty, 0);
+    const counters = document.querySelectorAll('.cart-counter');
+    counters.forEach(c => {
+      c.textContent = total;
+      c.style.display = total > 0 ? 'flex' : 'none';
+    });
+  },
+
   // Auth State
   getCurrentUser() { return this._get('current_user_v3'); },
   setCurrentUser(user) { this._set('current_user_v3', user); },

@@ -3,380 +3,232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thanh Toán | Legato</title>
+<title>Thanh toán | Legato</title>
 <link rel="stylesheet" href="/shared/style.css">
 <style>
-  .checkout-container { max-width: 500px; margin: 40px auto; padding: 0 16px; animation: fadeIn 0.4s ease-out; }
+  .checkout-container { max-width: 100%; margin: 32px 0; padding: 0 24px; min-height: 60vh; }
+  .checkout-header { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 24px; color: white; }
+  .checkout-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+  @media (max-width: 768px) { .checkout-layout { grid-template-columns: 1fr; gap: 24px; } .checkout-container { margin: 20px auto; padding: 0 16px; } .checkout-form, .cart-summary { padding: 16px; } }
   
-  .order-card {
-    background: var(--bg-card);
-    border: 1px solid var(--accent-green);
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 10px 40px rgba(0, 255, 136, 0.1);
-    position: relative;
-    overflow: hidden;
-  }
+  .checkout-form { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); }
+  .form-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; color: white; font-family: inherit; font-size: 14px; }
+  .form-input:focus { outline: none; border-color: var(--accent-green); }
   
-  .order-card::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-    background: linear-gradient(90deg, var(--accent-green), var(--accent-purple));
-  }
+  .payment-methods { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+  .payment-method { display: flex; align-items: center; gap: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; transition: 0.2s; }
+  .payment-method:hover { border-color: var(--accent-green); background: rgba(0,255,136,0.05); }
+  .payment-method.active { border-color: var(--accent-green); background: rgba(0,255,136,0.1); }
   
-  .img-wrap {
-    width: 100%; height: 200px; background: #000; border-radius: 12px;
-    margin: 24px 0; display: flex; align-items: center; justify-content: center;
-    overflow: hidden; border: 1px solid var(--border);
-  }
-  .img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .cart-summary { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 24px; border-radius: 12px; height: fit-content; position: sticky; top: 100px; }
+  .summary-item { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: var(--text-muted); }
+  .summary-item-name { flex: 1; margin-right: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; color: var(--text-muted); font-size: 14px; }
+  .summary-total { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px dashed rgba(255,255,255,0.1); font-weight: 800; font-size: 20px; color: white; }
   
-  .spec-row {
-    display: flex; justify-content: space-between; padding: 12px 0;
-    border-bottom: 1px dashed rgba(255,255,255,0.1); font-size: 14px;
-  }
-  .spec-row:last-child { border-bottom: none; }
-  .spec-label { color: var(--text-muted); }
-  .spec-val { font-weight: 700; color: white; text-align: right; }
-  
-  .total-row {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 24px; padding-top: 24px; border-top: 1px dashed rgba(255,255,255,0.1);
-  }
-  
-  .btn-submit {
-    width: 100%; padding: 16px; font-size: 18px; font-weight: 800; font-family: 'Space Grotesk';
-    background: var(--accent-green); color: black; border: none; border-radius: 12px;
-    margin-top: 24px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;
-  }
-  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,255,136,0.3); }
-
-  /* Payment Options */
-  .pay-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
-  .pay-opt {
-    border: 1px solid var(--border); border-radius: 8px; padding: 16px;
-    text-align: center; cursor: pointer; transition: 0.2s; background: rgba(255,255,255,0.02);
-  }
-  .pay-opt.active { border-color: var(--accent-green); background: rgba(0,255,136,0.05); }
-  .pay-opt i { margin-bottom: 8px; color: var(--text-muted); }
-  .pay-opt.active i { color: var(--accent-green); }
-
-  /* QR Modal */
-  .qr-modal {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000;
-    display: none; align-items: center; justify-content: center; flex-direction: column;
-    backdrop-filter: blur(5px);
-  }
-  .qr-box {
-    background: white; padding: 24px; border-radius: 16px; text-align: center;
-    width: 300px; color: black; animation: zoomIn 0.3s;
-  }
-  @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  
-  /* AI Assistant */
-  .ai-assistant {
-    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-    display: flex; align-items: flex-end; gap: 12px; flex-direction: column;
-  }
-  .ai-bubble {
-    background: var(--bg-card); border: 1px solid var(--accent-purple); border-radius: 16px 16px 0 16px;
-    padding: 16px; width: 250px; font-size: 14px; box-shadow: 0 10px 30px rgba(168, 85, 247, 0.2);
-    transform: translateY(20px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    pointer-events: none;
-  }
-  .ai-bubble.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
-  .ai-avatar {
-    width: 48px; height: 48px; background: var(--accent-purple); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--accent-purple);
-    cursor: pointer; animation: pulse 2s infinite; color: white;
-  }
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(168, 85, 247, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
-  }
+  .submit-btn { width: 100%; padding: 14px; background: var(--accent-green); color: black; font-weight: 800; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; margin-top: 24px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+  .submit-btn:hover { opacity: 0.9; }
 </style>
 </head>
 <body>
 <div class="app-layout">
-  <main class="main-content" style="padding-bottom:100px;">
+  <main class="main-content">
     <header class="top-header justify-between border-b" style="height:70px;">
-      <a href="javascript:history.back()" class="back-btn" style="display:flex; align-items:center; gap:8px; color:var(--text-muted); text-decoration:none;"><i data-lucide="arrow-left"></i> Quay lại</a>
-      <div class="header-actions"></div>
+      <a href="/cart/" class="back-btn" data-link style="display:flex;align-items:center;gap:8px;color:var(--text-muted);text-decoration:none;">
+        <i data-lucide="arrow-left" style="width:18px;"></i>
+        <span style="font-size:14px;font-weight:600;">Quay lại giỏ hàng</span>
+      </a>
+      <div class="header-actions" style="display:flex;align-items:center;gap:12px;"></div>
     </header>
 
     <div class="checkout-container">
-      <div class="order-card">
-        <h2 style="font-family:'Space Grotesk'; text-align:center; margin-bottom:8px;">Bảng Yêu Cầu Đơn Hàng</h2>
-        <p class="text-sm text-muted" style="text-align:center; margin-bottom:24px;">Vui lòng kiểm tra kỹ thông tin trước khi chốt đơn</p>
-        
-        <div class="img-wrap"><img id="c-img" src="" alt="Product"></div>
-        
-        <div class="spec-row">
-          <span class="spec-label">Sản phẩm:</span>
-          <span class="spec-val" id="c-name"></span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">Loại đơn:</span>
-          <span class="spec-val" id="c-type" style="color:var(--accent-orange);"></span>
-        </div>
-        <div class="spec-row" id="row-seller" style="display:none;">
-          <span class="spec-label">Người bán (Xưởng):</span>
-          <span class="spec-val" id="c-seller"></span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">Chất liệu:</span>
-          <span class="spec-val" id="c-mat"></span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">Kích thước:</span>
-          <span class="spec-val" id="c-size"></span>
-        </div>
-        <div class="spec-row">
-          <span class="spec-label">Màu sắc:</span>
-          <span class="spec-val" style="display:flex; align-items:center; gap:8px;">
-            <div id="c-color-dot" style="width:12px; height:12px; border-radius:50%; border:1px solid #fff;"></div>
-            <span id="c-color-code"></span>
-          </span>
-        </div>
-        
-        <div class="total-row">
-          <span style="font-family:'Space Grotesk'; font-weight:700; font-size:18px;" id="c-total-label">TỔNG THANH TOÁN:</span>
-          <span style="font-family:'Space Grotesk'; font-weight:800; font-size:24px; color:var(--accent-green);" id="c-total"></span>
-        </div>
-        <div id="deposit-note" style="display:none; text-align:right; font-size:12px; color:var(--text-muted); margin-top:8px;">
-          (Ký quỹ trước để đẩy lên sàn đấu giá. Ngân sách dự kiến: <span id="c-budget"></span>)
-        </div>
-      </div>
-
-      <div style="margin-top:24px;">
-        <h3 style="font-size:16px; margin-bottom:12px;">Thông tin nhận hàng</h3>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <input type="text" id="cust-name" class="form-control" placeholder="Họ và tên người nhận" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-          <input type="text" id="cust-phone" class="form-control" placeholder="Số điện thoại" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;">
-          <textarea id="cust-address" class="form-control" placeholder="Địa chỉ giao hàng chi tiết" rows="3" style="width:100%; padding:12px; border-radius:8px; border:1px solid var(--border); background:rgba(255,255,255,0.05); color:white;"></textarea>
-        </div>
-      </div>
-      
-      <div style="margin-top:24px;">
-        <h3 style="font-size:16px; margin-bottom:12px;">Phương thức thanh toán</h3>
-        <div class="pay-opts">
-          <div class="pay-opt active" onclick="setPayMethod('qr')" id="opt-qr">
-            <i data-lucide="qr-code"></i>
-            <div style="font-weight:600; font-size:14px;">Chuyển Khoản QR</div>
+      <h1 class="checkout-header">Thanh Toán</h1>
+      <div class="checkout-layout">
+        <div class="checkout-form">
+          <h2 style="font-size: 18px; margin-bottom: 16px;">Thông tin nhận hàng</h2>
+          <div class="form-group">
+            <label class="form-label">Họ và tên</label>
+            <input type="text" id="f-name" class="form-input" placeholder="Nhập họ tên...">
           </div>
-          <div class="pay-opt" onclick="setPayMethod('wallet')" id="opt-wallet">
-            <i data-lucide="credit-card"></i>
-            <div style="font-weight:600; font-size:14px;">Ví Điện Tử / Thẻ</div>
+          <div class="form-group">
+            <label class="form-label">Số điện thoại</label>
+            <input type="text" id="f-phone" class="form-input" placeholder="Nhập số điện thoại...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Địa chỉ giao hàng</label>
+            <input type="text" id="f-address" class="form-input" placeholder="Nhập địa chỉ nhận hàng...">
+          </div>
+          
+          <h2 style="font-size: 18px; margin-top: 32px; margin-bottom: 16px;">Phương thức thanh toán</h2>
+          <div class="payment-methods">
+            <div class="payment-method active" onclick="selectPayment(this, 'cod')">
+              <i data-lucide="truck" style="color:var(--accent-green);"></i>
+              <div>
+                <div style="font-weight:700; color:white; font-size:14px;">Thanh toán khi nhận hàng (COD)</div>
+                <div style="font-size:12px; color:var(--text-muted);">Giao hàng thu tiền mặt tận nơi</div>
+              </div>
+            </div>
+            <div class="payment-method" onclick="selectPayment(this, 'bank')">
+              <i data-lucide="credit-card" style="color:var(--accent-purple);"></i>
+              <div>
+                <div style="font-weight:700; color:white; font-size:14px;">Chuyển khoản ngân hàng</div>
+                <div style="font-size:12px; color:var(--text-muted);">Thanh toán an toàn qua mã QR</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="cart-summary">
+          <h2 style="font-size:18px; margin-bottom:20px; color:white;">Đơn hàng của bạn</h2>
+          <div id="summary-items"></div>
+          
+          <div style="margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.1);">
+            <div class="summary-row"><span>Tạm tính:</span> <span id="summary-subtotal"></span></div>
+            <div class="summary-row"><span>Phí giao hàng:</span> <span>Miễn phí</span></div>
+            <div class="summary-total"><span>Tổng cộng:</span> <span id="summary-total" style="color:var(--accent-green);"></span></div>
+            
+            <button class="submit-btn" onclick="submitOrder()" id="btn-submit">
+              Xác nhận đặt hàng <i data-lucide="check"></i>
+            </button>
           </div>
         </div>
       </div>
-
-      <button class="btn-submit" onclick="processCheckout()" id="btn-checkout"><i data-lucide="check-circle"></i> Xác nhận & Chốt đơn</button>
-      <button class="btn btn-ghost" style="width:100%; margin-top:12px;" onclick="history.back()">Quay lại sửa</button>
     </div>
   </main>
 </div>
 
-<!-- QR Modal -->
-<div class="qr-modal" id="qr-modal">
-  <div class="qr-box">
-    <h3 style="margin-bottom:8px; font-weight:800;">Quét Mã Thanh Toán</h3>
-    <p style="font-size:12px; color:#666; margin-bottom:16px;">Vui lòng dùng app ngân hàng quét mã bên dưới.</p>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MockPayment" style="width:200px; height:200px; margin-bottom:16px;">
-    <div style="font-weight:700; font-size:20px; color:var(--accent-green); margin-bottom:16px;" id="qr-amount"></div>
-    <div class="text-xs" style="color:#666; margin-bottom:16px;">Nội dung CK: <strong id="qr-code"></strong></div>
-    <button class="btn btn-primary" style="width:100%;" onclick="completePayment()">Đã thanh toán xong</button>
-    <button class="btn btn-ghost" style="width:100%; margin-top:8px; color:#666;" onclick="document.getElementById('qr-modal').style.display='none'">Đóng</button>
-  </div>
-</div>
-
-<!-- AI Assistant -->
-<div class="ai-assistant">
-  <div class="ai-bubble" id="ai-bubble">
-    Xin chào! 👋 Hãy kiểm tra kỹ thông tin đơn hàng trước khi chốt nhé. Cần đổi màu hay kích thước thì ấn "Quay lại sửa".
-  </div>
-  <div class="ai-avatar" onclick="toggleAI()">
-    <i data-lucide="bot" style="width:24px;"></i>
-  </div>
-</div>
-
-<!-- Page Loader overlay for transitions -->
-<div id="page-loader" style="position:fixed; inset:0; background:var(--bg-base); z-index:99999; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:0.3s;">
-  <i class="loader-spinner" data-lucide="loader-2" style="width:40px; height:40px; color:var(--accent-green);"></i>
-</div>
-
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
 <script src="/shared/auth.js"></script>
 <script src="/shared/app.js"></script>
 <script>
 DB.init();
 
-// Parse URL params
-const params = new URLSearchParams(window.location.search);
-const type = params.get('type'); // 'buy' or 'custom'
-const dropId = params.get('dropId');
-const askId = params.get('askId');
-const mat = params.get('mat') || 'PLA';
-const size = params.get('size') || '100%';
-const color = params.get('color') || '#ffffff';
-const basePrice = parseFloat(params.get('price')) || 0;
+let currentPayment = 'cod';
 
-let payMethod = 'qr';
-let finalPrice = basePrice;
-let dropData = null;
-let askData = null;
-
-function loadOrderDetails() {
-  const drops = DB.getDrops();
-  dropData = drops.find(d => d.id === dropId);
-  if (!dropData) return alert('Sản phẩm không tồn tại!');
-  
-  document.getElementById('c-img').src = dropData.image;
-  document.getElementById('c-name').textContent = dropData.name;
-  document.getElementById('c-mat').textContent = mat;
-  document.getElementById('c-size').textContent = size;
-  document.getElementById('c-color-dot').style.background = color;
-  document.getElementById('c-color-code').textContent = color.toUpperCase();
-  
-  if (type === 'buy') {
-    document.getElementById('c-type').textContent = 'Mua Ngay (Hàng có sẵn)';
-    document.getElementById('row-seller').style.display = 'flex';
-    askData = (dropData.asks || []).find(a => a.id === askId);
-    if (askData) document.getElementById('c-seller').textContent = askData.seller;
-  } else {
-    document.getElementById('c-type').textContent = 'In Theo Yêu Cầu (Chờ đấu giá)';
-    document.getElementById('btn-checkout').innerHTML = '<i data-lucide="gavel"></i> Gửi Yêu Cầu Vào Job Board';
+function initCheckout() {
+  const cart = DB.getCart();
+  if (!cart || cart.length === 0) {
+    window.location.href = '/cart/';
+    return;
   }
   
-  // Apply modifiers
-  let multiplier = 1.0;
-  if (mat === 'PETG') multiplier *= 1.2;
-  if (mat === 'RESIN') multiplier *= 1.5;
-  if (size === '150%') multiplier *= 1.5;
-  if (size === '200%') multiplier *= 2.5;
-  
-  finalPrice = basePrice * multiplier;
-  
-  if (type === 'buy') {
-    document.getElementById('c-total-label').textContent = 'TỔNG THANH TOÁN:';
-    document.getElementById('c-total').textContent = '$' + finalPrice.toFixed(2);
-    document.getElementById('btn-checkout').innerHTML = '<i data-lucide="check-circle"></i> Xác nhận & Thanh Toán (100%)';
-  } else {
-    document.getElementById('c-total-label').textContent = 'PHÍ KÝ QUỸ (Deposit):';
-    document.getElementById('c-total').textContent = '$5.00';
-    document.getElementById('deposit-note').style.display = 'block';
-    document.getElementById('c-budget').textContent = '$' + finalPrice.toFixed(2);
-    document.getElementById('btn-checkout').innerHTML = '<i data-lucide="gavel"></i> Ký Quỹ & Gửi Yêu Cầu';
-  }
-}
-
-loadOrderDetails();
-
-function setPayMethod(m) {
-  payMethod = m;
-  document.getElementById('opt-qr').className = 'pay-opt ' + (m==='qr' ? 'active' : '');
-  document.getElementById('opt-wallet').className = 'pay-opt ' + (m==='wallet' ? 'active' : '');
-  showAI("Bạn đã chọn thanh toán qua " + (m==='qr' ? "Chuyển khoản QR" : "Ví điện tử/Thẻ") + ". Sẵn sàng chốt đơn chưa?");
-}
-
-function processCheckout() {
   const user = Auth.getCurrentUser();
   if (!user) {
-    showAI("Bạn cần đăng nhập để đặt hàng nhé!");
-    setTimeout(() => { window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search); }, 2000);
+    alert('Vui lòng đăng nhập để thanh toán!');
+    window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname);
     return;
   }
   
-  const name = document.getElementById('cust-name').value.trim();
-  const phone = document.getElementById('cust-phone').value.trim();
-  const address = document.getElementById('cust-address').value.trim();
+  // Pre-fill user data
+  if (user) {
+    document.getElementById('f-name').value = user.name || '';
+    if(user.email) document.getElementById('f-phone').value = user.phone || ''; // Might not have phone
+  }
+
+  let subtotal = 0;
+  let itemsHtml = '';
+  
+  cart.forEach(item => {
+    const itemTotal = item.price * item.qty;
+    subtotal += itemTotal;
+    
+    let itemExtras = '';
+      if (item.hasAcrylicBox) {
+         itemExtras += `<div style="font-size:12px; color:var(--accent-green); margin-left:24px;">+ Hộp Mica</div>`;
+      }
+      if (item.engraving) {
+         itemExtras += `<div style="font-size:12px; color:var(--text-muted); margin-left:24px;">+ Khắc: "${DB.escapeHTML(item.engraving)}"</div>`;
+      }
+      
+      itemsHtml += `
+        <div class="summary-item" style="display:flex; flex-direction:column; gap:4px;">
+          <div style="display:flex; justify-content:space-between; width:100%;">
+            <span class="summary-item-name">${item.qty}x ${DB.escapeHTML(item.name)}</span>
+            <span>${DB.formatVND(itemTotal)}</span>
+          </div>
+          ${itemExtras}
+        </div>
+      `;
+  });
+  
+  document.getElementById('summary-items').innerHTML = itemsHtml;
+  document.getElementById('summary-subtotal').textContent = DB.formatVND(subtotal);
+  document.getElementById('summary-total').textContent = DB.formatVND(subtotal);
+}
+
+window.selectPayment = function(el, method) {
+  document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+  el.classList.add('active');
+  currentPayment = method;
+};
+
+window.submitOrder = async function() {
+  const cart = DB.getCart();
+  if (!cart || cart.length === 0) return;
+  
+  const name = document.getElementById('f-name').value;
+  const phone = document.getElementById('f-phone').value;
+  const address = document.getElementById('f-address').value;
   
   if (!name || !phone || !address) {
-    showAI("Bạn vui lòng điền đầy đủ Thông tin nhận hàng (Tên, SĐT, Địa chỉ) nhé!");
+    alert("Vui lòng điền đầy đủ thông tin giao hàng!");
     return;
   }
   
-  const payAmount = (type === 'buy') ? finalPrice : 5.00;
+  const btn = document.getElementById('btn-submit');
+  btn.textContent = 'Đang xử lý...';
+  btn.disabled = true;
   
-  if (payMethod === 'qr') {
-    document.getElementById('qr-amount').textContent = '$' + payAmount.toFixed(2);
-    document.getElementById('qr-code').textContent = 'BD-' + Math.floor(Math.random()*10000);
-    document.getElementById('qr-modal').style.display = 'flex';
-  } else {
-    showAI("Đang kết nối cổng thanh toán ảo...");
-    document.getElementById('btn-checkout').innerHTML = '<i class="loader-spinner" data-lucide="loader-2"></i> Đang xử lý...';
-    setTimeout(completePayment, 1500);
+  let subtotal = 0;
+  cart.forEach(item => subtotal += item.price * item.qty);
+  
+  // Submit each item as a bid (temporary integration with existing DB structure)
+  // In a real app, this would be one Order object containing multiple items.
+  try {
+    for (const item of cart) {
+      if (item.isCustom) {
+        await DB.addBid({
+          id: DB.genId('bid'), dropId: item.id,
+          dropName: `${item.name} (${item.mat}, ${item.size}, ${item.color})`,
+          dropImage: item.image, budget: item.price * item.qty,
+          status: 'pending', createdAt: new Date().toISOString(),
+          customerName: name, phone: phone, address: address
+        });
+      } else {
+        // Just order tracking
+        await DB.addBid({
+          id: DB.genId('order'), dropId: item.id,
+          dropName: `${item.name} (Hàng Có Sẵn) - Qty: ${item.qty}`,
+          dropImage: item.image, budget: item.price * item.qty,
+          status: 'pending', createdAt: new Date().toISOString(),
+          customerName: name, phone: phone, address: address
+        });
+        
+        // Optionally decrement stock here via BDB if it existed, but we rely on current API.
+      }
+    }
+    
+    DB.clearCart();
+    alert('Đặt hàng thành công! Cảm ơn bạn đã mua sắm.');
+    window.location.href = '/drops/';
+  } catch(e) {
+    console.error(e);
+    alert('Có lỗi xảy ra khi đặt hàng.');
+    btn.textContent = 'Xác nhận đặt hàng';
+    btn.disabled = false;
   }
-}
+};
 
-function completePayment() {
-  const user = Auth.getCurrentUser();
-  document.getElementById('qr-modal').style.display = 'none';
-  
-  const customerInfo = {
-    name: document.getElementById('cust-name').value.trim(),
-    phone: document.getElementById('cust-phone').value.trim(),
-    address: document.getElementById('cust-address').value.trim(),
-  };
-  
-  if (type === 'buy') {
-    // Direct order
-    const order = {
-      id: DB.genId('ord'),
-      dropName: dropData.name,
-      buyerEmail: user.email,
-      customer: customerInfo,
-      price: finalPrice,
-      status: 'pending',
-      seller: askData ? askData.seller : 'Admin',
-      createdAt: new Date().toISOString()
-    };
-    DB.addOrder(order);
-    alert('Thanh toán 100% thành công! Đơn hàng đã được chuyển cho xưởng.');
-  } else {
-    // Custom Job Bid
-    const bid = {
-      id: DB.genId('bid'),
-      dropId: dropData.id,
-      dropName: dropData.name,
-      dropImage: dropData.image,
-      budget: finalPrice,
-      deposit: 5.00,
-      customer: customerInfo,
-      status: 'pending',
-      clientEmail: user.email,
-      createdAt: new Date().toISOString()
-    };
-    DB.addBid(bid);
-    alert('Gửi yêu cầu thành công! Đơn của bạn đã nằm trên Job Board chờ Xưởng vào báo giá.');
-  }
-  
-  window.location.href = '/';
-}
-
-// AI Logic
-function showAI(text) {
-  const bubble = document.getElementById('ai-bubble');
-  bubble.textContent = text;
-  bubble.classList.add('show');
-  setTimeout(() => { bubble.classList.remove('show'); }, 4000);
-}
-function toggleAI() {
-  const bubble = document.getElementById('ai-bubble');
-  if (bubble.classList.contains('show')) bubble.classList.remove('show');
-  else {
-    bubble.textContent = type === 'buy' ? "Đừng quên điền địa chỉ giao hàng. Bạn thanh toán 100% hôm nay và xưởng sẽ gửi hàng ngay." : "Xưởng in không phải lúc nào cũng sẵn sàng. Bạn chỉ cần ký quỹ $5.00, phần còn lại thanh toán sau khi xưởng đấu giá thành công.";
-    bubble.classList.add('show');
-    setTimeout(() => { bubble.classList.remove('show'); }, 6000);
-  }
-}
-
-setTimeout(() => { 
-  document.getElementById('ai-bubble').textContent = type === 'buy' ? 'Điền địa chỉ và thanh toán 100% để chốt đơn hàng có sẵn nhé!' : 'Với đơn gia công, bạn chỉ cần ký quỹ 1 khoản nhỏ. Xưởng sẽ vào đấu giá sau!';
-  document.getElementById('ai-bubble').classList.add('show'); 
-  setTimeout(() => { document.getElementById('ai-bubble').classList.remove('show'); }, 5000); 
-}, 1000);
+document.addEventListener('DOMContentLoaded', () => {
+  initCheckout();
+});
 </script>
 </body>
 </html>

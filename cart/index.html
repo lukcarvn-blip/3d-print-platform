@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Giỏ hàng | Legato</title>
+<link rel="stylesheet" href="/shared/style.css">
+<style>
+  .cart-container { max-width: 100%; margin: 32px 0; padding: 0 24px; min-height: 60vh; }
+  .cart-header { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 24px; color:var(--text-primary); }
+  .cart-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+  @media (max-width: 768px) { .cart-layout { grid-template-columns: 1fr; gap: 24px; } .cart-container { margin: 20px auto; padding: 0 16px; } .cart-item, .cart-summary { padding: 16px; } }
+  
+  .cart-items { display: flex; flex-direction: column; gap: 16px; }
+  .cart-item { display: flex; gap: 16px; background: rgba(var(--shade-rgb),0.02); border: 1px solid rgba(var(--shade-rgb),0.05); padding: 16px; border-radius: 12px; }
+  .cart-item-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; background: #000; }
+  .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .cart-item-title { font-weight: 700; font-size: 16px; color:var(--text-primary); margin-bottom: 4px; }
+  .cart-item-specs { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+  .cart-item-price { font-weight: 700; color: var(--accent-green); }
+  .cart-item-actions { display: flex; justify-content: space-between; align-items: center; }
+  
+  .qty-controls { display: flex; align-items: center; gap: 12px; background: rgba(var(--shade-rgb),0.05); border-radius: 6px; padding: 4px 8px; }
+  .qty-btn { background: none; border: none; color:var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
+  .qty-btn:hover { color: var(--accent-green); }
+  .qty-val { font-size: 14px; font-weight: 700; min-width: 20px; text-align: center; }
+  
+  .remove-btn { color: var(--text-red); background: none; border: none; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 4px; padding: 6px; }
+  .remove-btn:hover { background: rgba(255,68,68,0.1); border-radius: 6px; }
+
+  .cart-summary { background: rgba(var(--shade-rgb),0.02); border: 1px solid rgba(var(--shade-rgb),0.05); padding: 24px; border-radius: 12px; height: fit-content; position: sticky; top: 100px; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; color: var(--text-muted); font-size: 14px; }
+  .summary-total { display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px dashed rgba(var(--shade-rgb),0.1); font-weight: 800; font-size: 20px; color:var(--text-primary); }
+  
+  .checkout-btn { width: 100%; padding: 14px; background: var(--accent-green); color: black; font-weight: 800; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; margin-top: 24px; display: flex; justify-content: center; align-items: center; gap: 8px; text-decoration: none; }
+  .checkout-btn:hover { opacity: 0.9; }
+  
+  .empty-cart { text-align: center; padding: 60px 20px; }
+  .empty-cart i { color: rgba(var(--shade-rgb),0.2); margin-bottom: 16px; }
+  .empty-cart h3 { color:var(--text-primary); margin-bottom: 8px; }
+  .empty-cart p { color: var(--text-muted); margin-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="app-layout">
+  <main class="main-content">
+    <header class="top-header justify-between border-b" style="height:70px;">
+      <a href="/drops/" class="back-btn" data-link style="display:flex;align-items:center;gap:8px;color:var(--text-muted);text-decoration:none;">
+        <i data-lucide="arrow-left" style="width:18px;"></i>
+        <span style="font-size:14px;font-weight:600;">Tiếp tục mua sắm</span>
+      </a>
+      <div class="header-actions" style="display:flex;align-items:center;gap:12px;"></div>
+    </header>
+
+    <div class="cart-container">
+      <h1 class="cart-header">Giỏ Hàng Của Bạn</h1>
+      <div id="cart-content">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="/shared/db.js"></script>
+<script src="/shared/firebase.js"></script>
+<script src="/shared/auth.js"></script>
+<script src="/shared/app.js"></script>
+<script>
+  window.onerror = function(msg, url, line, col, error) { document.getElementById('cart-content').innerHTML = "<div style='color:red;padding:20px;'>ERROR: " + msg + "<br>Line: " + line + "</div>"; };
+DB.init();
+
+function renderCart() {
+  const cart = DB.getCart();
+  const container = document.getElementById('cart-content');
+  
+  if (!cart || cart.length === 0) {
+    container.innerHTML = `
+      <div class="empty-cart">
+        <i data-lucide="shopping-bag" style="width: 64px; height: 64px;"></i>
+        <h3>Giỏ hàng trống</h3>
+        <p>Có vẻ như bạn chưa chọn sản phẩm nào vào giỏ hàng.</p>
+        <a href="/drops/" data-link class="btn btn-primary" style="display:inline-flex;">Khám Phá Ngay</a>
+      </div>
+    `;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    return;
+  }
+  
+  let html = '<div class="cart-layout"><div class="cart-items">';
+  let subtotal = 0;
+  
+  cart.forEach((item, index) => {
+    const itemTotal = item.price * item.qty;
+    subtotal += itemTotal;
+    
+    let specs = '';
+    if (item.isCustom) {
+      specs = `<span style="color:var(--accent-purple); font-weight:600; font-size:11px; padding:2px 6px; background:rgba(124,58,237,0.1); border-radius:4px; margin-right:6px;">CUSTOM</span>`;
+      specs += `${item.mat} &bull; ${item.size} &bull; ${item.color}`;
+    } else {
+      specs = `<span style="color:var(--accent-green); font-weight:600; font-size:11px; padding:2px 6px; background:rgba(0,255,136,0.1); border-radius:4px; margin-right:6px;">HÀNG SẴN</span>`;
+      specs += `Giao ngay`;
+      }
+      if (item.hasAcrylicBox) {
+        specs += `<br><span style="color: var(--accent-green); margin-top: 4px; display: inline-block;">+ Phụ kiện: Hộp Trưng Bày Mica</span>`;
+      }
+      if (item.engraving) {
+        specs += `<br><span style="color: var(--text-muted); margin-top: 4px; display: inline-block;">+ Khắc tên: "${DB.escapeHTML(item.engraving)}"</span>`;
+      }
+    
+    html += `
+      <div class="cart-item">
+        <img src="${item.image || '/shared/no-image.jpg'}" class="cart-item-img">
+        <div class="cart-item-details">
+          <div>
+            <div class="cart-item-title">${DB.escapeHTML(item.name)}</div>
+            <div class="cart-item-specs">${specs}</div>
+            <div class="cart-item-price">${DB.formatVND(item.price)} <span style="font-size:11px; color:var(--text-muted); font-weight:400;">/ sp</span></div>
+          </div>
+          <div class="cart-item-actions">
+            <div class="qty-controls">
+              <button class="qty-btn" onclick="updateQty(${index}, -1)"><i data-lucide="minus"></i></button>
+              <span class="qty-val">${item.qty}</span>
+              <button class="qty-btn" onclick="updateQty(${index}, 1)"><i data-lucide="plus"></i></button>
+            </div>
+            <button class="remove-btn" onclick="removeItem(${index})"><i data-lucide="trash-2"></i> Xóa</button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += '</div><div class="cart-summary">';
+  html += `<h2 style="font-size:18px; margin-bottom:20px; color:var(--text-primary);">Tổng quan đơn hàng</h2>`;
+  html += `<div class="summary-row"><span>Tạm tính:</span> <span>${DB.formatVND(subtotal)}</span></div>`;
+  html += `<div class="summary-row"><span>Phí giao hàng:</span> <span>Miễn phí</span></div>`;
+  html += `<div class="summary-total"><span>Tổng cộng:</span> <span style="color:var(--accent-green);">${DB.formatVND(subtotal)}</span></div>`;
+  
+  html += `<a href="/checkout/" data-link class="checkout-btn">Tiến hành thanh toán <i data-lucide="arrow-right"></i></a>`;
+  
+  html += '</div></div>';
+  
+  container.innerHTML = html;
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+window.updateQty = function(index, delta) {
+  const cart = DB.getCart();
+  if (cart[index]) {
+    cart[index].qty += delta;
+    if (cart[index].qty <= 0) {
+      cart.splice(index, 1);
+    }
+    DB.saveCart(cart);
+    renderCart();
+  }
+};
+
+window.removeItem = function(index) {
+  const cart = DB.getCart();
+  if (cart[index]) {
+    cart.splice(index, 1);
+    DB.saveCart(cart);
+    renderCart();
+  }
+};
+
+document.addEventListener('DOMContentLoaded', renderCart);
+</script>
+</body>
+</html>

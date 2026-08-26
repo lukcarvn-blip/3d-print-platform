@@ -35,9 +35,13 @@
             <input type="text" class="form-control" id="f-name" required>
           </div>
           <div class="form-group">
-            <label>Giá Niêm Yết (USD) *</label>
-            <input type="number" class="form-control" id="f-price" required>
-          </div>
+              <label>Giá Bán (VNĐ) *</label>
+              <input type="number" class="form-control" id="f-price" required>
+            </div>
+            <div class="form-group">
+              <label>Giảm Giá (%)</label>
+              <input type="number" class="form-control" id="f-discount" placeholder="0" min="0" max="100">
+            </div>
         </div>
         
         <div class="grid-2">
@@ -99,6 +103,24 @@
           </div>
         </div>
         
+        <!-- Hàng Có Sẵn -->
+        <h3 style="font-size:16px; margin: 24px 0 12px; font-weight:600; color:var(--text); display:flex; align-items:center; gap:8px;">
+          <i data-lucide="shopping-bag" style="width:18px; color:var(--accent-green);"></i> Hàng Có Sẵn (Chợ đồ cũ / Mua ngay)
+        </h3>
+        <div class="grid-2" style="background: rgba(255,255,255,0.02); padding: 16px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.15); margin-bottom: 24px; gap: 16px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Số lượng có sẵn</label>
+            <input type="number" class="form-control" id="f-stock-qty" placeholder="0">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Tình trạng</label>
+            <select class="form-control" id="f-stock-condition" style="appearance:none; background-color:#161625;">
+              <option value="new">Mới (100% Brand New)</option>
+              <option value="used">Cũ (Second-hand)</option>
+            </select>
+          </div>
+        </div>
+        
         <div class="form-group">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
             <label style="margin-bottom:0;">Mô tả chi tiết</label>
@@ -142,36 +164,52 @@
 DB.init();
 BDB.init();
 
-// Security Check
-const user = Auth.getCurrentUser();
-if (!user || user.role !== 'admin') {
-  alert("Chỉ có Admin mới được truy cập trang này!");
-  window.location.href = '/';
-}
-
-const urlParams = new URLSearchParams(window.location.search);
-const editId = urlParams.get('id');
-
-if (editId) {
-  document.getElementById('page-title').textContent = "Chỉnh Sửa Sản Phẩm";
-  const drops = DB.getDrops();
-  const d = drops.find(x => x.id === editId);
-  if (d) {
-    document.getElementById('f-id').value = d.id;
-    document.getElementById('f-name').value = d.name;
-    document.getElementById('f-price').value = d.retailPrice;
-    document.getElementById('f-designer').value = d.designer || 'Legato Official';
-    document.getElementById('f-image').value = d.image;
-    document.getElementById('f-gallery').value = (d.gallery || []).join('\n');
-    document.getElementById('f-desc').value = d.desc || '';
-    document.getElementById('f-specs').value = d.specs || '';
-    document.getElementById('f-category').value = d.category || '';
-    document.getElementById('f-tags').value = d.tags || '';
-    document.getElementById('f-material').value = d.material || '';
-    document.getElementById('f-scale').value = d.scale || '';
-    document.getElementById('f-model3d').value = d.model3d || '';
+async function initEdit() {
+  const user = Auth.getCurrentUser();
+  if (!user || user.role !== 'admin') {
+    alert("Chỉ có Admin mới được truy cập trang này!");
+    window.location.href = '/';
+    return;
   }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('id');
+  
+  let drops = [];
+  try {
+    drops = await BDB.getDrops();
+  } catch(e) {
+    drops = DB.getDrops();
+  }
+
+  if (editId) {
+    document.getElementById('page-title').textContent = "Chỉnh Sửa Sản Phẩm";
+    const d = drops.find(x => x.id === editId);
+    if (d) {
+      document.getElementById('f-id').value = d.id;
+      document.getElementById('f-name').value = d.name;
+      document.getElementById('f-price').value = d.retailPrice;
+        document.getElementById('f-discount').value = d.discountPercent || 0;
+      document.getElementById('f-designer').value = d.designer || 'Legato Official';
+      document.getElementById('f-image').value = d.image;
+      document.getElementById('f-gallery').value = (d.gallery || []).join('\n');
+      document.getElementById('f-stock-qty').value = d.stockQty || '';
+      if (d.stockCondition) document.getElementById('f-stock-condition').value = d.stockCondition;
+      document.getElementById('f-desc').value = d.desc || '';
+      document.getElementById('f-specs').value = d.specs || '';
+      document.getElementById('f-category').value = d.category || '';
+      document.getElementById('f-tags').value = d.tags || '';
+      document.getElementById('f-material').value = d.material || '';
+      document.getElementById('f-scale').value = d.scale || '';
+      document.getElementById('f-model3d').value = d.model3d || '';
+    }
+  }
+  
+  renderSuggestions();
 }
+
+// Call init
+initEdit();
 
 function renderSuggestions() {
   const drops = DB.getDrops();
@@ -316,9 +354,11 @@ function sanitizeData(obj) {
 }
 
 async function saveProduct() {
+    const user = Auth.getCurrentUser();
   const id = document.getElementById('f-id').value;
   const name = document.getElementById('f-name').value;
   const price = parseFloat(document.getElementById('f-price').value);
+    const discountPercent = parseFloat(document.getElementById('f-discount').value) || 0;
   const imageRaw = document.getElementById('f-image').value;
   
   if (!name || !price) return alert("Vui lòng nhập đủ trường bắt buộc (*)");
@@ -333,12 +373,18 @@ async function saveProduct() {
     .map(s => s.trim())
     .filter(s => s.length > 0 && !s.startsWith('data:') && !s.includes('Đang xử lý'));
   
+  const stockQty = parseInt(document.getElementById('f-stock-qty').value) || 0;
+  const stockCondition = document.getElementById('f-stock-condition').value || 'new';
+
   const data = {
     name: name,
     retailPrice: price,
+      discountPercent: discountPercent,
     designer: document.getElementById('f-designer').value,
     image: image,
     gallery: gallery,
+    stockQty: stockQty,
+    stockCondition: stockCondition,
     desc: document.getElementById('f-desc').value,
     specs: document.getElementById('f-specs').value,
     category: document.getElementById('f-category').value,
@@ -498,7 +544,7 @@ async function triggerAI() {
       Hãy phân tích bức ảnh được đính kèm và trả về JSON chứa các trường sau (bắt buộc đúng định dạng JSON, không Markdown, không có \`\`\`json):
       {
         "name": "Tên sản phẩm tiếng Việt",
-        "price": "Giá bán ước tính (số, ví dụ: 25.5)",
+        "price": "Giá bán ước tính VNĐ (chỉ số, ví dụ: 2500000)",
         "desc": "Mô tả chi tiết 2-3 câu, kế thừa văn phong của các sản phẩm cũ",
         "specs": "- Thông số kỹ thuật gạch đầu dòng (kế thừa định dạng cũ)",
         "category": "Thể loại (vd: Marvel, Anime, Đồ chơi...)",

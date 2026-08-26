@@ -194,6 +194,7 @@ async function initEdit() {
       document.getElementById('f-image').value = d.image;
       document.getElementById('f-gallery').value = (d.gallery || []).join('\n');
       document.getElementById('f-stock-qty').value = d.stockQty || '';
+          document.getElementById('f-views').value = d.views || '';
       if (d.stockCondition) document.getElementById('f-stock-condition').value = d.stockCondition;
       document.getElementById('f-desc').value = d.desc || '';
       document.getElementById('f-specs').value = d.specs || '';
@@ -384,6 +385,7 @@ async function saveProduct() {
     image: image,
     gallery: gallery,
     stockQty: stockQty,
+      views: views ? parseInt(views) : null,
     stockCondition: stockCondition,
     desc: document.getElementById('f-desc').value,
     specs: document.getElementById('f-specs').value,

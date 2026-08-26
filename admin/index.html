@@ -426,7 +426,7 @@ function renderProducts(fetchedDrops) {
         <div style="font-weight:bold; font-size:13px; margin-bottom:4px;"><i data-lucide="user" style="width:12px;display:inline-block;vertical-align:-2px;"></i> ${authorName}</div>
         <div class="text-xs text-muted"><i data-lucide="map-pin" style="width:12px;display:inline-block;vertical-align:-2px;"></i> ${location}</div>
       </td>
-      <td data-label="Giá Bán"><span style="color:var(--accent-green);font-weight:700;">${d.retailPrice ? d.retailPrice.toLocaleString('vi-VN') + ' VNĐ' : 'Liên hệ'}</span></td>
+      <td data-label="Giá Bán"><span style="color:var(--accent-green);font-weight:700;">${d.retailPrice ? DB.formatVND(d.retailPrice) : 'Liên hệ'}</span></td>
       <td class="td-asks" data-label="Tồn Kho">${d.asks ? d.asks.length : 0} Asks</td>
       <td class="td-actions" style="text-align:right;">
         <a href="/admin/edit.html?id=${d.id}" data-link class="btn-action" title="Sửa"><i data-lucide="edit-2" style="width:16px;"></i> <span style="font-size:13px; margin-left:4px;" class="desktop-hide">Sửa</span></a>

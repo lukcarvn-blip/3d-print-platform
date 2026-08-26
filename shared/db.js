@@ -49,7 +49,7 @@ const DB = {
       category: 'Đồ Chơi (Toys)',
       designer: 'Cinderwing3D',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=cinder',
-      retailPrice: 18.99,
+      retailPrice: 18990,
       image: 'https://images.unsplash.com/photo-1596726888463-5be813636f2a?w=600&q=80',
       model3d: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb', // Fallback model for demo
       gallery: [
@@ -58,8 +58,8 @@ const DB = {
       desc: 'Mô hình Rồng Pha Lê (Crystal Dragon) với các khớp nối linh hoạt, uốn lượn sinh động. \nĐược in 3D nguyên khối không cần lắp ráp. Rất phù hợp làm quà tặng, đồ trang trí bàn làm việc hoặc đồ chơi xả stress (Fidget Toy).',
       specs: '- Công nghệ in: FDM (Nhựa PLA sinh học)\n- Chiều dài: 45cm\n- Thời gian in: ~18 giờ\n- Đặc điểm: Có thể đổi màu sắc tự do (Color-shifting Filament)',
       asks: [
-        { id: 'ask_1', type: 'new', price: 20.00, seller: 'Hà Nội 3D Print', makerId: 'user_1' },
-        { id: 'ask_2', type: 'new', price: 18.50, seller: 'SG Maker Space', makerId: 'user_2' }
+        { id: 'ask_1', type: 'new', price: 20000, seller: 'Hà Nội 3D Print', makerId: 'user_1' },
+        { id: 'ask_2', type: 'new', price: 18500, seller: 'SG Maker Space', makerId: 'user_2' }
       ]
     },
     {
@@ -68,13 +68,13 @@ const DB = {
       category: 'Trang Trí (Home Decor)',
       designer: 'MakersMuse',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=muse',
-      retailPrice: 12.50,
+      retailPrice: 12500,
       image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&q=80',
       gallery: ['https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&q=80'],
       desc: 'Chậu trồng cây sen đá, xương rồng thiết kế theo phong cách Geometric Low-Poly hiện đại. \nTạo điểm nhấn cho không gian làm việc. Sản phẩm đã bao gồm lỗ thoát nước tiêu chuẩn.',
       specs: '- Công nghệ in: FDM\n- Chất liệu: PETG (Chống tia UV, chịu nhiệt độ ngoài trời)\n- Kích thước: 12x12x10 cm',
       asks: [
-        { id: 'ask_3', type: 'new', price: 12.00, seller: 'Đà Nẵng 3D', makerId: 'user_3' }
+        { id: 'ask_3', type: 'new', price: 12000, seller: 'Đà Nẵng 3D', makerId: 'user_3' }
       ]
     },
     {
@@ -83,7 +83,7 @@ const DB = {
       category: 'Cosplay Props',
       designer: 'HeroForge Labs',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=iron',
-      retailPrice: 85.00,
+      retailPrice: 85000,
       image: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=600&q=80',
       gallery: ['https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=600&q=80'],
       desc: 'Mặt nạ Iron Man Mark 50 tỷ lệ 1:1 (Real size) có thể đội được. \nPhù hợp cho Cosplay hoặc trưng bày. Lưu ý: Sản phẩm là phôi in thô (RAW 3D Print), cần tự chà nhám và sơn màu.',
@@ -96,13 +96,13 @@ const DB = {
       category: 'Boardgame Miniatures',
       designer: 'LootStudios',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=loot',
-      retailPrice: 9.99,
+      retailPrice: 9990,
       image: 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?w=600&q=80',
       gallery: ['https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?w=600&q=80'],
       desc: 'Mô hình Orc Warchief siêu chi tiết dành cho người chơi Dungeons & Dragons, Warhammer hoặc sưu tầm sơn Miniature. \nĐế base 32mm tiêu chuẩn.',
       specs: '- Công nghệ in: MSLA Resin 8K\n- Độ phân giải: 0.03mm Layer height (siêu nét)\n- Đã xử lý rửa cồn và sấy UV',
       asks: [
-        { id: 'ask_4', type: 'new', price: 9.50, seller: 'Resin Master SG', makerId: 'user_2' }
+        { id: 'ask_4', type: 'new', price: 9500, seller: 'Resin Master SG', makerId: 'user_2' }
       ]
     },
     {
@@ -111,13 +111,13 @@ const DB = {
       category: 'Cosplay Props',
       designer: 'NeonCity 3D',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=oni',
-      retailPrice: 55.00,
+      retailPrice: 55000,
       image: 'https://images.unsplash.com/photo-1542451542907-6cf80ff362d6?w=600&q=80',
       gallery: ['https://images.unsplash.com/photo-1542451542907-6cf80ff362d6?w=600&q=80'],
       desc: 'Mặt nạ quỷ Oni phong cách Cyberpunk cực ngầu, có thể đeo hoặc treo tường. Bề mặt nhám mờ.',
       specs: '- Công nghệ in: FDM hoặc Resin\n- Kích thước: Free size',
       asks: [
-        { id: 'ask_5', type: 'new', price: 50.00, seller: 'Đà Nẵng 3D', makerId: 'user_3' }
+        { id: 'ask_5', type: 'new', price: 50000, seller: 'Đà Nẵng 3D', makerId: 'user_3' }
       ]
     },
     {
@@ -126,7 +126,7 @@ const DB = {
       category: 'Figure Diorama',
       designer: 'AnimePrintZ',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=kame',
-      retailPrice: 35.00,
+      retailPrice: 35000,
       image: 'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=600&q=80',
       gallery: ['https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=600&q=80'],
       desc: 'Mô hình phong cảnh nhà rùa Kame House nổi tiếng trong Dragon Ball. Các mảnh dễ dàng sơn và lắp ráp.',
@@ -139,13 +139,13 @@ const DB = {
       category: 'Đồ Chơi (Toys)',
       designer: 'DinoMecha',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=trex',
-      retailPrice: 22.00,
+      retailPrice: 22000,
       image: 'https://images.unsplash.com/photo-1567117189196-1934ec71da70?w=600&q=80',
       gallery: ['https://images.unsplash.com/photo-1567117189196-1934ec71da70?w=600&q=80'],
       desc: 'Khung xương khủng long T-Rex lai máy móc. Rất ngầu để trưng bày.',
       specs: '- In không cần support\n- Các khớp có thể cử động',
       asks: [
-        { id: 'ask_7', type: 'new', price: 19.99, seller: 'Hà Nội 3D Print', makerId: 'user_1' }
+        { id: 'ask_7', type: 'new', price: 19990, seller: 'Hà Nội 3D Print', makerId: 'user_1' }
       ]
     },
     {
@@ -154,7 +154,7 @@ const DB = {
       category: 'Trang Trí (Home Decor)',
       designer: 'MagicLamps',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=hogwarts',
-      retailPrice: 40.00,
+      retailPrice: 40000,
       image: 'https://images.unsplash.com/photo-1618944847023-38aa001235f0?w=600&q=80',
       gallery: ['https://images.unsplash.com/photo-1618944847023-38aa001235f0?w=600&q=80'],
       desc: 'Đèn ngủ in bằng kỹ thuật Lithophane (ảnh nổi 3D). Khi bật đèn sẽ hiện ra bóng lâu đài Hogwarts tuyệt đẹp.',
@@ -167,13 +167,13 @@ const DB = {
       category: 'Anime Figure',
       designer: 'WaifuPrint',
       designerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=raiden',
-      retailPrice: 120.00,
+      retailPrice: 120000,
       image: 'https://images.unsplash.com/photo-1654157925394-4b7809721149?w=600&q=80',
       gallery: ['https://images.unsplash.com/photo-1654157925394-4b7809721149?w=600&q=80'],
       desc: 'Mô hình tĩnh Raiden Shogun (Genshin Impact). In siêu nét bằng Resin, độ cao 25cm.',
       specs: '- Công nghệ in: Resin 8K\n- Đã lên màu sơn phủ Clear bảo vệ',
       asks: [
-        { id: 'ask_9', type: 'new', price: 110.00, seller: 'SG Maker Space', makerId: 'user_2' }
+        { id: 'ask_9', type: 'new', price: 110000, seller: 'SG Maker Space', makerId: 'user_2' }
       ]
     }
   ],
@@ -226,7 +226,7 @@ const DB = {
       dropId: 'drop_003',
       dropName: 'Iron Man MK50 Helmet 1:1',
       dropImage: 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=200&q=80',
-      budget: 80.00,
+      budget: 80000,
       status: 'pending',
       createdAt: new Date().toISOString()
     }
@@ -237,7 +237,7 @@ const DB = {
       id: 'ord_001',
       dropName: 'Articulated Crystal Dragon',
       buyerEmail: 'nguyenvan.khachhang@example.com',
-      price: 20.00,
+      price: 20000,
       status: 'shipping',
       createdAt: new Date().toISOString()
     }
@@ -257,6 +257,7 @@ const DB = {
     } else {
       let updated = false;
       drops = drops.map(d => {
+        if (d.retailPrice && d.retailPrice < 1000) { d.retailPrice = d.retailPrice * 1000; updated = true; }
         if (!d.createdAt) {
           d.createdAt = new Date(Date.now() - Math.random() * 10000000000).toISOString();
           d.author = d.designer || 'Admin';
@@ -274,7 +275,15 @@ const DB = {
     const users = this._get(this.KEYS.USERS);
     if (!users || users.length === 0) this._set(this.KEYS.USERS, this.SEED_USERS);
 
-    const orders = this._get(this.KEYS.ORDERS);
+    let orders = this._get(this.KEYS.ORDERS);
+    if (orders && orders.length > 0) {
+      let ordersUpdated = false;
+      orders = orders.map(o => {
+        if (o.price && o.price < 1000) { o.price = o.price * 1000; ordersUpdated = true; }
+        return o;
+      });
+      if (ordersUpdated) this._set(this.KEYS.ORDERS, orders);
+    }
     if (!orders || orders.length === 0) this._set(this.KEYS.ORDERS, this.SEED_ORDERS);
 
     const apps = this._get(this.KEYS.MAKER_APPS);
@@ -415,7 +424,7 @@ const DB = {
   },
 
   genId(prefix='id') { return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,7)}`; },
-  formatVND(n) { return new Intl.NumberFormat('vi-VN').format(Number(n) * 1000) + ' VNĐ'; },
+  formatVND(n) { return new Intl.NumberFormat('vi-VN').format(Number(n)) + ' VNĐ'; },
   
   // Anti-XSS Utility
   escapeHTML(str) {

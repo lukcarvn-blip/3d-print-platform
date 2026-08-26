@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Product Details | Legato</title>
@@ -10,9 +11,9 @@
    LAYOUT
 ══════════════════════════════ */
 .detail-wrap {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 24px 24px 0;
+    max-width: 1280px;
+    margin: 0;
+    padding: 24px 24px 0;
   display: grid;
   grid-template-columns: 480px 1fr;
   gap: 40px;
@@ -41,9 +42,9 @@
   border-radius: 16px;
   overflow: hidden;
   background: #0d1117;
-  border: 1px solid rgba(255,255,255,0.09);
+  border: 1px solid var(--border);
 }
-@media (max-width: 900px) { .img-frame { border-radius: 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); } }
+@media (max-width: 900px) { .img-frame { border-radius: 0; border: none; border-bottom: 1px solid rgba(var(--shade-rgb),0.1); max-height: 85vw; } }
 
 .img-frame img#d-img {
   width: 100%;
@@ -56,7 +57,7 @@
 .flash-badge {
   position: absolute; top: 14px; left: 14px; z-index: 3;
   background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white; font-weight: 800; font-size: 12px;
+  color: var(--text-primary); font-weight: 800; font-size: 12px;
   padding: 5px 10px; border-radius: 7px;
   display: none; align-items: center; gap: 5px;
   box-shadow: 0 4px 14px rgba(239,68,68,0.45);
@@ -67,11 +68,11 @@
   position: absolute; top: 14px; right: 14px; z-index: 3;
   width: 34px; height: 34px;
   background: rgba(0,0,0,0.55); backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  border: 1px solid rgba(var(--shade-rgb),0.15); border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; color: white; transition: 0.2s;
+  cursor: pointer; color: var(--text-primary); transition: 0.2s;
 }
-.btn-expand:hover { background: rgba(255,255,255,0.12); }
+.btn-expand:hover { background: rgba(var(--shade-rgb),0.12); }
 
 /* Gallery nav */
 .gallery-nav {
@@ -82,13 +83,13 @@
 }
 .gallery-nav button {
   width: 30px; height: 30px; border-radius: 7px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(0,0,0,0.5); color: white;
+  border: 1px solid rgba(var(--shade-rgb),0.2);
+  background: rgba(0,0,0,0.5); color: var(--text-primary);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: 0.2s;
 }
-.gallery-nav button:hover { background: rgba(255,255,255,0.15); }
-.gallery-counter { font-size: 13px; font-weight: 700; color: white; min-width: 52px; text-align: center; }
+.gallery-nav button:hover { background: rgba(var(--shade-rgb),0.15); }
+.gallery-counter { font-size: 13px; font-weight: 700; color: var(--text-primary); min-width: 52px; text-align: center; }
 
 /* Video Frame */
 .video-frame {
@@ -97,11 +98,11 @@
   border-radius: 12px;
   overflow: hidden;
   background: #0d1117;
-  border: 1px solid rgba(255,255,255,0.09);
+  border: 1px solid var(--border);
   display: none;
 }
 .video-frame iframe { width: 100%; height: 100%; border: none; }
-@media (max-width: 900px) { .video-frame { border-radius: 0; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 0; } }
+@media (max-width: 900px) { .video-frame { border-radius: 0; border: none; border-bottom: 1px solid rgba(var(--shade-rgb),0.1); margin-bottom: 0; } }
 
 /* Buy action (sticky on left) */
 .action-zone {
@@ -111,12 +112,29 @@
   margin-top: 4px;
 }
 @media (max-width: 900px) {
-  .action-zone {
-    border-radius: 0;
-    border-left: none; border-right: none;
-    margin-top: 0; margin-bottom: 12px;
+    .action-zone {
+      position: fixed !important;
+      bottom: 70px !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      z-index: 99 !important;
+      border-radius: 0 !important;
+      border: none !important;
+      border-top: 1px solid rgba(255,255,255,0.05) !important;
+      margin: 0 !important;
+      padding: 12px 16px !important;
+      box-shadow: 0 -8px 24px rgba(0,0,0,0.6) !important;
+      background: rgba(12, 12, 20, 0.95) !important;
+      backdrop-filter: blur(16px) !important;
+    }
+    .bottom-section {
+      padding-bottom: 180px !important;
+    }
+    #global-chat-fab {
+      display: none !important;
+    }
   }
-}
 .btn-buy {
   background: var(--accent-green); color: black;
   font-weight: 800; font-family: 'Space Grotesk'; font-size: 17px;
@@ -130,11 +148,11 @@
    RIGHT COLUMN (scrollable info)
 ══════════════════════════════ */
 .right-col { padding: 4px 0 60px; }
-@media (max-width: 900px) { .right-col { padding: 16px 16px 60px; } }
+@media (max-width: 900px) { .right-col { padding: 16px 16px 16px; } }
 
 .breadcrumb { display: flex; gap: 6px; color: var(--text-muted); font-size: 12px; margin-bottom: 18px; align-items: center; }
 .breadcrumb .sep { opacity: 0.4; }
-.breadcrumb .current { color: rgba(255,255,255,0.65); }
+.breadcrumb .current { color: rgba(var(--shade-rgb),0.65); }
 
 .p-title { font-family: 'Space Grotesk', sans-serif; font-size: 36px; font-weight: 800; line-height: 1.15; margin-bottom: 14px; }
 @media (max-width: 600px) { .p-title { font-size: 26px; } }
@@ -142,7 +160,7 @@
 .p-stats { display: flex; gap: 18px; font-size: 13px; color: var(--text-muted); margin-bottom: 18px; flex-wrap: wrap; }
 .p-stats-item { display: flex; align-items: center; gap: 5px; }
 
-.price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 24px; }
+.price-row { display: none !important; }
 .price-main { font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 800; color: var(--accent-green); letter-spacing: -1px; }
 .price-original { font-size: 19px; color: var(--text-muted); text-decoration: line-through; display: none; }
 
@@ -150,46 +168,46 @@
 .options-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
 @media (max-width: 500px) { .options-row { grid-template-columns: 1fr; } }
 
-.opt-panel { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.09); border-radius: 14px; padding: 18px; }
-.opt-panel-title { font-size: 15px; font-weight: 700; color: white; margin-bottom: 14px; }
+.opt-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+.opt-panel-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 14px; }
 
 /* Material cards */
-.mat-opts { display: flex; flex-direction: column; gap: 9px; }
+.mat-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
 .mat-card {
-  display: flex; align-items: center; gap: 11px;
-  padding: 10px 12px; border-radius: 9px;
-  border: 2px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.02);
-  cursor: pointer; transition: 0.2s;
-}
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
+    padding: 12px 6px; border-radius: 9px;
+    border: 2px solid rgba(var(--shade-rgb),0.08);
+    background: rgba(var(--shade-rgb),0.02);
+    cursor: pointer; transition: 0.2s;
+  }
 .mat-card.active { border-color: var(--accent-green); background: rgba(0,255,136,0.06); }
-.mat-card:hover:not(.active) { border-color: rgba(255,255,255,0.18); }
+.mat-card:hover:not(.active) { border-color: rgba(var(--shade-rgb),0.18); }
 .mat-icon { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .mat-icon svg { width: 26px; height: 26px; }
 .mat-card.active .mat-icon svg { filter: drop-shadow(0 0 5px rgba(0,255,136,0.6)); }
-.mat-name { font-weight: 700; font-size: 13px; color: white; }
+.mat-name { font-weight: 700; font-size: 13px; color: var(--text-primary); }
 .mat-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
 .mat-desc-box { margin-top: 10px; background: rgba(0,0,0,0.35); border-radius: 8px; padding: 10px; font-size: 12px; color: var(--text-muted); line-height: 1.65; }
-.mat-desc-box strong { color: rgba(255,255,255,0.72); }
+.mat-desc-box strong { color: rgba(var(--shade-rgb),0.72); }
 
 /* Size panel */
 .size-inner { display: flex; gap: 10px; align-items: stretch; }
 .size-list { display: flex; flex-direction: column; gap: 8px; flex: 1; }
 .size-btn {
   padding: 9px 12px; border-radius: 8px;
-  border: 2px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.02);
-  color: white; font-weight: 700; font-size: 14px;
+  border: 2px solid rgba(var(--shade-rgb),0.08);
+  background: rgba(var(--shade-rgb),0.02);
+  color: var(--text-primary); font-weight: 700; font-size: 14px;
   cursor: pointer; transition: 0.2s; text-align: center; width: 100%;
 }
 .size-btn.active { border-color: var(--accent-green); background: var(--accent-green); color: black; }
-.size-btn:hover:not(.active) { border-color: rgba(255,255,255,0.2); }
+.size-btn:hover:not(.active) { border-color: rgba(var(--shade-rgb),0.2); }
 
 /* Size ruler visual — matching reference */
 .size-visual {
   display: flex; flex-direction: column; align-items: center;
   justify-content: space-between;
-  border-left: 1px solid rgba(255,255,255,0.07);
+  border-left: 1px solid rgba(var(--shade-rgb),0.07);
   padding-left: 12px;
   min-width: 70px;
 }
@@ -204,7 +222,7 @@
 }
 .ruler-line {
   width: 2px; height: 100%;
-  background: rgba(255,255,255,0.15);
+  background: rgba(var(--shade-rgb),0.15);
   border-radius: 2px;
   position: relative;
 }
@@ -231,38 +249,66 @@
 
 /* Accordion */
 .accordion {
-  border-top: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px solid rgba(var(--shade-rgb),0.07);
   padding: 18px 0; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center;
   font-weight: 700; font-size: 14px; user-select: none;
   transition: color 0.2s;
 }
-.accordion:hover { color: rgba(255,255,255,0.8); }
+.accordion:hover { color: rgba(var(--shade-rgb),0.8); }
 .accordion svg { flex-shrink: 0; transition: transform 0.2s; }
 .accordion.open svg { transform: rotate(180deg); }
 .accordion-content { display: none; padding-bottom: 18px; color: var(--text-muted); font-size: 14px; line-height: 1.7; }
 
-/* Timeline */
-.timeline { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 18px; margin-bottom: 8px; }
-.progress-track { height: 3px; background: rgba(255,255,255,0.08); border-radius: 4px; margin: 14px 0; position: relative; }
+
+  /* Timeline Responsive Fonts */
+  .tl-title { font-size: 12px; }
+  .tl-subtitle { font-size: 11px; }
+  .tl-subtext { font-size: 9px; }
+  
+  @media (min-width: 768px) {
+    .tl-title { font-size: 16px !important; }
+    .tl-subtitle { font-size: 15px !important; }
+    .tl-subtext { font-size: 12px !important; }
+    .timeline-steps { font-size: 14px !important; }
+    .timeline-steps svg, .tl-title svg { width: 16px !important; height: 16px !important; }
+  }
+
+  /* Timeline */
+.timeline { background: rgba(var(--shade-rgb),0.02); border: 1px solid rgba(var(--shade-rgb),0.07); border-radius: 12px; padding: 18px; margin-bottom: 8px; }
+.progress-track { height: 3px; background: rgba(var(--shade-rgb),0.08); border-radius: 4px; margin: 14px 0; position: relative; }
 .progress-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent-green); width: 50%; border-radius: 4px; }
 .timeline-steps { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); text-align: center; font-weight: 600; }
 
 /* Color picker */
 .color-palette { display: flex; gap: 10px; flex-wrap: wrap; }
 .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
-.color-swatch.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 10px rgba(255,255,255,0.4); }
+.color-swatch.active { border-color: var(--text-primary); transform: scale(1.15); box-shadow: 0 0 10px rgba(var(--shade-rgb),0.4); }
 .custom-color-picker { width: 30px; height: 30px; padding: 0; border: none; border-radius: 50%; cursor: pointer; overflow: hidden; background: transparent; }
 .custom-color-picker::-webkit-color-swatch-wrapper { padding: 0; }
 .custom-color-picker::-webkit-color-swatch { border: none; border-radius: 50%; }
 
-/* Bottom Sections */
-.bottom-section { max-width: 1280px; width: 100%; margin: 0 auto; padding: 40px 24px 80px; display: flex; flex-direction: column; gap: 48px; }
+
+  /* Vertical Mini List */
+  .vertical-list { display: flex; width: 100%; max-width: 100%; box-sizing: border-box; flex-direction: column; gap: 12px; }
+  .mini-list-item { display: flex; gap: 12px; align-items: center; width: 100%; max-width: 100%; box-sizing: border-box; min-width: 0; background: rgba(var(--shade-rgb),0.02); border: 1px solid var(--border); padding: 12px; border-radius: 12px; transition: all 0.2s; text-decoration: none; cursor: pointer; }
+  .mini-list-item:hover { background: rgba(var(--shade-rgb),0.06); border-color: rgba(0,255,136,0.3); transform: translateX(4px); }
+  .mini-item-img { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; background: #000; flex-shrink: 0; border: 1px solid rgba(var(--shade-rgb),0.1); }
+  .mini-item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+  .mini-item-name { font-size: 14px; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+  .mini-item-price { font-size: 13px; font-weight: 700; color: var(--accent-green); }
+  .mini-item-stock { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .mini-item-action { background: rgba(0,255,136,0.1); color: var(--accent-green); padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+
+  /* Bottom Sections */
+.bottom-section { max-width: 1280px; width: 100%; margin: 0; padding: 40px 24px 80px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .bottom-section > div { min-width: 0; }
 .half-grid { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 16px; }
 .half-grid::-webkit-scrollbar { height: 5px; }
 .half-grid::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 99px; }
-.half-grid > * { flex: 0 0 calc(25% - 12px); scroll-snap-align: start; min-width: 0; }
-@media (max-width: 600px) { .bottom-section { padding: 24px 16px 80px; } .half-grid > * { flex: 0 0 calc(50% - 8px); } }
+.half-grid > * { flex: 0 0 calc(50% - 8px); scroll-snap-align: start; min-width: 0; }
+@media (max-width: 900px) { .bottom-section { grid-template-columns: 1fr; padding: 24px 16px 80px; } }
+  @media (max-width: 600px) { .half-grid > * { flex: 0 0 calc(85% - 8px); } }
 
 /* Checkout Modal */
 .checkout-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
@@ -274,8 +320,159 @@
 .checkout-img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .checkout-row { display: flex; justify-content: space-between; }
 .checkout-label { color: var(--text-muted); }
-.checkout-val { font-weight: 700; color: white; text-align: right; }
+.checkout-val { font-weight: 700; color: var(--text-primary); text-align: right; }
 .checkout-footer { padding: 24px; background: rgba(0,255,136,0.05); }
+
+  /* Info Grid (3 columns) */
+  .info-grid {
+    max-width: 1280px; width: 100%; margin: 40px auto 0; padding: 0 24px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+  }
+  .info-col {
+    background: rgba(var(--shade-rgb),0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .info-col-title {
+    font-size: 16px; font-weight: 700; color: var(--text-primary);
+    margin-bottom: 16px; border-bottom: 1px solid rgba(var(--shade-rgb),0.07);
+    padding-bottom: 12px;
+  }
+  .info-col-content {
+    color: var(--text-muted); font-size: 14px; line-height: 1.6;
+  }
+  @media (max-width: 900px) {
+    .info-grid { grid-template-columns: 1fr; gap: 16px; margin: 24px auto 0; padding: 0 16px; }
+    .info-col { padding: 16px; }
+  }
+
+
+  /* Peek Gallery Dots */
+  .dot { width: 6px; height: 6px; border-radius: 4px; background: rgba(var(--shade-rgb),0.3); cursor: pointer; transition: 0.3s; }
+  .dot.active { width: 16px; background: var(--accent-green); }
+  .dot:hover { background: rgba(var(--shade-rgb),0.8); }
+
+
+  .breadcrumb { display: flex; gap: 8px; color: var(--text-muted); font-size: 13px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+  .breadcrumb a { color: var(--accent-green); text-decoration: none; padding: 4px 8px; background: rgba(0,255,136,0.1); border-radius: 6px; transition: 0.2s; font-weight: 500; }
+  .breadcrumb a:hover { background: rgba(0,255,136,0.2); color: var(--text-primary); }
+  .breadcrumb .sep { opacity: 0.4; font-size: 10px; }
+  .breadcrumb .current { color: rgba(var(--shade-rgb),0.8); font-weight: 500; }
+  
+  /* Mobile reordering */
+  @media (max-width: 900px) {
+    #mobile-top-info {
+      order: -1;
+      margin-bottom: 16px;
+    }
+    .detail-wrap { display: flex; flex-direction: column; align-items: stretch; }
+    .right-col { display: flex; flex-direction: column; width: 100%; }
+    .left-col { order: 0; width: 100%; margin-bottom: 0; }
+    #mobile-top-info { width: 100%; padding-left: 16px; padding-right: 16px; box-sizing: border-box; }
+    .unified-action-group { order: 1; width: 100%; }
+  }
+
+
+.desc-specs-section {
+      max-width: 1280px;
+      margin: 0;
+    padding: 40px 24px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+@media (max-width: 768px) {
+    .desc-specs-section { grid-template-columns: 1fr; padding: 24px 16px 0; gap: 16px; }
+}
+.desc-box {
+    background: rgba(var(--shade-rgb),0.02);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+.desc-box .box-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(var(--shade-rgb),0.07);
+    padding-bottom: 12px;
+}
+.desc-box .box-content {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.lego-box {
+    position: relative;
+    background: var(--bg-card) !important;
+    border: 2px solid var(--border) !important;
+    border-radius: 12px !important;
+    margin-top: 20px !important;
+    opacity: 0;
+    animation: legoStack 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    box-sizing: border-box;
+}
+.lego-box::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    right: 20px;
+    height: 10px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="10"><path d="M12,10 L12,4 Q12,1 15,1 L45,1 Q48,1 48,4 L48,10" fill="%23141417" stroke="%233a3a40" stroke-width="2" /></svg>');
+    background-repeat: space;
+    background-position: center;
+    pointer-events: none;
+    z-index: 10;
+}
+[data-theme="light"] .lego-box::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="10"><path d="M12,10 L12,4 Q12,1 15,1 L45,1 Q48,1 48,4 L48,10" fill="%23ffffff" stroke="%23cccccc" stroke-width="2" /></svg>');
+}
+@keyframes legoStack {
+    0% { opacity: 0; transform: translateY(-30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.lego-delay-1 { animation-delay: 0.1s; }
+.lego-delay-2 { animation-delay: 0.2s; }
+.lego-delay-3 { animation-delay: 0.3s; }
+.lego-delay-4 { animation-delay: 0.4s; }
+.lego-delay-5 { animation-delay: 0.5s; }
+
+
+  /* KILL THE GAP PATCH */
+  @media (max-width: 900px) {
+    .right-col {
+      padding-bottom: 0 !important;
+      margin-bottom: 0 !important;
+    }
+    .desc-specs-section {
+      padding-top: 16px !important;
+      margin-top: 0 !important;
+    }
+    .detail-wrap {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+    #options-panel-instock {
+      margin-bottom: 0 !important;
+    }
+    #color-picker-section {
+      margin-bottom: 0 !important;
+    }
+    .left-col {
+      margin-bottom: 0 !important;
+      padding-bottom: 0 !important;
+    }
+    .unified-action-group {
+      display: none !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -306,17 +503,21 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
           </button>
           <!-- Main image -->
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="d-img" alt="" onload="adaptImageBackground()" class="lazy-img" style="position:relative; z-index:2; width:100%; height:100%; object-fit:contain; display:block;">
-          <!-- Gallery nav -->
-          <div class="gallery-nav" id="gallery-nav" style="z-index:3; position:absolute;">
-            <button onclick="galleryPrev()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <span class="gallery-counter" id="gallery-counter">01 / 01</span>
-            <button onclick="galleryNext()">
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
+          
+            <!-- Main image -->
+            <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="d-img" alt="" onload="adaptImageBackground()" class="lazy-img" style="position:relative; z-index:2; width:100%; height:100%; object-fit:contain; display:block;">
+            
+            <!-- Gallery Counter -->
+            <div id="gallery-counter-badge" style="position:absolute; bottom:16px; right:16px; background:rgba(0,0,0,0.6); color: var(--text-primary); font-size:12px; font-weight:700; font-family:monospace; padding:4px 10px; border-radius:99px; z-index:3; display:none; backdrop-filter:blur(4px);">1/1</div>
+            
+            <!-- Nav Arrows -->
+            <button id="gallery-btn-prev" onclick="galleryPrev()" style="position:absolute; left:16px; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%; background:rgba(0,0,0,0.4); border:1px solid rgba(var(--shade-rgb),0.1); color: var(--text-primary); display:none; align-items:center; justify-content:center; z-index:4; cursor:pointer; backdrop-filter:blur(4px); transition:0.2s;"><i data-lucide="chevron-left" style="width:20px;"></i></button>
+            <button id="gallery-btn-next" onclick="galleryNext()" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); width:36px; height:36px; border-radius:50%; background:rgba(0,0,0,0.4); border:1px solid rgba(var(--shade-rgb),0.1); color: var(--text-primary); display:none; align-items:center; justify-content:center; z-index:4; cursor:pointer; backdrop-filter:blur(4px); transition:0.2s;"><i data-lucide="chevron-right" style="width:20px;"></i></button>
+
+          <!-- Gallery nav / Peek previews -->
+            <img id="d-img-prev" onclick="galleryPrev()" style="position:absolute; left:-12%; top:15%; height:70%; width:20%; object-fit:contain; opacity:0; filter:blur(3px); z-index:2; cursor:pointer; transition:0.3s; pointer-events:none;" />
+            <img id="d-img-next" onclick="galleryNext()" style="position:absolute; right:-12%; top:15%; height:70%; width:20%; object-fit:contain; opacity:0; filter:blur(3px); z-index:2; cursor:pointer; transition:0.3s; pointer-events:none;" />
+            <div id="gallery-dots" style="position:absolute; bottom:16px; left:0; right:0; display:flex; justify-content:center; gap:6px; z-index:3; pointer-events:auto;"></div>
         </div>
 
         <!-- Video Frame -->
@@ -325,23 +526,51 @@
         </div>
 
         <!-- BUY ACTION (sticky on left) -->
-        <div class="action-zone" id="action-zone">
-          <button class="btn-buy" id="btn-buy" onclick="checkout()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-            <span id="btn-text">MUA NGAY</span>
-          </button>
-          <div id="action-desc" style="font-size:12px;color:var(--text-muted);margin-top:10px;text-align:center;">Sản phẩm có sẵn. Giao ngay trong 2H.</div>
-        </div>
+        
+          <!-- HÀNG CÓ SẴN -->
+          <div id="stock-market-zone" style="display:none; background:rgba(253,224,71,0.05); border:1px solid rgba(253,224,71,0.3); border-radius:14px; padding:12px 16px; margin-top:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <div style="font-weight:600; color:#fde047; font-size:14px; display:flex; align-items:center; gap:6px;">
+                <i data-lucide="package" style="width:16px;"></i> <span id="sm-title">Hàng Có Sẵn</span>
+              </div>
+              <div id="sm-qty" style="font-size:13px; font-weight:700; background:rgba(253,224,71,0.2); color:#fde047; padding:2px 8px; border-radius:4px;"></div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div id="sm-condition" style="font-size:13px; color:var(--text-muted);"></div>
+              <button class="btn btn-ghost" onclick="checkoutStock()" style="border:1px solid #fde047; color:#fde047; padding:6px 12px; border-radius:6px; font-size:13px; font-weight:700; background:rgba(253,224,71,0.1);">MUA HÀNG SẴN</button>
+            </div>
+          </div>
+          <div class="action-zone" id="action-zone">
+            <div style="display: flex; gap: 10px; width: 100%;">
+              <button class="btn-buy" id="btn-buy" onclick="console.log(\'clicked\'); checkout()" style="flex: 1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <span id="btn-text">MUA NGAY</span>
+              </button>
+              <button id="btn-rush" class="btn btn-ghost" onclick="toggleRush()" style="display: none; padding: 0 16px; border: 2px solid rgba(255,68,68,0.2); border-radius: 10px; color: #ff4444; background: rgba(255,68,68,0.05); transition: 0.2s; align-items:center; justify-content:center;" title="Tăng tốc chế tác (+20% phí, hoàn thành trong 1-2 ngày)">
+                <i data-lucide="rocket"></i>
+              </button>
+            </div>
+            <div id="action-desc" style="font-size:12px;color:var(--text-muted);margin-top:10px;text-align:center;">Sản phẩm có sẵn. Giao ngay trong 2H.</div>
+          </div>
 
-      </div><!-- /left-col -->
+            <!-- Khắc tên (Left Col) -->
+            <div class="opt-panel lego-box lego-delay-3" id="engraving-section" style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px; width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+              <div class="opt-panel-title" style="font-size:14px; font-weight:700;">Khắc Tên Lên Đế (Miễn Phí)</div>
+              <input type="text" id="engraving-text" placeholder="Nhập tên hoặc thông điệp (tối đa 20 ký tự)..." maxlength="20" style="background: rgba(var(--shade-rgb),0.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; color: var(--text-primary); font-family: 'Space Grotesk'; font-size: 15px; width: 100%; box-sizing: border-box;" autocomplete="off">
+              <div style="font-size: 12px; color: var(--text-muted);">* Dành riêng cho hàng Custom. Layout 3D sẽ tối ưu trước khi in.</div>
+            </div>
+        </div><!-- /left-col -->
 
       <!-- ════ RIGHT COL ════ -->
       <div class="right-col">
 
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-          Trang chủ <span class="sep">›</span> Drops <span class="sep">›</span> <span id="d-cat"></span><span class="current" id="d-bread"></span>
-        </div>
+        <div id="mobile-top-info">
+<!-- Breadcrumb -->
+          <div class="breadcrumb">
+            <a href="/" data-link>Trang chủ</a> <span class="sep">›</span>
+            <a href="/drops/" data-link>Drops</a> <span class="sep">›</span>
+            <a href="#" data-link id="d-cat-link">Art Toy</a>
+          </div>
 
         <!-- Title -->
         <h1 class="p-title" id="d-name"></h1>
@@ -365,14 +594,124 @@
         <!-- Price -->
         <div class="price-row">
           <div class="price-main" id="d-price"></div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:24px; margin-top:-8px; font-weight: 500;">
+            * Giá trên chưa bao gồm thuế. Sẽ cộng thêm 10% VAT khi thanh toán.
+          </div>
           <div class="price-original" id="d-price-original"></div>
         </div>
 
-        <!-- Options Row -->
-        <div class="options-row">
+        
+</div>
+
+<!-- In-Stock Options Row -->
+<div id="options-panel-instock" style="display: none; margin-bottom: 20px; width: 100%;">
+  <div class="opt-panel lego-box lego-delay-1">
+    <div class="opt-panel-title">Hàng Có Sẵn <span style="font-size:11px; color:var(--accent-green);">(Giao Ngay)</span></div>
+    
+    
+<style>
+.instock-stats-grid { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 8px; 
+  margin-bottom: 16px; 
+  width: 100%; 
+  box-sizing: border-box; 
+}
+.stat-card { 
+  min-width: 0; 
+  word-wrap: break-word; 
+  background: rgba(0, 255, 136, 0.05); 
+  border: 1px solid rgba(0, 255, 136, 0.2); 
+  border-radius: 12px; 
+  padding: 12px 4px; 
+  text-align: center; 
+  transition: all 0.3s ease; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: default; 
+}
+.stat-card:hover { 
+  background: rgba(0, 255, 136, 0.12); 
+  transform: translateY(-2px); 
+  border-color: rgba(0, 255, 136, 0.5); 
+  box-shadow: 0 4px 12px rgba(0, 255, 136, 0.1); 
+}
+.stat-card i { 
+  color: var(--accent-green); 
+  width: 18px; 
+  height: 18px; 
+  margin-bottom: 6px; 
+}
+.stat-label { 
+  font-size: 9px; 
+  color: var(--text-muted); 
+  margin-bottom: 4px; 
+  text-transform: uppercase; 
+  font-weight: 700; 
+  letter-spacing: -0.2px; 
+  line-height: 1.1;
+}
+.stat-value { 
+  font-size: 13px; 
+  font-weight: 800; 
+  color: var(--text-primary); 
+  word-break: break-word;
+}
+@media (min-width: 768px) {
+  .stat-label { font-size: 10px; letter-spacing: 0; }
+  .stat-value { font-size: 14px; }
+  .stat-card i { width: 20px; height: 20px; margin-bottom: 8px; }
+  .stat-card { padding: 16px 8px; }
+}
+@media (max-width: 600px) {
+  .instock-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+<div class="instock-stats-grid">
+  <div class="stat-card">
+    <i data-lucide="box"></i>
+    <div class="stat-label">Chất Liệu</div>
+    <div class="stat-value" id="instock-display-mat">PLA</div>
+  </div>
+  <div class="stat-card">
+    <i data-lucide="ruler"></i>
+    <div class="stat-label">Kích Thước</div>
+    <div class="stat-value" id="instock-display-size">500%</div>
+  </div>
+  <div class="stat-card">
+    <i data-lucide="award"></i>
+    <div class="stat-label">Tình Trạng</div>
+    <div class="stat-value" id="instock-display-cond">Mới</div>
+  </div>
+  <div class="stat-card">
+    <i data-lucide="package"></i>
+    <div class="stat-label">Kho Sẵn</div>
+    <div class="stat-value" id="instock-display-qty" style="color:var(--accent-green);">1</div>
+  </div>
+</div>
+
+
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 16px;">
+      <label style="font-size: 14px; color: var(--text-muted);">Số lượng mua:</label>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="btn btn-ghost" style="padding: 4px 12px; border-radius: 4px;" onclick="changeQty(-1)">-</button>
+        <input type="number" id="purchase-qty" value="1" min="1" max="1" readonly style="width: 50px; background: rgba(0,0,0,0.3); border: 1px solid rgba(var(--shade-rgb),0.1); color: var(--text-primary); border-radius: 6px; padding: 6px; text-align: center;">
+        <button class="btn btn-ghost" style="padding: 4px 12px; border-radius: 4px;" onclick="changeQty(1)">+</button>
+      </div>
+    </div>
+    
+    <button class="btn btn-ghost" onclick="toggleCustomMode()" style="width: 100%; border: 1px dashed var(--border); justify-content: center;">Bạn muốn chế tác cá nhân hóa?</button>
+  </div>
+</div>
+
+          <!-- Options Row -->
+        <div class="options-row" id="options-panel-custom">
 
           <!-- Chất Liệu -->
-          <div class="opt-panel">
+          <div class="opt-panel lego-box lego-delay-1">
             <div class="opt-panel-title">Chất Liệu</div>
             <div class="mat-opts">
               <div class="mat-card active" onclick="selectMat(this,'PLA',1,'PLA (Polylactic Acid): Nhựa phân hủy sinh học thân thiện môi trường, nguồn gốc từ tinh bột ngô. Cho độ nét in cực cao, màu sắc đẹp, phù hợp trưng bày trong nhà. Giá thành rẻ hơn.')">
@@ -387,11 +726,11 @@
                 </div>
                 <div><div class="mat-name">PETG</div><div class="mat-sub">+20% Giá</div></div>
               </div>
-              <div class="mat-card" onclick="selectMat(this,'Resin 8K',1.5,'Resin 8K: Công nghệ in quang học độ phân giải cực cao 8K. Chi tiết sắc nét đến từng sợi tóc. Phù hợp cho mô hình trưng bày cao cấp.')">
+              <div class="mat-card" onclick="selectMat(this,'ABS',1.5,'ABS (Acrylonitrile Butadiene Styrene): Chịu nhiệt độ cao, siêu cứng cáp và chống va đập tốt. Phù hợp cho các chi tiết cơ khí, kỹ thuật và mô hình sử dụng ngoài trời.')">
                 <div class="mat-icon">
                   <svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="9" rx="11" ry="4" stroke="#a78bfa" stroke-width="2"/><rect x="9" y="9" width="22" height="16" rx="2" stroke="#a78bfa" stroke-width="2"/><ellipse cx="20" cy="25" rx="11" ry="4" stroke="#a78bfa" stroke-width="2"/><line x1="20" y1="5" x2="20" y2="29" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
                 </div>
-                <div><div class="mat-name">Resin 8K</div><div class="mat-sub">+50% Giá</div></div>
+                <div><div class="mat-name">ABS</div><div class="mat-sub">+50% Giá</div></div>
               </div>
             </div>
             <div class="mat-desc-box" id="mat-desc">
@@ -400,32 +739,106 @@
           </div>
 
           <!-- Kích Thước -->
-          <div class="opt-panel">
+          <div class="opt-panel lego-box lego-delay-2">
             <div class="opt-panel-title">Kích Thước</div>
-            <div class="size-inner">
-              <div class="size-list">
-                <button class="size-btn active" onclick="selectSize(this,'300%',1)">300%</button>
-                <button class="size-btn" onclick="selectSize(this,'400%',1.3)">400%</button>
-                <button class="size-btn" onclick="selectSize(this,'1000%',2.5)">1000%</button>
-              </div>
-              <div class="size-visual">
-                <div class="ruler-container">
-                  <div class="ruler-line">
-                    <div class="ruler-tick">
-                      <span class="size-cm-label" id="size-cm">~ 21 CM</span>
+            
+              
+              <div class="size-inner" style="display: flex; gap: 20px; align-items: center; justify-content: space-between;">
+                
+                <!-- Left side: Visual (Absolute positioning for stability) -->
+                <div class="size-visual" style="position: relative; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-elevated); width: 150px; height: 160px; flex-shrink: 0;">
+                  
+                  <!-- Ruler -->
+                  <div class="ruler" style="position: absolute; left: 16px; top: 16px; bottom: 16px; width: 10px; border-left: 1px solid rgba(202, 138, 4, 0.5);">
+                    <!-- Ruler ticks -->
+                    <div style="position: absolute; left: -1px; top: 0; bottom: 0; width: 6px; background: repeating-linear-gradient(to bottom, transparent, transparent 8px, #ca8a04 8px, #ca8a04 9px);"></div>
+                    
+                    <!-- Dynamic Tick -->
+                    <div class="size-tick" style="position: absolute; left: -1px; bottom: 30px; display: flex; align-items: center; transition: 0.3s; z-index: 10;">
+                      <div style="width: 16px; height: 3px; background: #fbbf24;"></div>
+                      <span id="size-cm" style="color: #fbbf24; font-weight: 800; font-size: 14px; margin-left: 8px; white-space: nowrap;">40-45 CM</span>
                     </div>
                   </div>
+
+                  <!-- Lego Figure -->
+                  <div class="lego-figure" style="position: absolute; right: 16px; bottom: 16px; display: flex; flex-direction: column; align-items: center; width: 60px;">
+                    <!-- Head -->
+                    <div style="width: 24px; height: 20px; background: #4ade80; border-radius: 4px; border-top-left-radius: 8px; border-top-right-radius: 8px; position: relative;">
+                      <div style="position:absolute; top:-4px; left:6px; width:12px; height:4px; background:#4ade80; border-radius:2px;"></div>
+                    </div>
+                    <!-- Torso -->
+                    <div style="width: 50px; height: 40px; background: #4ade80; clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%); margin-top: 2px; border-radius: 4px;"></div>
+                    <!-- Legs -->
+                    <div style="display: flex; gap: 4px; margin-top: 2px;">
+                      <div style="width: 18px; height: 28px; background: #4ade80; border-radius: 3px;"></div>
+                      <div style="width: 18px; height: 28px; background: #4ade80; border-radius: 3px;"></div>
+                    </div>
+                  </div>
+
                 </div>
-                <div class="size-figure">🧍</div>
+
+                <!-- Right side: Buttons -->
+                <div class="size-list" style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+                    <button class="size-btn active" onclick="selectSize(this,'500%',1)" style="padding: 14px; border-radius: 8px; border: 2px solid #4ade80; background: rgba(74, 222, 128, 0.05); color: #4ade80; font-weight: 800; font-size: 18px; cursor: pointer; transition: 0.2s;">500%</button>
+                    <button class="size-btn" onclick="selectSize(this,'1000%',2)" style="padding: 14px; border-radius: 8px; border: 2px solid rgba(var(--shade-rgb),0.08); background: rgba(var(--shade-rgb),0.02); color: #9ca3af; font-weight: 800; font-size: 18px; cursor: pointer; transition: 0.2s;">1000%</button>
+                  </div>
+
+              </div>
+
+            </div>
+          </div><!-- /options-row -->
+
+        
+          <!-- Timeline -->
+        
+          <!-- Phụ Kiện (Box Mica) -->
+          <div class="opt-panel lego-box" id="accessory-box-mica" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px dashed rgba(0,255,136,0.3) !important; background: rgba(0,255,136,0.02) !important;">
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <div style="width: 50px; height: 50px; background: rgba(0,255,136,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,255,136,0.2);">
+                 <i data-lucide="box" style="color: var(--accent-green);"></i>
+              </div>
+              <div>
+                <div style="font-weight: 700; font-size: 15px; color: var(--text-primary); margin-bottom: 4px;">Hộp Trưng Bày Mica</div>
+                <div style="font-size: 13px; color: var(--text-muted);" id="box-mica-price">+600.000 VNĐ (Chống bụi, Acrylic 3mm)</div>
               </div>
             </div>
+            <label style="position: relative; display: inline-block; width: 44px; height: 24px;">
+              <input type="checkbox" id="toggle-box-mica" onchange="toggleBoxMica()" style="opacity: 0; width: 0; height: 0;">
+              <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(var(--shade-rgb),0.2); transition: .4s; border-radius: 24px;"></span>
+              <span class="knob" style="position: absolute; content: ''; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;"></span>
+            </label>
+          </div>
+          <style>
+             #toggle-box-mica:checked + .slider { background-color: var(--accent-green); }
+             #toggle-box-mica:checked ~ .knob { transform: translateX(20px); }
+          </style>
+
+          <div class="timeline lego-box lego-delay-3" id="custom-timeline" style="grid-column: 1 / -1; margin-top: 16px; padding: 20px;">
+          <div class="tl-title" style="text-transform:uppercase;font-weight:700;color: var(--text-primary);display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Quy Trình Chế Tác Dự Kiến
+          </div>
+          <div class="tl-subtitle" style="color:var(--text-muted);">Tổng thời gian khoảng 2-4 ngày</div>
+          <div class="progress-track"><div class="progress-fill"></div></div>
           </div>
 
-        </div><!-- /options-row -->
+          <div class="timeline-steps">
+            <div>📦 Đặt Hàng</div>
+            <div>🔨 Chế Tác<br><span class="tl-subtext">(2-4 ngày)</span></div>
+            <div>🚚 Giao Hàng</div>
+          </div>
+        </div>
 
-        <!-- 3D Color picker (hidden unless model3d) -->
+          <!-- Nút quay lại mua hàng sẵn -->
+          <div id="btn-back-instock-container" style="margin-top: 16px; grid-column: 1 / -1;">
+            <button class="btn btn-ghost" onclick="toggleInstockMode()" style="width: 100%; border: 1px dashed var(--border); justify-content: center; color: var(--accent-green);">
+              <i data-lucide="corner-down-left" style="width: 16px; margin-right: 8px;"></i> Mua Hàng Có Sẵn
+            </button>
+          </div>
+
+          <!-- 3D Color picker (hidden unless model3d) -->
         <div id="color-picker-section" style="display:none;margin-bottom:18px;">
-          <div style="font-size:13px;font-weight:700;color:white;margin-bottom:10px;">Màu Sơn 3D</div>
+          <div style="font-size:13px;font-weight:700;color: var(--text-primary);margin-bottom:10px;">Màu Sơn 3D</div>
           <div class="color-palette" id="color-palette">
             <div class="color-swatch active" style="background:#ffffff;" onclick="changeModelColor(this,'#ffffff')"></div>
             <div class="color-swatch" style="background:#ff3333;" onclick="changeModelColor(this,'#ff3333')"></div>
@@ -437,51 +850,37 @@
           </div>
         </div>
 
-        <!-- Timeline -->
-        <div class="timeline">
-          <div style="font-size:12px;text-transform:uppercase;font-weight:700;color:white;display:flex;align-items:center;gap:7px;margin-bottom:3px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Quy Trình Chế Tác Dự Kiến
-          </div>
-          <div style="font-size:11px;color:var(--text-muted);">Tổng thời gian khoảng 2-4 ngày</div>
-          <div class="progress-track"><div class="progress-fill"></div></div>
-          <div class="timeline-steps">
-            <div>📦 Đặt Hàng</div>
-            <div>🔨 Chế Tác<br><span style="font-size:9px;">(2-4 ngày)</span></div>
-            <div>🚚 Giao Hàng</div>
-          </div>
-        </div>
-
-        <!-- Accordions -->
-        <div class="accordion" onclick="toggleAcc(this)">
-          Mô Tả Sản Phẩm <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        <div class="accordion-content" style="display:block;" id="d-desc"></div>
-
-        <div class="accordion" onclick="toggleAcc(this)">
-          Thông Số Kỹ Thuật <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        <div class="accordion-content" id="d-specs"></div>
-
-        <div class="accordion" onclick="toggleAcc(this)">
-          Danh Sách Xưởng Nhận In <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </div>
-        <div class="accordion-content" id="d-asks"></div>
-
-      </div><!-- /right-col -->
+        </div><!-- /right-col -->
     </div><!-- /detail-wrap -->
 
-    <!-- Bottom Sections -->
-    <div class="bottom-section">
-      <div>
-        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:10px;">Sản Phẩm Liên Quan</h2>
-        <div id="d-related-list" class="half-grid"></div>
+    <!-- Description & Specs Section -->
+    <div class="desc-specs-section">
+      <div class="desc-box lego-box lego-delay-4">
+          <div class="box-title">Mô Tả Sản Phẩm</div>
+          <div class="box-content" id="d-desc"></div>
       </div>
-      <div>
-        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.07);padding-bottom:10px;">📈 Bán Chạy Nhất</h2>
-        <div id="d-bestseller-list" class="half-grid"></div>
+      <div class="desc-box lego-box lego-delay-5">
+          <div class="box-title">Thông Số Kỹ Thuật</div>
+          <div class="box-content" id="d-specs"></div>
       </div>
     </div>
+
+
+    <!-- Bottom Sections -->
+      <div class="bottom-section">
+        <div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;">Sản Phẩm Liên Quan</h2>
+          <div id="d-related-list" class="half-grid"></div>
+        </div>
+        <div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;">📈 Bán Chạy Nhất</h2>
+          <div id="d-bestseller-list" class="half-grid"></div>
+        </div>
+        <div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;">📦 Đang Có Sẵn</h2>
+          <div id="d-instock-list" class="half-grid"></div>
+        </div>
+      </div>
 
   </main>
 </div>
@@ -498,8 +897,10 @@
       <div class="checkout-row"><span class="checkout-label">Sản phẩm:</span><span class="checkout-val" id="co-name"></span></div>
       <div class="checkout-row"><span class="checkout-label">Chất liệu:</span><span class="checkout-val" id="co-mat"></span></div>
       <div class="checkout-row"><span class="checkout-label">Kích thước:</span><span class="checkout-val" id="co-size"></span></div>
+        <div class="checkout-row" style="margin-top: 12px;"><span class="checkout-label">Giá tạm tính:</span><span class="checkout-val" id="co-subtotal"></span></div>
+        <div class="checkout-row"><span class="checkout-label">Thuế VAT (10%):</span><span class="checkout-val" id="co-tax"></span></div>
       <div class="checkout-row" style="margin-top:8px;font-size:18px;border-top:1px dashed var(--border);padding-top:14px;">
-        <span class="checkout-label" style="color:white;font-weight:700;">TỔNG THANH TOÁN:</span>
+        <span class="checkout-label" style="color: var(--text-primary);font-weight:700;">TỔNG THANH TOÁN:</span>
         <span class="checkout-val" id="co-total" style="color:var(--accent-green);font-size:22px;"></span>
       </div>
     </div>
@@ -529,11 +930,20 @@ BDB.init();
 
 let drop = null, basePrice = 0, currentLowestAsk = null, calculatedPrice = 0;
 let currentMatMult = 1, currentSizeMult = 1;
-let currentMatName = 'PLA', currentSizeName = '300%', currentColorHex = '#ffffff';
+let currentMatName = 'PLA', currentSizeName = '500%', currentColorHex = '#ffffff';
 let isCustom = false;
+  let isRush = false;
+  let hasAcrylicBox = false;
+  let boxMicaPrice = 600000;
+  
+  window.toggleBoxMica = function() {
+    hasAcrylicBox = document.getElementById('toggle-box-mica').checked;
+    updatePrice(isCustom);
+  };
+
 let galleryImages = [], galleryIndex = 0;
 
-const SIZE_CM_MAP = { '300%': 21, '400%': 28, '1000%': 70 };
+const SIZE_CM_MAP = { '500%': '40-45', '1000%': '60-75' };
 
 // Declare functions in global scope so onclick can access them
 window.adaptImageBackground = function() {
@@ -590,14 +1000,37 @@ window.selectMat = function(el, name, mult, desc) {
 };
 
 window.selectSize = function(el, name, mult) {
-  currentSizeMult = mult;
-  currentSizeName = name;
-  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  const cm = SIZE_CM_MAP[name] || Math.round(21 * mult);
-  document.getElementById('size-cm').textContent = `~ ${cm} CM`;
-  updatePrice();
-};
+    currentSizeMult = mult;
+    currentSizeName = name;
+    
+    // Reset all buttons
+    document.querySelectorAll('.size-btn').forEach(b => {
+      b.classList.remove('active');
+      b.style.borderColor = 'rgba(var(--shade-rgb),0.08)';
+      b.style.color = '#9ca3af';
+      b.style.background = 'rgba(var(--shade-rgb),0.02)';
+    });
+    
+    // Activate clicked button
+    el.classList.add('active');
+    el.style.borderColor = '#4ade80';
+    el.style.color = '#4ade80';
+    el.style.background = 'rgba(74, 222, 128, 0.05)';
+    
+    // Update CM label
+    const cm = SIZE_CM_MAP[name] || Math.round(21 * mult);
+    const cmLabel = document.getElementById('size-cm');
+    if (cmLabel) cmLabel.textContent = `${cm} CM`;
+    
+    // Update tick position
+    const tick = document.querySelector('.size-tick');
+    if (tick) {
+      const bottomPx = mult <= 1.5 ? 30 : 90;
+      tick.style.bottom = `${bottomPx}px`;
+    }
+    
+    updatePrice();
+  };
 
 window.changeModelColor = function(el, colorHex) {
   currentColorHex = colorHex;
@@ -635,134 +1068,339 @@ window.toggleAcc = function(el) {
   el.classList.toggle('open', !isOpen);
 };
 
-window.checkout = async function() {
-  const user = Auth.getCurrentUser();
-  if (!user) {
-    alert('Vui lòng đăng nhập để giao dịch!');
-    window.location.href = '/login/?next=' + encodeURIComponent(window.location.pathname + window.location.search);
-    return;
-  }
-  document.getElementById('co-img').src = document.getElementById('d-img').src;
-  document.getElementById('co-name').textContent = drop.name;
-  document.getElementById('co-mat').textContent = currentMatName;
-  document.getElementById('co-size').textContent = currentSizeName;
-  document.getElementById('co-total').textContent = DB.formatUSD(calculatedPrice);
-  document.getElementById('checkout-modal').classList.add('open');
-};
 
-window.closeCheckoutModal = function() {
-  document.getElementById('checkout-modal').classList.remove('open');
-};
+  window.checkout = async function() {
+  try {
 
-window.confirmCheckout = function() {
-  if (isCustom) {
-    DB.addBid({
-      id: DB.genId('bid'), dropId: drop.id,
-      dropName: `${drop.name} (${currentMatName}, ${currentSizeName}, ${currentColorHex})`,
-      dropImage: drop.image, budget: calculatedPrice,
-      status: 'pending', createdAt: new Date().toISOString()
-    });
-    alert(`Đã chốt đơn gia công với giá ${DB.formatUSD(calculatedPrice)}!`);
-  } else {
-    alert(`Chốt đơn thành công với giá ${DB.formatUSD(calculatedPrice)}!`);
-    if (drop.asks && drop.asks.length > 0) {
-      drop.asks.shift();
-      DB.updateDropAsks(drop.id, drop.asks);
+    const qty = parseInt((document.getElementById('purchase-qty') ? document.getElementById('purchase-qty').value : 1) || 1);
+    const item = {
+        id: drop.id,
+        name: drop.name,
+        image: drop.image,
+        mat: isCustom ? currentMatName : 'Mặc định',
+        size: isCustom ? currentSizeName : 'Mặc định',
+        color: isCustom ? currentColorHex : '#ffffff',
+        price: isCustom ? calculatedPrice : calculatedPrice / qty,
+        qty: isCustom ? 1 : qty,
+        isCustom: isCustom,
+        isRush: isRush,
+          hasAcrylicBox: hasAcrylicBox,
+          acrylicBoxPrice: boxMicaPrice,
+          engraving: isCustom ? (document.getElementById('engraving-text') ? document.getElementById('engraving-text').value.trim() : '') : ''
+      };
+    
+    DB.addToCart(item);
+    
+    const btn = document.getElementById('btn-buy');
+    const txt = document.getElementById('btn-text');
+    if (!btn || !txt) return;
+    
+    // -- BEGIN ANIMATION --
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    const plane = document.createElement('div');
+    plane.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-green);"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
+    plane.style.position = 'fixed';
+    plane.style.zIndex = '999999';
+    plane.style.pointerEvents = 'none';
+    
+    const btnRect = btn.getBoundingClientRect();
+    const startX = btnRect.left + btnRect.width / 2 - 12;
+    const startY = btnRect.top + btnRect.height / 2 - 12;
+    
+    let cartBtn = document.querySelector('.header-btn[title="Giỏ hàng"]');
+    if (!cartBtn) {
+       const icon = document.querySelector('.header-btn i[data-lucide="shopping-cart"]');
+       if (icon) cartBtn = icon.parentElement;
     }
-  }
-  window.location.href = '/drops/';
-};
+    
+    let endX = window.innerWidth - 40;
+    let endY = 20;
+    if (cartBtn) {
+       const cartRect = cartBtn.getBoundingClientRect();
+       endX = cartRect.left + cartRect.width / 2 - 12;
+       endY = cartRect.top + cartRect.height / 2 - 12;
+    }
+    
+    plane.style.left = startX + 'px';
+    plane.style.top = startY + 'px';
+    plane.style.transition = 'all 1s cubic-bezier(0.25, 1, 0.5, 1)';
+    plane.style.transform = 'scale(1.5) rotate(-45deg)';
+    document.body.appendChild(plane);
+    
+    // Reflow
+    void plane.offsetWidth;
+    
+    plane.style.left = endX + 'px';
+    plane.style.top = endY + 'px';
+    plane.style.transform = 'scale(0.2) rotate(45deg)';
+    plane.style.opacity = '0';
+    
+    setTimeout(() => {
+      if (plane.parentNode) plane.parentNode.removeChild(plane);
+    }, 1000);
+    // -- END ANIMATION --
 
-window.startChat = function(makerId) {
-  if (typeof window.startGlobalChat === 'function') {
-    window.startGlobalChat(makerId, drop.id, drop.name);
+    const oldText = txt.textContent;
+    const oldBg = btn.style.background;
+    const oldColor = btn.style.color;
+    
+    txt.textContent = 'ĐÃ THÊM VÀO GIỎ HÀNG';
+    btn.style.background = 'var(--accent-purple)';
+    btn.style.color = 'white';
+    
+    setTimeout(() => {
+      txt.textContent = oldText;
+      btn.style.background = oldBg;
+      btn.style.color = oldColor;
+    }, 2000);
+  } catch (err) {
+    alert("Lỗi checkout: " + err.message + "\n" + err.stack);
   }
 };
+window.checkoutStock = function() {
+      if(window.toggleInstockMode) window.toggleInstockMode();
+      window.checkout();
+  };
+
+  // Remove old modal functions
+  window.closeCheckoutModal = function() {};
+  window.confirmCheckout = function() {};
+
 
 // ══════════════════════════════════════════════════════════
 //  PRICE UPDATE
 // ══════════════════════════════════════════════════════════
-function updatePrice(forceCustom = false) {
-  isCustom = forceCustom || (currentMatMult !== 1 || currentSizeMult !== 1 || currentColorHex !== '#ffffff');
 
-  const priceEl = document.getElementById('d-price');
-  const origEl  = document.getElementById('d-price-original');
-  const az       = document.getElementById('action-zone');
-  const btnBuy   = document.getElementById('btn-buy');
-  const btnText  = document.getElementById('btn-text');
-  const desc     = document.getElementById('action-desc');
+  window.changeQty = function(delta) {
+    const el = document.getElementById('purchase-qty');
+    let val = parseInt(el.value) || 1;
+    let max = parseInt(el.max) || 1;
+    val += delta;
+    if(val < 1) val = 1;
+    if(val > max) val = max;
+    el.value = val;
+    updatePrice();
+  };
 
-  if (isCustom) {
-    calculatedPrice = basePrice * currentMatMult * currentSizeMult;
-    priceEl.textContent = DB.formatUSD(calculatedPrice);
-    priceEl.style.color = 'var(--accent-purple)';
-    origEl.style.display = 'none';
-    az.style.background = 'rgba(124,58,237,0.06)';
-    az.style.borderColor = 'rgba(124,58,237,0.3)';
-    btnBuy.style.background = 'var(--accent-purple)';
-    btnBuy.style.color = 'white';
-    btnText.textContent = 'ĐẶT GIA CÔNG (BID) - ' + DB.formatUSD(calculatedPrice);
-    desc.textContent = 'Custom: Yêu cầu gửi sàn ẩn danh. Xưởng nhận đơn & chế tác 2-4 ngày.';
-  } else {
-    calculatedPrice = currentLowestAsk || basePrice;
-    priceEl.textContent = DB.formatUSD(calculatedPrice);
-    priceEl.style.color = 'var(--accent-green)';
-    if (currentLowestAsk && currentLowestAsk < basePrice) {
-      origEl.textContent = DB.formatUSD(basePrice);
-      origEl.style.display = 'block';
+  
+  
+  window.toggleRush = function() {
+    isRush = !isRush;
+    const btn = document.getElementById('btn-rush');
+    if (isRush) {
+      btn.style.background = '#ff4444';
+      btn.style.color = 'white';
+      btn.style.borderColor = '#ff4444';
     } else {
-      origEl.style.display = 'none';
+      btn.style.background = 'rgba(255,68,68,0.05)';
+      btn.style.color = '#ff4444';
+      btn.style.borderColor = 'rgba(255,68,68,0.2)';
     }
-    az.style.background = 'rgba(0,255,136,0.05)';
-    az.style.borderColor = 'rgba(0,255,136,0.25)';
-    btnBuy.style.background = 'var(--accent-green)';
-    btnBuy.style.color = 'black';
-    if (currentLowestAsk) {
-      btnText.textContent = 'MUA NGAY - ' + DB.formatUSD(calculatedPrice);
-      desc.textContent = 'Sản phẩm có sẵn tại kho (Verified). Giao ngay trong 2H.';
+    updatePrice(true);
+  };
+
+  window.toggleCustomMode = function() {
+    isCustom = true;
+    document.getElementById('options-panel-instock').style.display = 'none';
+    document.getElementById('options-panel-custom').style.display = 'grid';
+    updatePrice(true);
+  };
+  
+  window.toggleInstockMode = function() {
+    currentMatMult = 1;
+    currentSizeMult = 1;
+    currentColorHex = '#ffffff';
+    // reset UI buttons
+    document.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
+    
+    const defaultMats = document.querySelectorAll('.mat-opts .btn-opt');
+    const defaultSizes = document.querySelectorAll('.size-opts .btn-opt');
+    if (defaultMats.length > 0) defaultMats[0].classList.add('active');
+    if (defaultSizes.length > 0) defaultSizes[0].classList.add('active');
+    
+    updatePrice(false);
+  };
+
+
+  function updatePrice(forceCustom = null) {
+    const hasStock = drop.stockQty && drop.stockQty > 0;
+    
+    if (forceCustom === true || forceCustom === false) {
+      isCustom = forceCustom;
     } else {
-      btnText.textContent = 'ĐẶT GIA CÔNG (BID) - ' + DB.formatUSD(calculatedPrice);
-      desc.textContent = 'Hết hàng có sẵn. Bấm Đặt Gia Công để xưởng in mới.';
-      isCustom = true;
+      if (typeof isCustom === 'undefined') {
+        isCustom = (!hasStock) || (currentMatMult !== 1 || currentSizeMult !== 1 || currentColorHex !== '#ffffff');
+      }
     }
-  }
+
+          if (hasStock && !isCustom) {
+        document.getElementById('options-panel-instock').style.display = 'block';
+        document.getElementById('options-panel-custom').style.display = 'none';
+        if (document.getElementById('custom-timeline')) document.getElementById('custom-timeline').style.display = 'none';
+          if (document.getElementById('engraving-section')) document.getElementById('engraving-section').style.display = 'none';
+        
+        
+          document.getElementById('instock-display-qty').textContent = drop.stockQty;
+          document.getElementById('instock-display-cond').textContent = drop.stockCondition === 'used' ? 'Cũ' : 'Mới';
+          const matEl = document.getElementById('instock-display-mat');
+          const sizeEl = document.getElementById('instock-display-size');
+          if(matEl) matEl.textContent = drop.material || 'PLA';
+          if(sizeEl) sizeEl.textContent = drop.scale || '500%';
+          document.getElementById('purchase-qty').max = drop.stockQty;
+          
+          if (document.getElementById('btn-back-instock-container')) {
+              document.getElementById('btn-back-instock-container').style.display = 'none';
+          }
+
+      } else {
+        document.getElementById('options-panel-instock').style.display = 'none';
+        document.getElementById('options-panel-custom').style.display = 'grid';
+        if (document.getElementById('custom-timeline')) document.getElementById('custom-timeline').style.display = 'block';
+          if (document.getElementById('engraving-section')) document.getElementById('engraving-section').style.display = 'flex';
+        if (document.getElementById('btn-back-instock-container')) {
+            document.getElementById('btn-back-instock-container').style.display = hasStock ? 'block' : 'none';
+        }
+      }
+
+    const priceEl = document.getElementById('d-price');
+    const origEl  = document.getElementById('d-price-original');
+    const az       = document.getElementById('action-zone');
+    const btnBuy   = document.getElementById('btn-buy');
+    const btnText  = document.getElementById('btn-text');
+    const desc     = document.getElementById('action-desc');
+    
+    // Apply discount
+    const discount = drop.discountPercent ? parseFloat(drop.discountPercent) : 0;
+      const finalBasePrice = basePrice * (1 - discount/100);
+      
+      let currentScale = isCustom ? currentSizeName : (drop.scale || '500%');
+      boxMicaPrice = (currentScale.includes('1000') || currentScale.includes('1000%')) ? 800000 : 600000;
+      const boxPriceEl = document.getElementById('box-mica-price');
+      if (boxPriceEl) boxPriceEl.textContent = '+' + DB.formatVND(boxMicaPrice) + ' (Chống bụi, Acrylic 3mm)';
+
+
+    if (isCustom) {
+      document.getElementById('btn-rush').style.display = 'flex';
+      calculatedPrice = finalBasePrice * currentMatMult * currentSizeMult * (isRush ? 1.2 : 1);
+        if (hasAcrylicBox) calculatedPrice += boxMicaPrice;
+      priceEl.textContent = DB.formatVND(calculatedPrice);
+      priceEl.style.color = 'var(--accent-purple)';
+      
+      if (discount > 0 || isRush) {
+        origEl.textContent = DB.formatVND(basePrice * currentMatMult * currentSizeMult);
+        origEl.style.display = 'block';
+      } else {
+        origEl.style.display = 'none';
+      }
+
+      az.style.background = 'rgba(124,58,237,0.06)';
+      az.style.borderColor = 'rgba(124,58,237,0.3)';
+      btnBuy.style.background = 'var(--accent-purple)';
+      btnBuy.style.color = 'white';
+      btnText.textContent = 'ĐẶT GIA CÔNG (BID) - ' + DB.formatVND(calculatedPrice);
+      desc.textContent = isRush ? 'Custom Rush: Yêu cầu in ưu tiên. Chế tác từ 1-2 ngày.' : 'Custom: Yêu cầu in riêng 3D theo lựa chọn. Chế tác từ 2-4 ngày.';
+      if(isRush) desc.style.color = '#ff4444'; else desc.style.color = 'var(--text-muted)';
+    } else {
+      document.getElementById('btn-rush').style.display = 'none';
+      const qty = parseInt((document.getElementById('purchase-qty') ? document.getElementById('purchase-qty').value : 1) || 1);
+      calculatedPrice = finalBasePrice * qty;
+        if (hasAcrylicBox) calculatedPrice += (boxMicaPrice * qty);
+        priceEl.textContent = DB.formatVND(calculatedPrice);
+      priceEl.style.color = 'var(--accent-green)';
+      
+      if (discount > 0) {
+        origEl.textContent = DB.formatVND(basePrice * qty);
+        origEl.style.display = 'block';
+      } else {
+        origEl.style.display = 'none';
+      }
+
+      az.style.background = 'rgba(0,255,136,0.06)';
+      az.style.borderColor = 'rgba(0,255,136,0.3)';
+      btnBuy.style.background = 'var(--accent-green)';
+      btnBuy.style.color = 'black';
+      
+      btnText.textContent = 'MUA NGAY - ' + DB.formatVND(calculatedPrice * qty);
+      desc.textContent = 'Sản phẩm có sẵn tại kho. Giao ngay trong 2H.';
+    }
 }
 
 // ══════════════════════════════════════════════════════════
 //  GALLERY HELPERS
 // ══════════════════════════════════════════════════════════
-function buildGallery() {
-  const all = [];
-  if (drop.image && drop.image.trim()) all.push(drop.image.trim());
-  (drop.gallery || []).forEach(src => { if (src && src.trim() && src.trim() !== drop.image) all.push(src.trim()); });
-  galleryImages = all;
-  galleryIndex = 0;
-  
-  if (galleryImages.length <= 1) {
-    document.getElementById('gallery-nav').style.display = 'none';
-  } else {
-    document.getElementById('gallery-nav').style.display = 'flex';
-  }
-  
-  setGalleryImage(0);
-}
 
-function setGalleryImage(idx) {
-  galleryIndex = Math.max(0, Math.min(idx, Math.max(0, galleryImages.length - 1)));
-  const img = document.getElementById('d-img');
-  if (img) {
-    const newSrc = galleryImages[galleryIndex] || '/shared/no-image.jpg';
-    if (img.src !== newSrc) {
-      img.classList.remove('loaded');
-      const container = document.getElementById('img-frame-container');
-      if (container) container.classList.add('skeleton-bg');
-      img.src = newSrc;
+  window.galleryPrev = function() {
+    if (galleryIndex > 0) setGalleryImage(galleryIndex - 1);
+    else setGalleryImage(galleryImages.length - 1); // loop
+  };
+  
+  window.galleryNext = function() {
+    if (galleryIndex < galleryImages.length - 1) setGalleryImage(galleryIndex + 1);
+    else setGalleryImage(0); // loop
+  };
+
+  function buildGallery() {
+    const all = [];
+    if (drop.image && drop.image.trim()) all.push(drop.image.trim());
+    (drop.gallery || []).forEach(src => { if (src && src.trim() && src.trim() !== drop.image) all.push(src.trim()); });
+    galleryImages = all;
+    galleryIndex = 0;
+    
+    const prevBtn = document.getElementById('gallery-btn-prev');
+    const nextBtn = document.getElementById('gallery-btn-next');
+    const counterBadge = document.getElementById('gallery-counter-badge');
+    const dotsContainer = document.getElementById('gallery-dots');
+    
+    if (galleryImages.length <= 1) {
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+      if (counterBadge) counterBadge.style.display = 'none';
+      if (dotsContainer) dotsContainer.innerHTML = '';
+    } else {
+      if (prevBtn) prevBtn.style.display = 'flex';
+      if (nextBtn) nextBtn.style.display = 'flex';
+      if (counterBadge) counterBadge.style.display = 'block';
+      
+      if (dotsContainer) {
+        dotsContainer.innerHTML = galleryImages.map((_, i) => 
+          `<div class="dot ${i === 0 ? 'active' : ''}" onclick="setGalleryImage(${i})"></div>`
+        ).join('');
+      }
+    }
+    
+    if (galleryImages.length > 0) {
+      setGalleryImage(0);
     }
   }
-  const counter = document.getElementById('gallery-counter');
-  const total = Math.max(1, galleryImages.length);
-  if (counter) counter.textContent = `${String(galleryIndex + 1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
-}
+
+
+
+  function setGalleryImage(idx) {
+    galleryIndex = Math.max(0, Math.min(idx, Math.max(0, galleryImages.length - 1)));
+    const img = document.getElementById('d-img');
+    if (img && galleryImages.length > 0) {
+      const newSrc = galleryImages[galleryIndex] || '/shared/no-image.jpg';
+      if (img.src !== newSrc && !img.src.endsWith(newSrc)) {
+        img.classList.remove('loaded');
+        const container = document.getElementById('img-frame-container');
+        if (container) container.classList.add('skeleton-bg');
+        img.src = newSrc;
+      }
+    }
+    const counter = document.getElementById('gallery-counter-badge');
+    const total = Math.max(1, galleryImages.length);
+    if (counter) counter.textContent = `${galleryIndex + 1}/${total}`;
+    
+    // Update dots
+    const dotsContainer = document.getElementById('gallery-dots');
+    if (dotsContainer) {
+      Array.from(dotsContainer.children).forEach((dot, i) => {
+        dot.classList.toggle('active', i === galleryIndex);
+      });
+    }
+  }
+
 
 function extractYoutubeId(url) {
   if (!url) return null;
@@ -779,30 +1417,37 @@ async function renderBottomSections() {
   allDrops = allDrops.filter(d => d.id !== drop.id);
 
   const renderList = (list) => list.map(d => {
-    const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
-    const priceDisplay = lowestAsk ? DB.formatUSD(lowestAsk) : DB.formatUSD(d.retailPrice);
-    const stock = (d.asks || []).length;
-    return `
-      <div class="drop-card">
-        <div class="drop-card-img-wrap" onclick="window.location.href='/drops/detail.html?id=${d.id}'" style="cursor:pointer;">
-          <img src="${(d.image&&d.image.trim())?DB.escapeHTML(d.image):'/shared/no-image.jpg'}" alt="${DB.escapeHTML(d.name)}" onerror="this.src='/shared/no-image.jpg'">
-          <div class="drop-card-img-overlay"><div class="gallery-hint">Xem</div></div>
-          <div class="drop-card-stock" style="color:${stock>0?'var(--accent-green)':'#ef4444'};border-color:${stock>0?'rgba(0,255,136,0.3)':'rgba(239,68,68,0.3)'};">${stock} Sẵn</div>
-        </div>
-        <div class="drop-card-body">
-          ${d.category ? `<div class="drop-card-cat">${DB.escapeHTML(d.category)}</div>` : ''}
-          <a href="/drops/detail.html?id=${d.id}" data-link class="drop-card-name">${DB.escapeHTML(d.name)}</a>
-          <div class="drop-card-footer">
-            <div class="drop-card-price">Từ ${priceDisplay}</div>
-            <a href="/drops/detail.html?id=${d.id}" data-link class="drop-card-buy">Mua</a>
+      const lowestAsk = d.asks && d.asks.length > 0 ? Math.min(...d.asks.map(a => a.price)) : null;
+      let priceDisplay = lowestAsk ? DB.formatVND(lowestAsk) : DB.formatVND(d.retailPrice);
+      if (d.discountPercent > 0) priceDisplay = DB.formatVND(d.retailPrice * (1 - d.discountPercent/100));
+      const stock = (d.stockQty !== undefined && d.stockQty > 0) ? d.stockQty : (d.asks || []).length;
+      
+      return `
+        <a href="/drops/detail.html?id=${d.id}" class="mini-list-item" data-link>
+          <img src="${(d.image&&d.image.trim())?DB.escapeHTML(d.image):'/shared/no-image.jpg'}" class="mini-item-img" alt="${DB.escapeHTML(d.name)}" onerror="this.src='/shared/no-image.jpg'">
+          <div class="mini-item-info">
+            <div class="mini-item-name">${DB.escapeHTML(d.name)}</div>
+            <div class="mini-item-price">Từ ${priceDisplay}</div>
+            <div class="mini-item-stock">${stock > 0 ? `Sẵn ${stock} kho` : 'Chờ chế tác'}</div>
           </div>
-        </div>
-      </div>
-    `;
-  }).join('');
+          <div class="mini-item-action">
+            <i data-lucide="chevron-right" style="width:16px;"></i>
+          </div>
+        </a>
+      `;
+    }).join('');
 
-  document.getElementById('d-related-list').innerHTML = renderList(allDrops.slice(0,8)) || '<div style="opacity:.5">Chưa có sản phẩm.</div>';
-  document.getElementById('d-bestseller-list').innerHTML = renderList([...allDrops].reverse().slice(0,8)) || '<div style="opacity:.5">Chưa có sản phẩm.</div>';
+  
+    const relEl = document.getElementById('d-related-list');
+    const bestEl = document.getElementById('d-bestseller-list');
+    const inEl = document.getElementById('d-instock-list');
+    
+    if (relEl) { relEl.className = 'vertical-list'; relEl.innerHTML = renderList(allDrops.slice(0,5)) || '<div style="opacity:.5">Chưa có sản phẩm.</div>'; }
+    if (bestEl) { bestEl.className = 'vertical-list'; bestEl.innerHTML = renderList([...allDrops].reverse().slice(0,5)) || '<div style="opacity:.5">Chưa có sản phẩm.</div>'; }
+    
+    const inStockDrops = allDrops.filter(d => (d.stockQty !== undefined && d.stockQty > 0) || (d.asks && d.asks.length > 0));
+    if (inEl) { inEl.className = 'vertical-list'; inEl.innerHTML = renderList(inStockDrops.slice(0,5)) || '<div style="opacity:.5">Chưa có sản phẩm.</div>'; }
+
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
@@ -832,9 +1477,23 @@ async function initDetail() {
   // ── Populate UI ──
   document.title = drop.name + ' | Legato';
   document.getElementById('d-name').textContent = drop.name;
-  document.getElementById('d-bread').textContent = drop.name;
-  if (drop.category) document.getElementById('d-cat').textContent = drop.category + ' › ';
-  document.getElementById('d-ask-count').textContent = (drop.asks || []).length;
+  
+  if (drop.category) {
+      const catL = document.getElementById('d-cat-link');
+      if(catL) { catL.textContent = drop.category; catL.href = '/drops/?cat=' + encodeURIComponent(drop.category); }
+    }
+  const stockCount = (drop.stockQty !== undefined && drop.stockQty > 0) ? drop.stockQty : (drop.asks || []).length;
+  document.getElementById('d-ask-count').textContent = stockCount;
+
+  // Generate pseudo-random realistic values for likes and views based on drop.id
+  const idNum = parseInt(drop.id.replace(/\D/g, '')) || Math.floor(Math.random() * 10) + 1;
+  const likesCount = drop.likes || (idNum * 47 + 12);
+  const viewsCount = drop.views || (likesCount * 14 + 105);
+  
+  const elLikes = document.getElementById('d-likes');
+  const elViews = document.getElementById('d-views');
+  if (elLikes) elLikes.textContent = likesCount;
+  if (elViews) elViews.textContent = viewsCount;
   document.getElementById('d-desc').innerHTML  = drop.desc  ? drop.desc.replace(/\n/g,'<br>') : '<span style="opacity:.5">Chưa có mô tả.</span>';
   document.getElementById('d-specs').innerHTML = drop.specs ? drop.specs.replace(/\n/g,'<br>') : '<span style="opacity:.5">Chưa có thông số.</span>';
 
@@ -854,9 +1513,9 @@ async function initDetail() {
     mv.setAttribute('camera-controls', '');
     mv.setAttribute('auto-rotate', '');
     mv.setAttribute('rotation-per-second', '30deg');
-    mv.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,0.08)0%,transparent 70%);';
+    mv.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;background:radial-gradient(circle,rgba(var(--shade-rgb),0.08)0%,transparent 70%);';
     document.getElementById('d-img').style.display = 'none';
-    document.getElementById('gallery-nav').style.display = 'none';
+    // noop
     wrap.appendChild(mv);
     document.getElementById('color-picker-section').style.display = 'block';
   }
@@ -870,29 +1529,59 @@ async function initDetail() {
     }
   }
 
-  // Asks
-  if (drop.asks && drop.asks.length > 0) {
-    document.getElementById('d-asks').innerHTML = drop.asks.map(a => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:11px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">
-        <div>
-          <div style="font-weight:700;color:white;">${a.seller || 'Xưởng Ẩn Danh'}</div>
-          <div style="font-size:11px;color:var(--text-muted);">${a.type === 'new' ? 'In mới 100%' : 'Pass lại'}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div style="color:var(--accent-green);font-weight:700;">${DB.formatUSD(a.price)}</div>
-          <button class="btn btn-ghost" onclick="startChat('${a.makerId||'admin'}')" style="padding:5px 10px;font-size:12px;">💬 Chat</button>
-        </div>
-      </div>
-    `).join('');
-  } else {
-    document.getElementById('d-asks').innerHTML = '<div style="opacity:.6;font-size:13px;">Chưa có xưởng nào nhận in sẵn. Hãy Đặt Gia Công để xưởng nhận nhé.</div>';
-  }
-
   // Gallery & Price
   if (!drop.model3d) buildGallery();
   updatePrice();
   renderBottomSections();
 }
+
+  // Layout unification patch
+  setTimeout(() => {
+    const sm = document.getElementById('stock-market-zone');
+    const az = document.getElementById('action-zone');
+    const tl = document.querySelector('.timeline');
+    const rightCol = document.querySelector('.right-col');
+    const isMobile = window.innerWidth <= 900;
+    
+    if (sm && az && !document.querySelector('.unified-action-group')) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'unified-action-group lego-box lego-delay-3';
+      wrapper.style.display = 'flex';
+      wrapper.style.flexDirection = 'column';
+      if (sm) { sm.style.borderTopLeftRadius = '10px'; sm.style.borderTopRightRadius = '10px'; }
+      
+      // style adjustments
+      sm.style.marginTop = '0';
+      sm.style.border = 'none';
+      sm.style.borderBottom = '1px solid rgba(253,224,71,0.2)';
+      sm.style.borderRadius = '0';
+      
+      az.style.marginTop = '0';
+      az.style.border = 'none';
+      az.style.borderBottomLeftRadius = '10px'; az.style.borderBottomRightRadius = '10px';
+      
+      if (tl) tl.style.background = 'transparent';
+
+      if (isMobile && rightCol) {
+            // DO NOT wrap az (action-zone) on mobile inside a lego-box, 
+            // because transform breaks position:fixed!
+            // Let's just do nothing to az on mobile.
+        } else {
+          az.parentNode.insertBefore(wrapper, az);
+          wrapper.appendChild(sm);
+          wrapper.appendChild(az);
+      }
+    }
+
+    // Fix Safari display:contents bug by manually moving top info on mobile
+    if (isMobile) {
+        const topInfo = document.getElementById('mobile-top-info');
+        const detailWrap = document.querySelector('.detail-wrap');
+        if (topInfo && detailWrap) {
+            detailWrap.insertBefore(topInfo, detailWrap.firstChild);
+        }
+    }
+  }, 100);
 
 // Start
 initDetail();

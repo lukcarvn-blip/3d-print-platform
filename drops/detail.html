@@ -5,15 +5,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Product Details | Legato</title>
-<link rel="stylesheet" href="/shared/style.css">
+<link rel="stylesheet" href="/shared/style.css?v=2024083012">
 <style>
 /* ══════════════════════════════
    LAYOUT
 ══════════════════════════════ */
 .detail-wrap {
-      max-width: 100%;
-      margin: 0;
-      padding: 24px 40px 0;
+  padding: 24px 24px 0;
   display: grid;
   grid-template-columns: 480px 1fr;
   gap: 40px;
@@ -147,7 +145,7 @@
 /* ══════════════════════════════
    RIGHT COLUMN (scrollable info)
 ══════════════════════════════ */
-.right-col { padding: 4px 0 60px; }
+.right-col { padding: 4px 0 16px; }
 @media (max-width: 900px) { .right-col { padding: 16px 16px 16px; } }
 
 .breadcrumb { display: flex; gap: 6px; color: var(--text-muted); font-size: 12px; margin-bottom: 18px; align-items: center; }
@@ -301,13 +299,13 @@
   .mini-item-action { background: rgba(0,255,136,0.1); color: var(--accent-green); padding: 6px; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
 
   /* Bottom Sections */
-.bottom-section { max-width: 100%; width: 100%; margin: 0; padding: 40px 40px 80px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.bottom-section { max-width: 1280px; width: 100%; margin: 0; padding: 40px 0 80px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
   .bottom-section > div { min-width: 0; }
 .half-grid { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 16px; }
 .half-grid::-webkit-scrollbar { height: 5px; }
 .half-grid::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 99px; }
 .half-grid > * { flex: 0 0 calc(50% - 8px); scroll-snap-align: start; min-width: 0; }
-@media (max-width: 900px) { .bottom-section { grid-template-columns: 1fr; padding: 24px 16px 80px; } }
+@media (max-width: 900px) { .bottom-section { grid-template-columns: 1fr; padding: 24px 0 80px; gap: 48px; } }
   @media (max-width: 600px) { .half-grid > * { flex: 0 0 calc(85% - 8px); } }
 
 /* Checkout Modal */
@@ -375,15 +373,15 @@
 
 
 .desc-specs-section {
-      max-width: 100%;
+      max-width: 1280px;
       margin: 0;
-      padding: 40px 40px 0;
+      padding: 24px 0 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
 }
 @media (max-width: 768px) {
-    .desc-specs-section { grid-template-columns: 1fr; padding: 24px 16px 0; gap: 16px; }
+    .desc-specs-section { grid-template-columns: 1fr; padding: 24px 0 0; gap: 16px; }
 }
 .desc-box {
     background: rgba(var(--shade-rgb),0.02);
@@ -473,6 +471,18 @@
     }
   }
 
+/* In-stock Stats Grid */
+.instock-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; width: 100%; box-sizing: border-box; }
+.stat-card { min-width: 0; word-wrap: break-word; background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.2); border-radius: 12px; padding: 12px 4px; text-align: center; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: default; }
+.stat-card:hover { background: rgba(0,255,136,0.12); transform: translateY(-2px); border-color: rgba(0,255,136,0.5); box-shadow: 0 4px 12px rgba(0,255,136,0.1); }
+.stat-card i { color: var(--accent-green); width: 18px; height: 18px; margin-bottom: 6px; }
+.stat-label { font-size: 9px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; font-weight: 700; letter-spacing: -0.2px; line-height: 1.1; }
+.stat-value { font-size: 13px; font-weight: 800; color: var(--text-primary); word-break: break-word; }
+@media (min-width: 768px) { .stat-label { font-size: 10px; letter-spacing: 0; } .stat-value { font-size: 14px; } .stat-card i { width: 20px; height: 20px; margin-bottom: 8px; } .stat-card { padding: 16px 8px; } }
+@media (max-width: 600px) { .instock-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+#toggle-box-mica:checked + .slider { background-color: var(--accent-green); }
+#toggle-box-mica:checked ~ .knob { transform: translateX(20px); }
+
 </style>
 </head>
 <body>
@@ -542,7 +552,7 @@
           </div>
           <div class="action-zone" id="action-zone">
             <div style="display: flex; gap: 10px; width: 100%;">
-              <button class="btn-buy" id="btn-buy" onclick="console.log(\'clicked\'); checkout()" style="flex: 1;">
+              <button class="btn-buy" id="btn-buy" onclick="checkout()" style="flex: 1;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                 <span id="btn-text">MUA NGAY</span>
               </button>
@@ -609,67 +619,6 @@
     <div class="opt-panel-title">Hàng Có Sẵn <span style="font-size:11px; color:var(--accent-green);">(Giao Ngay)</span></div>
     
     
-<style>
-.instock-stats-grid { 
-  display: grid; 
-  grid-template-columns: repeat(4, 1fr); 
-  gap: 8px; 
-  margin-bottom: 16px; 
-  width: 100%; 
-  box-sizing: border-box; 
-}
-.stat-card { 
-  min-width: 0; 
-  word-wrap: break-word; 
-  background: rgba(0, 255, 136, 0.05); 
-  border: 1px solid rgba(0, 255, 136, 0.2); 
-  border-radius: 12px; 
-  padding: 12px 4px; 
-  text-align: center; 
-  transition: all 0.3s ease; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  justify-content: center; 
-  cursor: default; 
-}
-.stat-card:hover { 
-  background: rgba(0, 255, 136, 0.12); 
-  transform: translateY(-2px); 
-  border-color: rgba(0, 255, 136, 0.5); 
-  box-shadow: 0 4px 12px rgba(0, 255, 136, 0.1); 
-}
-.stat-card i { 
-  color: var(--accent-green); 
-  width: 18px; 
-  height: 18px; 
-  margin-bottom: 6px; 
-}
-.stat-label { 
-  font-size: 9px; 
-  color: var(--text-muted); 
-  margin-bottom: 4px; 
-  text-transform: uppercase; 
-  font-weight: 700; 
-  letter-spacing: -0.2px; 
-  line-height: 1.1;
-}
-.stat-value { 
-  font-size: 13px; 
-  font-weight: 800; 
-  color: var(--text-primary); 
-  word-break: break-word;
-}
-@media (min-width: 768px) {
-  .stat-label { font-size: 10px; letter-spacing: 0; }
-  .stat-value { font-size: 14px; }
-  .stat-card i { width: 20px; height: 20px; margin-bottom: 8px; }
-  .stat-card { padding: 16px 8px; }
-}
-@media (max-width: 600px) {
-  .instock-stats-grid { grid-template-columns: repeat(2, 1fr); }
-}
-</style>
 <div class="instock-stats-grid">
   <div class="stat-card">
     <i data-lucide="box"></i>
@@ -808,10 +757,7 @@
               <span class="knob" style="position: absolute; content: ''; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;"></span>
             </label>
           </div>
-          <style>
-             #toggle-box-mica:checked + .slider { background-color: var(--accent-green); }
-             #toggle-box-mica:checked ~ .knob { transform: translateX(20px); }
-          </style>
+
 
           <div class="timeline lego-box lego-delay-3" id="custom-timeline" style="grid-column: 1 / -1; margin-top: 16px; padding: 20px;">
           <div class="tl-title" style="text-transform:uppercase;font-weight:700;color: var(--text-primary);display:flex;align-items:center;gap:7px;margin-bottom:3px;">
@@ -820,14 +766,13 @@
           </div>
           <div class="tl-subtitle" style="color:var(--text-muted);">Tổng thời gian khoảng 2-4 ngày</div>
           <div class="progress-track"><div class="progress-fill"></div></div>
-          </div>
 
           <div class="timeline-steps">
             <div>📦 Đặt Hàng</div>
             <div>🔨 Chế Tác<br><span class="tl-subtext">(2-4 ngày)</span></div>
             <div>🚚 Giao Hàng</div>
           </div>
-        </div>
+          </div>
 
           <!-- Nút quay lại mua hàng sẵn -->
           <div id="btn-back-instock-container" style="margin-top: 16px; grid-column: 1 / -1;">
@@ -850,11 +795,10 @@
           </div>
         </div>
 
-        </div><!-- /right-col -->
-    </div><!-- /detail-wrap -->
+      </div><!-- /right-col -->
 
-    <!-- Description & Specs Section -->
-    <div class="desc-specs-section">
+      <!-- Description & Specs Section -->
+      <div class="desc-specs-section" style="grid-column: 1 / -1; width: 100%;">
       <div class="desc-box lego-box lego-delay-4">
           <div class="box-title">Mô Tả Sản Phẩm</div>
           <div class="box-content" id="d-desc"></div>
@@ -865,22 +809,22 @@
       </div>
     </div>
 
-
     <!-- Bottom Sections -->
-      <div class="bottom-section">
+      <div class="bottom-section" style="grid-column: 1 / -1; width: 100%;">
         <div>
-          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;">Sản Phẩm Liên Quan</h2>
-          <div id="d-related-list" class="half-grid"></div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;display:flex;align-items:center;gap:8px;"><i data-lucide="layers" style="width:20px;height:20px;"></i> Sản Phẩm Liên Quan</h2>
+          <div id="d-related-list" class="vertical-list"></div>
         </div>
         <div>
-          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;">📈 Bán Chạy Nhất</h2>
-          <div id="d-bestseller-list" class="half-grid"></div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;display:flex;align-items:center;gap:8px;"><i data-lucide="trending-up" style="width:20px;height:20px;"></i> Bán Chạy Nhất</h2>
+          <div id="d-bestseller-list" class="vertical-list"></div>
         </div>
         <div>
-          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;">📦 Đang Có Sẵn</h2>
-          <div id="d-instock-list" class="half-grid"></div>
+          <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;border-bottom:1px solid rgba(var(--shade-rgb),0.07);padding-bottom:10px;display:flex;align-items:center;gap:8px;"><i data-lucide="package" style="width:20px;height:20px;"></i> Đang Có Sẵn</h2>
+          <div id="d-instock-list" class="vertical-list"></div>
         </div>
       </div>
+    </div><!-- /detail-wrap -->
 
   </main>
 </div>
@@ -1582,6 +1526,47 @@ async function initDetail() {
         }
     }
   }, 100);
+
+window.checkout = function() {
+    try {
+        const qty = parseInt(document.getElementById('purchase-qty').value) || 1;
+        const mat = window.currentMat || 'PLA';
+        const sizeInfo = document.querySelector('.size-btn.active');
+        const sizeStr = sizeInfo ? sizeInfo.textContent.trim() : '500%';
+        
+        let price = calculatedPrice || 0;
+        const tax = price * 0.1;
+        const total = price + tax;
+        
+        document.getElementById('co-img').src = drop.image || '/shared/no-image.jpg';
+        document.getElementById('co-name').textContent = drop.name + ' (x' + qty + ')';
+        document.getElementById('co-mat').textContent = mat;
+        document.getElementById('co-size').textContent = sizeStr;
+        document.getElementById('co-subtotal').textContent = DB.formatVND(price);
+        document.getElementById('co-tax').textContent = DB.formatVND(tax);
+        document.getElementById('co-total').textContent = DB.formatVND(total);
+        
+        const modal = document.getElementById('checkout-modal');
+        if (modal) modal.classList.add('open');
+    } catch (err) {
+        alert("Lỗi checkout: " + err.message);
+    }
+};
+
+window.closeCheckoutModal = function() {
+    const modal = document.getElementById('checkout-modal');
+    if (modal) modal.classList.remove('open');
+};
+
+window.confirmCheckout = function() {
+    alert('Đơn hàng của bạn đã được ghi nhận thành công! Chúng tôi sẽ liên hệ sớm.');
+    closeCheckoutModal();
+};
+
+window.checkoutStock = function() {
+    if(window.toggleInstockMode) window.toggleInstockMode();
+    window.checkout();
+};
 
 // Start
 initDetail();

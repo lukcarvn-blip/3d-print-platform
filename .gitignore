@@ -1,1 +1,6 @@
 .vercel
+
+node_modules/
+temp_curl.html
+downloaded_detail.html
+parse*.js

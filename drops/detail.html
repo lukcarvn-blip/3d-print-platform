@@ -563,12 +563,6 @@
             <div id="action-desc" style="font-size:12px;color:var(--text-muted);margin-top:10px;text-align:center;">Sản phẩm có sẵn. Giao ngay trong 2H.</div>
           </div>
 
-            <!-- Khắc tên (Left Col) -->
-            <div class="opt-panel lego-box lego-delay-3" id="engraving-section" style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px; width: 100%; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
-              <div class="opt-panel-title" style="font-size:14px; font-weight:700;">Khắc Tên Lên Đế (Miễn Phí)</div>
-              <input type="text" id="engraving-text" placeholder="Nhập tên hoặc thông điệp (tối đa 20 ký tự)..." maxlength="20" style="background: rgba(var(--shade-rgb),0.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; color: var(--text-primary); font-family: 'Space Grotesk'; font-size: 15px; width: 100%; box-sizing: border-box;" autocomplete="off">
-              <div style="font-size: 12px; color: var(--text-muted);">* Dành riêng cho hàng Custom. Layout 3D sẽ tối ưu trước khi in.</div>
-            </div>
         </div><!-- /left-col -->
 
       <!-- ════ RIGHT COL ════ -->
@@ -723,39 +717,42 @@
                       <div style="width: 18px; height: 28px; background: #4ade80; border-radius: 3px;"></div>
                     </div>
                   </div>
-
                 </div>
 
                 <!-- Right side: Buttons -->
                 <div class="size-list" style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
                     <button class="size-btn active" onclick="selectSize(this,'500%',1)" style="padding: 14px; border-radius: 8px; border: 2px solid #4ade80; background: rgba(74, 222, 128, 0.05); color: #4ade80; font-weight: 800; font-size: 18px; cursor: pointer; transition: 0.2s;">500%</button>
                     <button class="size-btn" onclick="selectSize(this,'1000%',2)" style="padding: 14px; border-radius: 8px; border: 2px solid rgba(var(--shade-rgb),0.08); background: rgba(var(--shade-rgb),0.02); color: #9ca3af; font-weight: 800; font-size: 18px; cursor: pointer; transition: 0.2s;">1000%</button>
-                  </div>
-
+                </div>
               </div>
-
             </div>
           </div><!-- /options-row -->
 
-        
-          <!-- Timeline -->
-        
-          <!-- Phụ Kiện (Box Mica) -->
-          <div class="opt-panel lego-box" id="accessory-box-mica" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px dashed rgba(0,255,136,0.3) !important; background: rgba(0,255,136,0.02) !important;">
-            <div style="display: flex; gap: 16px; align-items: center;">
-              <div style="width: 50px; height: 50px; background: rgba(0,255,136,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,255,136,0.2);">
-                 <i data-lucide="box" style="color: var(--accent-green);"></i>
-              </div>
-              <div>
-                <div style="font-weight: 700; font-size: 15px; color: var(--text-primary); margin-bottom: 4px;">Hộp Trưng Bày Mica</div>
-                <div style="font-size: 13px; color: var(--text-muted);" id="box-mica-price">+600.000 VNĐ (Chống bụi, Acrylic 3mm)</div>
-              </div>
+          <div style="display: flex; gap: 16px; margin-bottom: 20px;">
+            <!-- Khắc tên -->
+            <div class="opt-panel lego-box lego-delay-3" id="engraving-section" style="flex: 1; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border); border-radius: 12px; padding: 16px;">
+              <div class="opt-panel-title" style="font-size:14px; font-weight:700;">Khắc Tên Lên Đế (Miễn Phí)</div>
+              <input type="text" id="engraving-text" placeholder="Nhập tên (tối đa 20 ký tự)..." maxlength="20" style="background: rgba(var(--shade-rgb),0.03); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; color: var(--text-primary); font-family: 'Space Grotesk'; font-size: 15px; width: 100%; box-sizing: border-box;" autocomplete="off">
+              <div style="font-size: 12px; color: var(--text-muted);">* Dành riêng cho hàng Custom.</div>
             </div>
-            <label style="position: relative; display: inline-block; width: 44px; height: 24px;">
-              <input type="checkbox" id="toggle-box-mica" onchange="toggleBoxMica()" style="opacity: 0; width: 0; height: 0;">
-              <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(var(--shade-rgb),0.2); transition: .4s; border-radius: 24px;"></span>
-              <span class="knob" style="position: absolute; content: ''; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;"></span>
-            </label>
+
+            <!-- Phụ Kiện (Box Mica) -->
+            <div class="opt-panel lego-box" id="accessory-box-mica" style="flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px dashed rgba(0,255,136,0.3) !important; background: rgba(0,255,136,0.02) !important; padding: 16px; border-radius: 12px;">
+              <div style="display: flex; gap: 16px; align-items: center;">
+                <div style="width: 50px; height: 50px; background: rgba(0,255,136,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(0,255,136,0.2);">
+                   <i data-lucide="box" style="color: var(--accent-green);"></i>
+                </div>
+                <div>
+                  <div style="font-weight: 700; font-size: 15px; color: var(--text-primary); margin-bottom: 4px;">Hộp Trưng Bày Mica</div>
+                  <div style="font-size: 13px; color: var(--text-muted);" id="box-mica-price">+600K (Acrylic 3mm)</div>
+                </div>
+              </div>
+              <label style="position: relative; display: inline-block; width: 44px; height: 24px;">
+                <input type="checkbox" id="toggle-box-mica" onchange="toggleBoxMica()" style="opacity: 0; width: 0; height: 0;">
+                <span class="slider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(var(--shade-rgb),0.2); transition: .4s; border-radius: 24px;"></span>
+                <span class="knob" style="position: absolute; content: ''; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;"></span>
+              </label>
+            </div>
           </div>
 
 
